@@ -500,7 +500,7 @@ void KaleidoScope_DrawQuestStatus(PlayState* play, GraphicsContext* gfxCtx) {
                     gDPPipeSync(POLY_OPA_DISP++);
 
                     if (D_8082A124[sp218] == 0) {
-                        gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 80, 255, 150, D_8082A150[sp218]);
+                        gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 0x50, 0x96, 0xFF, D_8082A150[sp218]);
                     } else {
                         gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 50, D_8082A150[sp218]);
                     }
@@ -530,7 +530,7 @@ void KaleidoScope_DrawQuestStatus(PlayState* play, GraphicsContext* gfxCtx) {
 
                 if (pauseCtx->unk_1E4 == 8) {
                     if (gOcarinaSongButtons[sp224].buttonsIndex[phi_s3] == OCARINA_BTN_A) {
-                        gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 80, 255, 150, 200);
+                        gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 0x50, 0x96, 0xFF, 200);
                     } else {
                         gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 50, 200);
                     }
@@ -585,7 +585,7 @@ void KaleidoScope_DrawQuestStatus(PlayState* play, GraphicsContext* gfxCtx) {
                     gDPPipeSync(POLY_OPA_DISP++);
 
                     if (D_8082A124[phi_s3] == 0) {
-                        gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 80, 255, 150, D_8082A150[phi_s3]);
+                        gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 0x50, 0x96, 0xFF, D_8082A150[phi_s3]);
                     } else {
                         gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 50, D_8082A150[phi_s3]);
                     }

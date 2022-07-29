@@ -152,16 +152,16 @@ void func_801109B0(PlayState* play) {
     interfaceCtx->unk_23C = interfaceCtx->unk_242 = 0;
 
     R_ITEM_BTN_X(0) = B_BUTTON_X;
-    R_B_BTN_COLOR(0) = 255;
-    R_B_BTN_COLOR(1) = 30;
-    R_B_BTN_COLOR(2) = 30;
+    R_B_BTN_COLOR(0) = 0;
+    R_B_BTN_COLOR(1) = 0x96;
+    R_B_BTN_COLOR(2) = 0;
     R_ITEM_ICON_X(0) = B_BUTTON_X;
     R_ITEM_AMMO_X(0) = B_BUTTON_X + 2;
     R_A_BTN_X = A_BUTTON_X;
     R_A_ICON_X = A_BUTTON_X;
-    R_A_BTN_COLOR(0) = 0;
-    R_A_BTN_COLOR(1) = 200;
-    R_A_BTN_COLOR(2) = 50;
+    R_A_BTN_COLOR(0) = 0x5A;
+    R_A_BTN_COLOR(1) = 0x5A;
+    R_A_BTN_COLOR(2) = 0xFF;
 }
 
 void Message_Init(PlayState* play) {
@@ -538,7 +538,7 @@ void func_80111070(void) {
     VREG(30) = 0;
     VREG(31) = 0;
     VREG(32) = 0;
-
+	// TODO: Below 6 lines different on N64?
     R_TEXT_ADJUST_COLOR_1_R = 70;
     R_TEXT_ADJUST_COLOR_1_G = 255;
     R_TEXT_ADJUST_COLOR_1_B = 80;

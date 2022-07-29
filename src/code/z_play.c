@@ -322,15 +322,6 @@ void Play_Init(GameState* thisx) {
 
     osSyncPrintf("\nSCENE_NO=%d COUNTER=%d\n", ((void)0, gSaveContext.entranceIndex), gSaveContext.sceneSetupIndex);
 
-    // When entering Gerudo Valley in the right setup, trigger the GC emulator to play the ending movie.
-    // The emulator constantly checks whether PC is 0x81000000, so this works even though it's not a valid address.
-    if ((gEntranceTable[((void)0, gSaveContext.entranceIndex)].scene == SCENE_SPOT09) &&
-        gSaveContext.sceneSetupIndex == 6) {
-        osSyncPrintf("エンディングはじまるよー\n"); // "The ending starts"
-        ((void (*)(void))0x81000000)();
-        osSyncPrintf("出戻り？\n"); // "Return?"
-    }
-
     Cutscene_HandleEntranceTriggers(this);
     KaleidoScopeCall_Init(this);
     func_801109B0(this);

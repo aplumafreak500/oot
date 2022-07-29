@@ -2136,8 +2136,8 @@ void EnOssan_InitActionFunc(EnOssan* this, PlayState* play) {
         this->cursorIndex = 0;
         this->cursorZ = 1.5f;
         this->cursorColorR = 0;
-        this->cursorColorG = 255;
-        this->cursorColorB = 80;
+        this->cursorColorG = 0x50;
+        this->cursorColorB = 0xFF;
         this->cursorColorA = 255;
         this->cursorAnimTween = 0;
 
