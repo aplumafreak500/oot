@@ -7,13 +7,13 @@ SHELL = /bin/bash
 # Build options can either be changed by modifying the makefile, or by building with 'make SETTING=value'
 
 # If COMPARE is 1, check the output md5sum after building
-COMPARE ?= 1
+COMPARE ?= 0
 # If NON_MATCHING is 1, define the NON_MATCHING C flag when building
-NON_MATCHING ?= 0
+NON_MATCHING ?= 1
 # If ORIG_COMPILER is 1, compile with QEMU_IRIX and the original compiler
 ORIG_COMPILER ?= 0
 # If COMPILER is "gcc", compile with GCC instead of IDO.
-COMPILER ?= ido
+COMPILER ?= gcc
 
 CFLAGS ?=
 CPPFLAGS ?=
@@ -33,7 +33,7 @@ endif
 
 # Set prefix to mips binutils binaries (mips-linux-gnu-ld => 'mips-linux-gnu-') - Change at your own risk!
 # In nearly all cases, not having 'mips-linux-gnu-*' binaries on the PATH is indicative of missing dependencies
-MIPS_BINUTILS_PREFIX ?= mips-linux-gnu-
+MIPS_BINUTILS_PREFIX ?= mips-linux-
 
 ifeq ($(NON_MATCHING),1)
   CFLAGS += -DNON_MATCHING -DAVOID_UB
@@ -111,7 +111,8 @@ ZAPD       := tools/ZAPD/ZAPD.out
 FADO       := tools/fado/fado.elf
 
 ifeq ($(COMPILER),gcc)
-  OPTFLAGS := -Os -ffast-math -fno-unsafe-math-optimizations
+#  OPTFLAGS := -Os -ffast-math -fno-unsafe-math-optimizations
+  OPTFLAGS := -O2
 else
   OPTFLAGS := -O2
 endif
