@@ -352,14 +352,16 @@ void Fault_Sleep(u32 msec) {
     Fault_SleepImpl(msec);
 }
 
-void PadMgr_RequestPadData(Input* input, s32 mode);
+//void PadMgr_RequestPadData(Input* input, s32 mode);
+void PadMgr_RequestPadData(PadMgr* padMgr, Input* input, s32 mode);
 
 void Fault_PadCallback(Input* input) {
     //! @bug This function is not called correctly, it is missing a leading PadMgr* argument. This
     //! renders the crash screen unusable.
     //! In Majora's Mask, PadMgr functions were changed to not require this argument, and this was
     //! likely just not addressed when backporting.
-    PadMgr_RequestPadData(input, 0);
+//  PadMgr_RequestPadData(input, 0);
+    PadMgr_RequestPadData(&gPadMgr, input, 0);
 }
 
 void Fault_UpdatePadImpl(void) {
@@ -651,6 +653,7 @@ void Fault_Wait5Seconds(void) {
  * (L & R & Z) + DPad-Up + C-Down + C-Up + DPad-Down + DPad-Left + C-Left + C-Right + DPad-Right + (B & A & START)
  */
 void Fault_WaitForButtonCombo(void) {
+	/*
     Input* input = &sFaultInstance->padInput;
     s32 state;
     u32 s1;
@@ -790,9 +793,9 @@ void Fault_WaitForButtonCombo(void) {
                     break;
             }
         }
-
         osWritebackDCacheAll();
     }
+	*/
 }
 
 void Fault_DrawMemDumpContents(const char* title, uintptr_t addr, u32 arg2) {
