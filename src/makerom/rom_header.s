@@ -10,9 +10,12 @@
 .word  0x69BC5453               /* Checksum 2 */
 .word  0x00000000               /* Unknown */
 .word  0x00000000               /* Unknown */
-.ascii "THE LEGEND OF ZELDA "   /* Internal ROM name */
+/*
+.ascii "THE LEGEND OF ZELDA " *//* Internal ROM name *//*
+*/
+.ascii "Zelda Master Luma  D"   /* Internal ROM name */
 .word  0x00000000               /* Unknown */
-.word  0x0000004E               /* Cartridge */
+.word  0x00000043               /* Cartridge */
 .ascii "ZL"                     /* Cartridge ID */
-.ascii "P"                      /* Region */
-.byte  0x0F                     /* Version */
+.ascii "E"                      /* Region */
+.byte  0xDE                     /* Version */

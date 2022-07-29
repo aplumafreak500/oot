@@ -1,3 +1,3 @@
-const char gBuildTeam[] = "zelda@srd022j";
-const char gBuildDate[] = "03-02-21 00:16:31";
+const char gBuildTeam[] = "arcticluma113@zelda64.dev";
+const char gBuildDate[] = "Thu Jul 28 19:45:19 EDT 2022";
 const char gBuildMakeOption[] = "";

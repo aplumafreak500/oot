@@ -18,12 +18,12 @@ void ConsoleLogo_PrintBuildInfo(Gfx** gfxp) {
     GfxPrint_Init(printer);
     GfxPrint_Open(printer, g);
     GfxPrint_SetColor(printer, 255, 155, 255, 255);
-    GfxPrint_SetPos(printer, 9, 21);
-    GfxPrint_Printf(printer, "NOT MARIO CLUB VERSION");
-    GfxPrint_SetColor(printer, 255, 255, 255, 255);
-    GfxPrint_SetPos(printer, 7, 23);
+    GfxPrint_SetPos(printer, 5, 22);
+    GfxPrint_Printf(printer, "Luma's Test Hacks Ver.");
+    GfxPrint_SetColor(printer, 0x80, 0x80, 0xff, 255);
+    GfxPrint_SetPos(printer, 3, 23);
     GfxPrint_Printf(printer, "[Creator:%s]", gBuildTeam);
-    GfxPrint_SetPos(printer, 7, 24);
+    GfxPrint_SetPos(printer, 3, 24);
     GfxPrint_Printf(printer, "[Date:%s]", gBuildDate);
     g = GfxPrint_Close(printer);
     GfxPrint_Destroy(printer);
@@ -43,7 +43,7 @@ void ConsoleLogo_Calc(ConsoleLogoState* this) {
 
         if (this->coverAlpha <= 0) {
             this->coverAlpha = 0;
-            this->addAlpha = 3;
+            this->addAlpha = 12;
         } else if (this->coverAlpha >= 255) {
             this->coverAlpha = 255;
             this->exit = true;
@@ -188,8 +188,8 @@ void ConsoleLogo_Init(GameState* thisx) {
     gSaveContext.fileNum = 0xFF;
     Sram_Alloc(&this->state, &this->sramCtx);
     this->ult = 0;
-    this->unk_1D4 = 0x14;
+    this->unk_1D4 = 20;
     this->coverAlpha = 255;
-    this->addAlpha = -3;
-    this->visibleDuration = 0x3C;
+    this->addAlpha = -12;
+    this->visibleDuration = 120;
 }
