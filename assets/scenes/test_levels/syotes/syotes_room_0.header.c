@@ -11,7 +11,7 @@
 s16 syotes_room_0ObjectList[];
 ActorEntry syotes_room_0ActorList[];
 
-SceneCmd syotes2_room_0Commands[] = {
+SceneCmd syotes_room_0Commands[] = {
     SCENE_CMD_ECHO_SETTINGS(5),
     SCENE_CMD_ROOM_BEHAVIOR(0x01, 0x00, false, false),
     SCENE_CMD_SKYBOX_DISABLES(true, false),
