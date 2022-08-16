@@ -465,7 +465,7 @@ void EnDodongo_SwallowBomb(EnDodongo* this, PlayState* play) {
     } else if (this->eatenBombType == EN_DODONGO_BOMBF) {
         ((EnBombf*)this->actor.parent)->timer++;
     } else if (this->eatenBombType == EN_DODONGO_BOMBCHU) {
-        ((EnBombChu*)this->actor.parent)->timer++;
+        ((EnBomChu*)this->actor.parent)->timer++;
     }
 
     if ((s32)this->skelAnime.curFrame == 28) {
