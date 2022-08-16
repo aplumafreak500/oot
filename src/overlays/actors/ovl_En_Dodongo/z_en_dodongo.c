@@ -1,6 +1,7 @@
 #include "z_en_dodongo.h"
 #include "overlays/actors/ovl_En_Bom/z_en_bom.h"
 #include "overlays/actors/ovl_En_Bombf/z_en_bombf.h"
+#include "overlays/actors/ovl_En_Bom_Chu/z_en_bom_chu.h"
 #include "assets/objects/object_dodongo/object_dodongo.h"
 
 #define FLAGS (ACTOR_FLAG_0 | ACTOR_FLAG_2 | ACTOR_FLAG_4)
@@ -458,15 +459,13 @@ void EnDodongo_SwallowBomb(EnDodongo* this, PlayState* play) {
     Vec3f pos;
     s32 pad;
 
-    if (this->actor.child != NULL) {
-        this->actor.child->world.pos = this->mouthPos;
+    this->actor.child->world.pos = this->mouthPos;
+    if (this->eatenBombType == EN_DODONGO_BOMB) {
         ((EnBom*)this->actor.child)->timer++;
-    } else if (this->actor.parent != NULL) {
-        this->actor.parent->world.pos = this->mouthPos;
+    } else if (this->eatenBombType == EN_DODONGO_BOMBF) {
         ((EnBombf*)this->actor.parent)->timer++;
-        //! @bug An explosive can also be a bombchu, not always a bomb, which leads to a serious bug. ->timer (0x1F8) is
-        //! outside the bounds of the bombchu actor, and the memory it writes to happens to be one of the pointers in
-        //! the next arena node. When this value is written to, massive memory corruption occurs.
+    } else if (this->eatenBombType == EN_DODONGO_BOMBCHU) {
+        ((EnBombChu*)this->actor.parent)->timer++;
     }
 
     if ((s32)this->skelAnime.curFrame == 28) {
@@ -955,11 +954,14 @@ s32 EnDodongo_AteBomb(EnDodongo* this, PlayState* play) {
         dy = actor->world.pos.y - this->mouthPos.y;
         dz = actor->world.pos.z - this->mouthPos.z;
         if ((fabsf(dx) < 20.0f) && (fabsf(dy) < 10.0f) && (fabsf(dz) < 20.0f)) {
-            if (actor->id == ACTOR_EN_BOM) {
-                this->actor.child = actor;
-            } else {
-                this->actor.parent = actor;
-            }
+            if (actor->id == ACTOR_EN_BOM)
+				this->eatenBombType = EN_DODONGO_BOMB;
+            else if (actor->id == ACTOR_EN_BOMBF)
+				this->eatenBombType = EN_DODONGO_BOMBF;
+            else if (actor->id == ACTOR_EN_BOM_CHU)
+				this->eatenBombType = EN_DODONGO_BOMBCHU;
+			else this->eatenBombType = 0;
+            this->actor.child = actor;
             actor->parent = &this->actor;
             return true;
         }

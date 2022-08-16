@@ -37,11 +37,18 @@ typedef struct EnDodongo {
     /* 0x0474 */ ColliderTrisElement trisElements[3];
     /* 0x0588 */ ColliderJntSph colliderBody;
     /* 0x05A8 */ ColliderJntSphElement sphElements[6];
+	u8 eatenBombType;
 } EnDodongo; // size = 0x0728
 
 typedef enum {
     EN_DODONGO_NORMAL = -1,
     EN_DODONGO_SMOKE_DEATH
 } EnDodongoParam;
+
+typedef enum {
+	EN_DODONGO_BOMB = 1,
+	EN_DODONGO_BOMBF,
+	EN_DODONGO_BOMBCHU
+} EnDodongoEatenBombType;
 
 #endif
