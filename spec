@@ -8447,6 +8447,7 @@ endseg
 beginseg
     name "syotes_room_0"
     romalign 0x1000
+    include "build/assets/scenes/test_levels/syotes/syotes_room_0.header.o"
     include "build/assets/scenes/test_levels/syotes/syotes_room_0.o"
     number 3
 endseg
