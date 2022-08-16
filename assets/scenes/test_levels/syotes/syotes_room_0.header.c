@@ -17,8 +17,8 @@ SceneCmd syotes_room_0Commands[] = {
     SCENE_CMD_SKYBOX_DISABLES(true, false),
     SCENE_CMD_TIME_SETTINGS(0, 0, 255),
     SCENE_CMD_MESH(&syotes_room_0PolygonType0_000000),
-    SCENE_CMD_OBJECT_LIST(1, syotes_room_0ObjectList),
-    SCENE_CMD_ACTOR_LIST(1, syotes_room_0ActorList),
+//    SCENE_CMD_OBJECT_LIST(1, syotes_room_0ObjectList),
+//    SCENE_CMD_ACTOR_LIST(1, syotes_room_0ActorList),
     SCENE_CMD_END(),
 };
 
