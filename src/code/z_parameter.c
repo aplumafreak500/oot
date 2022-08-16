@@ -1782,10 +1782,9 @@ u8 Item_Give(PlayState* play, u8 item) {
             }
         }
     } else if ((item >= ITEM_WEIRD_EGG) && (item <= ITEM_CLAIM_CHECK)) {
-        if (item == ITEM_SAW) {
+        /*if (item == ITEM_SAW) {
             SET_ITEMGETINF(ITEMGETINF_1F);
-        }
-
+        }*/
         temp = INV_CONTENT(item);
         INV_CONTENT(item) = item;
 
