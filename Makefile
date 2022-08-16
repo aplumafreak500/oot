@@ -26,8 +26,8 @@ ifneq ($(COMPILER),ido)
 endif
 
 ifeq ($(COMPILER),gcc)
-  CFLAGS += -DCOMPILER_GCC
-  CPPFLAGS += -DCOMPILER_GCC
+  CFLAGS += -DCOMPILER_GCC -DREAL_ASSERT_MACRO
+  CPPFLAGS += -DCOMPILER_GCC -DREAL_ASSERT_MACRO
   NON_MATCHING := 1
 endif
 
@@ -329,6 +329,11 @@ build/dmadata_table_spec.h: build/$(SPEC)
 
 build/src/boot/z_std_dma.o: build/dmadata_table_spec.h
 build/src/dmadata/dmadata.o: build/dmadata_table_spec.h
+
+build/build.h:
+	python3 get_date.py > $@
+
+build/src/boot/build.o: build/build.h
 
 build/src/%.o: src/%.c
 	$(CC_CHECK) $<
