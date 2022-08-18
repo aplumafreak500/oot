@@ -43,6 +43,7 @@ extern u32 __additional_scanline;
 extern u8 gBuildTeam[];
 extern u8 gBuildDate[];
 extern u8 gBuildMakeOption[];
+extern u8 gGitHash[];
 extern OSMesgQueue gPiMgrCmdQueue;
 extern OSViMode gViConfigMode;
 extern u8 D_80013960;
