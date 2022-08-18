@@ -378,9 +378,9 @@ void FileSelect_PulsateCursor(GameState* thisx) {
     static s16 cursorAlphaTargets[] = { 70, 200 };
     FileSelectState* this = (FileSelectState*)thisx;
     s16 alphaStep;
+#ifdef DEBUG
     SramContext* sramCtx = &this->sramCtx;
     Input* debugInput = &this->state.input[2];
-
     if (CHECK_BTN_ALL(debugInput->press.button, BTN_DLEFT)) {
         sramCtx->readBuff[SRAM_HEADER_LANGUAGE] = gSaveContext.language = LANGUAGE_ENG;
         *((u8*)0x80000002) = LANGUAGE_ENG;
@@ -420,7 +420,7 @@ void FileSelect_PulsateCursor(GameState* thisx) {
                      sramCtx->readBuff[SRAM_HEADER_ZTARGET], sramCtx->readBuff[SRAM_HEADER_LANGUAGE],
                      sramCtx->readBuff[SRAM_HEADER_MAGIC]);
     }
-
+#endif
     alphaStep = ABS(this->highlightColor[3] - cursorAlphaTargets[this->highlightPulseDir]) / XREG(35);
 
     if (this->highlightColor[3] >= cursorAlphaTargets[this->highlightPulseDir]) {
@@ -1439,8 +1439,13 @@ void FileSelect_LoadGame(GameState* thisx) {
     FileSelectState* this = (FileSelectState*)thisx;
     u16 swordEquipValue;
     s32 pad;
-
-    if (this->buttonIndex == FS_BTN_SELECT_FILE_1) {
+    if (
+#ifdef DEBUG
+    this->buttonIndex == FS_BTN_SELECT_FILE_1
+#else
+    0
+#endif
+    ) {
         Audio_PlaySfxGeneral(NA_SE_SY_FSEL_DECIDE_L, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                              &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
         gSaveContext.fileNum = this->buttonIndex;

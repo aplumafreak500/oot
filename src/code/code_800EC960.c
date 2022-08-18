@@ -2307,11 +2307,14 @@ f32 D_80131C8C = 0.0f;
 
 // =========== Audio Debugging ===========
 
+s32 sAudioUpdateTaskStart;
+s32 sAudioUpdateTaskEnd;
+u8 sAudioNatureFailed = false;
+
+#ifdef DEBUG
 u32 sDebugPadHold;
 u32 sDebugPadBtnLast;
 u32 sDebugPadPress;
-s32 sAudioUpdateTaskStart;
-s32 sAudioUpdateTaskEnd;
 
 f32 sAudioUpdateDuration = 0.0f;
 f32 sAudioUpdateDurationMax = 0.0f;
@@ -2367,7 +2370,6 @@ char sAudioSceneNames[3][2] = { "A", "S", "X" };
 u8 sAudioBlkChgBgmWork[2] = { 0 };
 u8 sAudioBlkChgBgmSel = 0;
 char sBoolStrs[3][5] = { "OFF", "ON", "STBY" };
-u8 sAudioNatureFailed = false;
 u8 sPeakNumNotes = 0;
 
 void AudioDebug_SetInput(void) {
@@ -3692,6 +3694,7 @@ void AudioDebug_ProcessInput(void) {
 
     D_8013340C = sAudioScrPrtWork[10];
 }
+#endif
 
 void Audio_UpdateRiverSoundVolumes(void);
 void func_800F5CF8(void);
@@ -3716,8 +3719,10 @@ void func_800F3054(void) {
         Audio_ProcessSeqCmds();
         func_800F8F88();
         func_800FA3DC();
+#ifdef DEBUG
         AudioDebug_SetInput();
         AudioDebug_ProcessInput();
+#endif
         Audio_ScheduleProcessCmds();
         sAudioUpdateTaskEnd = gAudioContext.totalTaskCount;
         sAudioUpdateEndTime = osGetTime();

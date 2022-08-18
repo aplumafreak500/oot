@@ -10,7 +10,11 @@
 
 GameStateOverlay gGameStateOverlayTable[] = {
     GAMESTATE_OVERLAY_INTERNAL(Setup_Init, Setup_Destroy, sizeof(SetupState)),
+#ifdef DEBUG
     GAMESTATE_OVERLAY(select, MapSelect_Init, MapSelect_Destroy, sizeof(MapSelectState)),
+#else
+    GAMESTATE_OVERLAY_INTERNAL(NULL, NULL, sizeof(SampleState)),
+#endif
     GAMESTATE_OVERLAY(title, ConsoleLogo_Init, ConsoleLogo_Destroy, sizeof(ConsoleLogoState)),
     GAMESTATE_OVERLAY_INTERNAL(Play_Init, Play_Destroy, sizeof(PlayState)),
     GAMESTATE_OVERLAY(opening, TitleSetup_Init, TitleSetup_Destroy, sizeof(TitleSetupState)),

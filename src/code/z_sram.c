@@ -590,7 +590,13 @@ void Sram_VerifyAndLoadAllSaves(FileSelectState* fileSelect, SramContext* sramCt
                 bzero(&gSaveContext.totalDays, sizeof(s32));
                 bzero(&gSaveContext.bgsDayCount, sizeof(s32));
 
-                if (!slotNum) {
+                if (
+#ifdef DEBUG
+                slotNum == 0
+#else
+                0
+#endif
+                ) {
                     Sram_InitDebugSave();
                     gSaveContext.newf[0] = 'Z';
                     gSaveContext.newf[1] = 'E';
@@ -688,7 +694,13 @@ void Sram_InitSave(FileSelectState* fileSelect, SramContext* sramCtx) {
     u16* ptr;
     u16 checksum;
 
-    if (fileSelect->buttonIndex != 0) {
+    if (
+#ifdef DEBUG
+    fileSelect->buttonIndex != 0
+#else
+    1
+#endif
+    ) {
         Sram_InitNewSave();
     } else {
         Sram_InitDebugSave();
@@ -698,11 +710,11 @@ void Sram_InitSave(FileSelectState* fileSelect, SramContext* sramCtx) {
     gSaveContext.linkAge = LINK_AGE_CHILD;
     gSaveContext.dayTime = CLOCK_TIME(10, 0);
     gSaveContext.cutsceneIndex = 0xFFF1;
-
+#ifdef DEBUG
     if (fileSelect->buttonIndex == 0) {
         gSaveContext.cutsceneIndex = 0;
     }
-
+#endif
     for (offset = 0; offset < 8; offset++) {
         gSaveContext.playerName[offset] = fileSelect->fileNames[fileSelect->buttonIndex][offset];
     }

@@ -1,3 +1,4 @@
+#ifdef DEBUG
 /*
  * File: z_select.c
  * Overlay: ovl_select
@@ -765,3 +766,4 @@ void MapSelect_Init(GameState* thisx) {
     gSaveContext.cutsceneIndex = 0x8000;
     gSaveContext.linkAge = LINK_AGE_CHILD;
 }
+#endif

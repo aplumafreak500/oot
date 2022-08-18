@@ -114,7 +114,7 @@ void Cutscene_DrawDebugInfo(PlayState* play, Gfx** dlist, CutsceneContext* csCtx
 
     GfxPrint_SetPos(&printer, 22, 25);
     GfxPrint_SetColor(&printer, 255, 255, 55, 32);
-    GfxPrint_Printf(&printer, "%s", "FLAME ");
+    GfxPrint_Printf(&printer, "%s", "FRAME ");
     GfxPrint_SetColor(&printer, 255, 255, 255, 32);
     GfxPrint_Printf(&printer, "%06d", csCtx->frames);
     GfxPrint_SetColor(&printer, 50, 255, 255, 60);
@@ -149,7 +149,7 @@ void func_80064558(PlayState* play, CutsceneContext* csCtx) {
 
 void func_800645A0(PlayState* play, CutsceneContext* csCtx) {
     Input* input = &play->state.input[0];
-
+#ifdef DEBUG
     if (CHECK_BTN_ALL(input->press.button, BTN_DLEFT) && (csCtx->state == CS_STATE_IDLE) && IS_CUTSCENE_LAYER) {
         D_8015FCC8 = 0;
         gSaveContext.cutsceneIndex = 0xFFFD;
@@ -162,7 +162,7 @@ void func_800645A0(PlayState* play, CutsceneContext* csCtx) {
         gSaveContext.cutsceneIndex = 0xFFFD;
         gSaveContext.cutsceneTrigger = 1;
     }
-
+#endif
     if ((gSaveContext.cutsceneTrigger != 0) && (play->transitionTrigger == TRANS_TRIGGER_START)) {
         gSaveContext.cutsceneTrigger = 0;
     }
@@ -498,7 +498,7 @@ void Cutscene_Command_Terminator(PlayState* play, CutsceneContext* csCtx, CsCmdB
                              &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
         temp = 1;
     }
-
+#ifdef DEBUG
     if ((csCtx->frames == cmd->startFrame) || (temp != 0) ||
         ((csCtx->frames > 20) && CHECK_BTN_ALL(play->state.input[0].press.button, BTN_START) &&
          (gSaveContext.fileNum != 0xFEDC))) {
@@ -1229,6 +1229,7 @@ void Cutscene_Command_Terminator(PlayState* play, CutsceneContext* csCtx, CsCmdB
                 break;
         }
     }
+#endif
 }
 
 // Command 0x2D: Transition Effects
@@ -1579,12 +1580,12 @@ void Cutscene_ProcessCommands(PlayState* play, CutsceneContext* csCtx, u8* cutsc
         csCtx->state = CS_STATE_UNSKIPPABLE_INIT;
         return;
     }
-
+#ifdef DEBUG
     if (CHECK_BTN_ALL(play->state.input[0].press.button, BTN_DRIGHT)) {
         csCtx->state = CS_STATE_UNSKIPPABLE_INIT;
         return;
     }
-
+#endif
     for (i = 0; i < totalEntries; i++) {
         MemCpy(&cmdType, cutscenePtr, 4);
         cutscenePtr += 4;

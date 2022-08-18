@@ -163,7 +163,9 @@ void Audio_ProcessSfxRequest(void) {
     }
     bankId = SFX_BANK(req->sfxId);
     if ((1 << bankId) & D_801333F0) {
+#ifdef DEBUG
         AudioDebug_ScrPrt("SE", req->sfxId);
+#endif
         bankId = SFX_BANK(req->sfxId);
     }
     count = 0;
