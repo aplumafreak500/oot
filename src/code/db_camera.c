@@ -539,6 +539,7 @@ void DbCamera_Init(DbCamera* dbCamera, Camera* cameraPtr) {
     dbCamera->unk_6C.z = 0;
 }
 
+#ifdef DEBUG
 void DbgCamera_Enable(DbCamera* dbCamera, Camera* cam) {
     dbCamera->at = cam->at;
     dbCamera->eye = cam->eye;
@@ -555,6 +556,7 @@ void DbgCamera_Enable(DbCamera* dbCamera, Camera* cam) {
     dbCamera->rollDegrees = 0.0f;
     func_800B4088(dbCamera, cam);
 }
+#endif
 
 void DbCamera_Update(DbCamera* dbCamera, Camera* cam) {
     static s32 D_8012D10C = 100;

@@ -3851,11 +3851,11 @@ void Interface_Draw(PlayState* play) {
             }
         }
     }
-
+#ifdef DEBUG
     if (pauseCtx->debugState == 3) {
         FlagSet_Update(play);
     }
-
+#endif
     if (interfaceCtx->unk_244 != 0) {
         gDPPipeSync(OVERLAY_DISP++);
         gSPDisplayList(OVERLAY_DISP++, sSetupDL_80125A60);
@@ -3875,6 +3875,7 @@ void Interface_Update(PlayState* play) {
     s16 alpha;
     s16 alpha1;
     u16 action;
+#ifdef DEBUG
     Input* debugInput = &play->state.input[2];
 
     if (CHECK_BTN_ALL(debugInput->press.button, BTN_DLEFT)) {
@@ -3887,7 +3888,7 @@ void Interface_Update(PlayState* play) {
         gSaveContext.language = LANGUAGE_FRA;
         osSyncPrintf("J_N=%x J_N=%x\n", gSaveContext.language, &gSaveContext.language);
     }
-
+#endif
     if ((play->pauseCtx.state == 0) && (play->pauseCtx.debugState == 0)) {
         if ((gSaveContext.minigameState == 1) || !IS_CUTSCENE_LAYER ||
             ((play->sceneId == SCENE_SPOT20) && (gSaveContext.sceneLayer == 4))) {

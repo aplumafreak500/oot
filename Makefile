@@ -15,6 +15,8 @@ ORIG_COMPILER ?= 0
 # If COMPILER is "gcc", compile with GCC instead of IDO.
 COMPILER ?= gcc
 
+DEBUG ?= 1
+
 CFLAGS ?=
 CPPFLAGS ?=
 
@@ -39,6 +41,11 @@ ifeq ($(NON_MATCHING),1)
   CFLAGS += -DNON_MATCHING -DAVOID_UB
   CPPFLAGS += -DNON_MATCHING -DAVOID_UB
   COMPARE := 0
+endif
+
+ifeq ($(DEBUG),1)
+  CFLAGS += -DDEBUG
+  CPPFLAGS += -DDEBUG
 endif
 
 PROJECT_DIR := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
@@ -115,6 +122,9 @@ ifeq ($(COMPILER),gcc)
   OPTFLAGS := -O2
 else
   OPTFLAGS := -O2
+  ifeq ($(DEBUG),0)
+    OPTFLAGS += -g3
+  endif
 endif
 
 ASFLAGS := -march=vr4300 -32 -no-pad-sections -Iinclude

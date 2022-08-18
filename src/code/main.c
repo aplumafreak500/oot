@@ -68,6 +68,9 @@ void Main(void* arg) {
     func_800636C0();
 
     R_ENABLE_ARENA_DBG = 0;
+#ifndef DEBUG
+    R_DISABLE_INPUT_DISPLAY = 1;
+#endif
 
     osCreateMesgQueue(&sSerialEventQueue, sSerialMsgBuf, ARRAY_COUNT(sSerialMsgBuf));
     osSetEventMesg(OS_EVENT_SI, &sSerialEventQueue, NULL);

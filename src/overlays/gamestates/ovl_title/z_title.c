@@ -9,6 +9,7 @@
 #include "assets/textures/nintendo_rogo_static/nintendo_rogo_static.h"
 
 void ConsoleLogo_PrintBuildInfo(Gfx** gfxp) {
+#ifdef DEBUG
     Gfx* g;
     GfxPrint* printer;
 
@@ -28,6 +29,7 @@ void ConsoleLogo_PrintBuildInfo(Gfx** gfxp) {
     g = GfxPrint_Close(printer);
     GfxPrint_Destroy(printer);
     *gfxp = g;
+#endif
 }
 
 void ConsoleLogo_Calc(ConsoleLogoState* this) {
@@ -145,7 +147,7 @@ void ConsoleLogo_Main(GameState* thisx) {
     Gfx_SetupFrame(this->state.gfxCtx, 0, 0, 0);
     ConsoleLogo_Calc(this);
     ConsoleLogo_Draw(this);
-
+#ifdef DEBUG
     if (gIsCtrlr2Valid) {
         Gfx* gfx = POLY_OPA_DISP;
         s32 pad;
@@ -153,7 +155,7 @@ void ConsoleLogo_Main(GameState* thisx) {
         ConsoleLogo_PrintBuildInfo(&gfx);
         POLY_OPA_DISP = gfx;
     }
-
+#endif
     if (this->exit) {
         gSaveContext.seqId = (u8)NA_BGM_DISABLED;
         gSaveContext.natureAmbienceId = 0xFF;

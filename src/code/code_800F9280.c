@@ -109,8 +109,10 @@ void Audio_ProcessSeqCmd(u32 cmd) {
     f32 freqScale;
 
     if (D_8013340C && (cmd & 0xF0000000) != 0x70000000) {
+#ifdef DEBUG
         AudioDebug_ScrPrt("SEQ H", (cmd >> 16) & 0xFFFF);
         AudioDebug_ScrPrt("    L", cmd & 0xFFFF);
+#endif
     }
 
     op = cmd >> 28;

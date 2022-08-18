@@ -82,11 +82,11 @@ void func_800C4344(GameState* gameState) {
         HREG(94) = CHECK_BTN_ALL(selectedInput->cur.button, hReg82);
         HREG(95) = CHECK_BTN_ALL(selectedInput->press.button, hReg82);
     }
-
+#ifdef DEBUG
     if (gIsCtrlr2Valid) {
         func_8006390C(&gameState->input[1]);
     }
-
+#endif
     gDmaMgrVerbose = HREG(60);
     gDmaMgrDmaBuffSize = SREG(21) != 0 ? ALIGN16(SREG(21)) : 0x2000;
     gSystemArenaLogSeverity = HREG(61);
@@ -155,7 +155,7 @@ void GameState_Draw(GameState* gameState, GraphicsContext* gfxCtx) {
     if (R_DISABLE_INPUT_DISPLAY == 0) {
         GameState_DrawInputDisplay(sLastButtonPressed, &newDList);
     }
-
+#ifdef DEBUG
     if (R_ENABLE_AUDIO_DBG & 1) {
         s32 pad;
         GfxPrint printer;
@@ -166,7 +166,7 @@ void GameState_Draw(GameState* gameState, GraphicsContext* gfxCtx) {
         newDList = GfxPrint_Close(&printer);
         GfxPrint_Destroy(&printer);
     }
-
+#endif
     if (R_ENABLE_ARENA_DBG < 0) {
         s32 pad;
 

@@ -1,5 +1,7 @@
 #include "global.h"
 
+GameInfo* gGameInfo;
+
 typedef struct {
     u8 x;
     u8 y;
@@ -11,8 +13,6 @@ typedef struct {
     u16 hold;
     u16 press;
 } InputCombo; // size = 0x4
-
-GameInfo* gGameInfo;
 
 PrintTextBufferEntry sDebugPrintTextBuffer[22];
 s16 sDebugPrintTextBufferNumUsed = 0;
@@ -26,7 +26,7 @@ Color_RGBA8 sDebugPrintTextColors[] = {
     { 128, 150, 255, 128 }, // 6
     { 128, 255, 32, 128 },  // 7
 };
-
+#ifdef DEBUG
 InputCombo sRegGroupInputCombos[REG_GROUPS] = {
     { BTN_L, BTN_CUP },        //  REG
     { BTN_L, BTN_CLEFT },      // SREG
@@ -91,6 +91,7 @@ char sRegGroupChars[REG_GROUPS] = {
     'k', // kREG
     'b', // bREG
 };
+#endif
 
 // Initialize GameInfo
 void func_800636C0(void) {
@@ -153,6 +154,7 @@ void func_80063828(GfxPrint* printer) {
     }
 }
 
+#ifdef DEBUG
 // Process inputs to control the reg editor
 void func_8006390C(Input* input) {
     s32 dPadInputCur;
@@ -267,6 +269,7 @@ void func_80063C04(GfxPrint* printer) {
         }
     }
 }
+#endif
 
 void func_80063D7C(GraphicsContext* gfxCtx) {
     Gfx* gfx;
@@ -285,11 +288,11 @@ void func_80063D7C(GraphicsContext* gfxCtx) {
     if ((OREG(0) == 1) || (OREG(0) == 8)) {
         func_80063828(&printer);
     }
-
+#ifdef DEBUG
     if (gGameInfo->regPage != 0) {
         func_80063C04(&printer);
     }
-
+#endif
     sDebugPrintTextBufferNumUsed = 0;
 
     gfx = GfxPrint_Close(&printer);
