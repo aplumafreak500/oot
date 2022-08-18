@@ -13,9 +13,17 @@
 /*
 .ascii "THE LEGEND OF ZELDA " *//* Internal ROM name *//*
 */
+#ifdef DEBUG
 .ascii "Zelda Master Luma  D"   /* Internal ROM name */
+#else
+.ascii "Zelda Master Luma   "   /* Internal ROM name */
+#endif
 .word  0x00000000               /* Unknown */
 .word  0x00000043               /* Cartridge */
 .ascii "ZL"                     /* Cartridge ID */
 .ascii "E"                      /* Region */
+#ifdef DEBUG
 .byte  0xDE                     /* Version */
+#else
+.byte  0x00                     /* Version */
+#endif
