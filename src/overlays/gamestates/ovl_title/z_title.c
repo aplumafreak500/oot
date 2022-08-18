@@ -27,7 +27,7 @@ void ConsoleLogo_PrintBuildInfo(Gfx** gfxp) {
     GfxPrint_SetPos(printer, 3, 24);
     GfxPrint_Printf(printer, "[Date:%s]", gBuildDate);
     GfxPrint_SetPos(printer, 3, 25);
-    GfxPrint_Printf(printer, "[Git Rev:%s]", gGitHash);
+    GfxPrint_Printf(printer, "[Git Rev:%s]", gGitRev);
     g = GfxPrint_Close(printer);
     GfxPrint_Destroy(printer);
     *gfxp = g;
