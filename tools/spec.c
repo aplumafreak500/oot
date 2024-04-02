@@ -64,7 +64,7 @@ static char *line_split(char *str)
 static bool parse_number(const char *str, unsigned int *num)
 {
     char *endptr;
-    long int n = strtol(str, &endptr, 0);
+    unsigned long int n = strtoul(str, &endptr, 0);
     *num = n;
     return endptr > str;
 }
