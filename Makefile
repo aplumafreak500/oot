@@ -55,6 +55,9 @@ endif
 ifeq ($(VERSION),gc-eu)
   DEBUG := 0
   COMPARE := 0
+else ifeq ($(VERSION),gc-eu-dbg)
+  DEBUG := 1
+  COMPARE := 0
 else ifeq ($(VERSION),gc-eu-mq)
   DEBUG := 0
   CFLAGS += -DOOT_MQ
