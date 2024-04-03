@@ -8,16 +8,16 @@
 #include "alloca.h"
 #include "assets/textures/nintendo_rogo_static/nintendo_rogo_static.h"
 
-void ConsoleLogo_PrintBuildInfo(Gfx** gfxp) {
-#ifdef DEBUG
-    Gfx* g;
+#if OOT_DEBUG
+void ConsoleLogo_PrintBuildInfo(Gfx** gfxP) {
+    Gfx* gfx;
     GfxPrint* printer;
 
-    g = *gfxp;
-    g = Gfx_SetupDL_28(g);
+    gfx = *gfxP;
+    gfx = Gfx_SetupDL_28(gfx);
     printer = alloca(sizeof(GfxPrint));
     GfxPrint_Init(printer);
-    GfxPrint_Open(printer, g);
+    GfxPrint_Open(printer, gfx);
     GfxPrint_SetColor(printer, 255, 155, 255, 255);
     GfxPrint_SetPos(printer, 5, 22);
     GfxPrint_Printf(printer, "Luma's Test Hacks Ver.");
@@ -28,11 +28,11 @@ void ConsoleLogo_PrintBuildInfo(Gfx** gfxp) {
     GfxPrint_Printf(printer, "[Date:%s]", gBuildDate);
     GfxPrint_SetPos(printer, 3, 25);
     GfxPrint_Printf(printer, "[Git Rev:%s]", gGitRev);
-    g = GfxPrint_Close(printer);
+    gfx = GfxPrint_Close(printer);
     GfxPrint_Destroy(printer);
-    *gfxp = g;
-#endif
+    *gfxP = gfx;
 }
+#endif
 
 void ConsoleLogo_Calc(ConsoleLogoState* this) {
     if ((this->coverAlpha == 0) && (this->visibleDuration != 0)) {
@@ -108,7 +108,7 @@ void ConsoleLogo_Draw(ConsoleLogoState* this) {
     Matrix_Scale(1.0, 1.0, 1.0, MTXMODE_APPLY);
     Matrix_RotateZYX(0, sTitleRotY, 0, MTXMODE_APPLY);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(this->state.gfxCtx, "../z_title.c", 424), G_MTX_LOAD);
+    gSPMatrix(POLY_OPA_DISP++, MATRIX_NEW(this->state.gfxCtx, "../z_title.c", 424), G_MTX_LOAD);
     gSPDisplayList(POLY_OPA_DISP++, gNintendo64LogoDL);
     Gfx_SetupDL_39Opa(this->state.gfxCtx);
     gDPPipeSync(POLY_OPA_DISP++);
@@ -149,15 +149,16 @@ void ConsoleLogo_Main(GameState* thisx) {
     Gfx_SetupFrame(this->state.gfxCtx, 0, 0, 0);
     ConsoleLogo_Calc(this);
     ConsoleLogo_Draw(this);
-#ifdef DEBUG
+
+#if OOT_DEBUG
     if (gIsCtrlr2Valid) {
         Gfx* gfx = POLY_OPA_DISP;
-        s32 pad;
 
         ConsoleLogo_PrintBuildInfo(&gfx);
         POLY_OPA_DISP = gfx;
     }
 #endif
+
     if (this->exit) {
         gSaveContext.seqId = (u8)NA_BGM_DISABLED;
         gSaveContext.natureAmbienceId = 0xFF;
@@ -179,11 +180,10 @@ void ConsoleLogo_Init(GameState* thisx) {
     u32 size = (uintptr_t)_nintendo_rogo_staticSegmentRomEnd - (uintptr_t)_nintendo_rogo_staticSegmentRomStart;
     ConsoleLogoState* this = (ConsoleLogoState*)thisx;
 
-    this->staticSegment = GameState_Alloc(&this->state, size, "../z_title.c", 611);
-    osSyncPrintf("z_title.c\n");
+    this->staticSegment = GAME_STATE_ALLOC(&this->state, size, "../z_title.c", 611);
+    PRINTF("z_title.c\n");
     ASSERT(this->staticSegment != NULL, "this->staticSegment != NULL", "../z_title.c", 614);
-    DmaMgr_SendRequest1(this->staticSegment, (uintptr_t)_nintendo_rogo_staticSegmentRomStart, size, "../z_title.c",
-                        615);
+    DMA_REQUEST_SYNC(this->staticSegment, (uintptr_t)_nintendo_rogo_staticSegmentRomStart, size, "../z_title.c", 615);
     R_UPDATE_RATE = 1;
     Matrix_Init(&this->state);
     View_Init(&this->view, this->state.gfxCtx);

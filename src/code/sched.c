@@ -45,40 +45,51 @@
 #define RDP_DONE_MSG 668
 #define NOTIFY_MSG 670 // original name: ENTRY_MSG
 
-vs32 sLogScheduler = false;
+OSTime sRSPGfxTimeStart;
+OSTime sRSPAudioTimeStart;
+OSTime sRSPOtherTimeStart;
+OSTime sRDPTimeStart;
 
-OSTime sRSPGFXStartTime;
-OSTime sRSPAudioStartTime;
-OSTime sRSPOtherStartTime;
-OSTime sRDPStartTime;
+#if OOT_DEBUG
+vs32 sSchedDebugPrintfEnabled = false;
+
+#define SCHED_DEBUG_PRINTF        \
+    if (sSchedDebugPrintfEnabled) \
+    PRINTF
+#elif IDO_PRINTF_WORKAROUND
+#define SCHED_DEBUG_PRINTF(args) (void)0
+#else
+#define SCHED_DEBUG_PRINTF(format, ...) (void)0
+#endif
 
 /**
  * Set the current framebuffer to the swapbuffer pointed to by the provided cfb
  */
 void Sched_SwapFrameBufferImpl(CfbInfo* cfbInfo) {
-    u16 width;
-
-    LogUtils_CheckValidPointer("cfbinfo->swapbuffer", cfbInfo->swapBuffer, "../sched.c", 340);
+    LOG_UTILS_CHECK_VALID_POINTER("cfbinfo->swapbuffer", cfbInfo->swapBuffer, "../sched.c", 340);
 
     if (cfbInfo->swapBuffer != NULL) {
         // Register the swapbuffer to display on next VI
         osViSwapBuffer(cfbInfo->swapBuffer);
         cfbInfo->updateTimer = cfbInfo->updateRate;
+        SCHED_DEBUG_PRINTF("osViSwapBuffer %08x %08x %08x\n", osViGetCurrentFramebuffer(), osViGetNextFramebuffer(),
+                           (cfbInfo != NULL) ? cfbInfo->swapBuffer : NULL);
 
-        if (sLogScheduler) {
-            osSyncPrintf("osViSwapBuffer %08x %08x %08x\n", osViGetCurrentFramebuffer(), osViGetNextFramebuffer(),
-                         (cfbInfo != NULL) ? cfbInfo->swapBuffer : NULL);
+        {
+            u16 width = (cfbInfo->viMode != NULL) ? cfbInfo->viMode->comRegs.width : (u32)gScreenWidth;
+
+            Fault_SetFrameBuffer(cfbInfo->swapBuffer, width, 16);
         }
 
-        width = (cfbInfo->viMode != NULL) ? cfbInfo->viMode->comRegs.width : (u32)gScreenWidth;
-        Fault_SetFrameBuffer(cfbInfo->swapBuffer, width, 16);
+#if OOT_DEBUG
+        if (R_HREG_MODE == HREG_MODE_SCHED && R_SCHED_INIT != HREG_MODE_SCHED) {
+            R_SCHED_TOGGLE_SPECIAL_FEATURES = 0;
+            R_SCHED_GAMMA_ON = 0;
+            R_SCHED_DITHER_FILTER_ON = 1;
+            R_SCHED_GAMMA_DITHER_ON = 0;
+            R_SCHED_DIVOT_ON = 1;
 
-        if (HREG(80) == 0xD && HREG(95) != 0xD) {
-            HREG(81) = 0;
-            HREG(82) = 0;
-            HREG(83) = 1;
-            HREG(84) = 0;
-            HREG(85) = 1;
+            // these regs are not used in this mode
             HREG(86) = 0;
             HREG(87) = 0;
             HREG(88) = 0;
@@ -88,15 +99,19 @@ void Sched_SwapFrameBufferImpl(CfbInfo* cfbInfo) {
             HREG(92) = 0;
             HREG(93) = 0;
             HREG(94) = 0;
-            HREG(95) = 0xD;
+
+            R_SCHED_INIT = HREG_MODE_SCHED;
         }
-        if (HREG(80) == 0xD && HREG(81) == 2) {
-            osViSetSpecialFeatures((HREG(82) != 0) ? OS_VI_GAMMA_ON : OS_VI_GAMMA_OFF);
-            osViSetSpecialFeatures((HREG(83) != 0) ? OS_VI_DITHER_FILTER_ON : OS_VI_DITHER_FILTER_OFF);
-            osViSetSpecialFeatures((HREG(84) != 0) ? OS_VI_GAMMA_DITHER_ON : OS_VI_GAMMA_DITHER_OFF);
-            osViSetSpecialFeatures((HREG(85) != 0) ? OS_VI_DIVOT_ON : OS_VI_DIVOT_OFF);
+
+        if (R_HREG_MODE == HREG_MODE_SCHED && R_SCHED_TOGGLE_SPECIAL_FEATURES == 2) {
+            osViSetSpecialFeatures(R_SCHED_GAMMA_ON ? OS_VI_GAMMA_ON : OS_VI_GAMMA_OFF);
+            osViSetSpecialFeatures(R_SCHED_DITHER_FILTER_ON ? OS_VI_DITHER_FILTER_ON : OS_VI_DITHER_FILTER_OFF);
+            osViSetSpecialFeatures(R_SCHED_GAMMA_DITHER_ON ? OS_VI_GAMMA_DITHER_ON : OS_VI_GAMMA_DITHER_OFF);
+            osViSetSpecialFeatures(R_SCHED_DIVOT_ON ? OS_VI_DIVOT_ON : OS_VI_DIVOT_OFF);
         }
+#endif
     }
+
     cfbInfo->unk_10 = 0;
 }
 
@@ -112,6 +127,7 @@ void Sched_SwapFrameBuffer(Scheduler* sc, CfbInfo* cfbInfo) {
 }
 
 void Sched_HandlePreNMI(Scheduler* sc) {
+#if OOT_DEBUG
     OSTime now;
 
     if (sc->curRSPTask != NULL) {
@@ -120,24 +136,25 @@ void Sched_HandlePreNMI(Scheduler* sc) {
         if (sc->curRSPTask->framebuffer == NULL) {
             // audio and jpeg tasks end up in here
             LOG_TIME("(((u64)(now - audio_rsp_start_time)*(1000000LL/15625LL))/((62500000LL*3/4)/15625LL))",
-                     OS_CYCLES_TO_USEC(now - sRSPAudioStartTime), "../sched.c", 421);
-        } else if (OS_CYCLES_TO_USEC(now - sRSPGFXStartTime) > 1000000 ||
-                   OS_CYCLES_TO_USEC(now - sRDPStartTime) > 1000000) {
+                     OS_CYCLES_TO_USEC(now - sRSPAudioTimeStart), "../sched.c", 421);
+        } else if (OS_CYCLES_TO_USEC(now - sRSPGfxTimeStart) > 1000000 ||
+                   OS_CYCLES_TO_USEC(now - sRDPTimeStart) > 1000000) {
             // More than 1 second since the RSP or RDP tasks began, halt the RSP and RDP
             RcpUtils_Reset();
             // Manually send RSP/RDP done messages to the scheduler interrupt queue if appropriate
             if (sc->curRSPTask != NULL) {
                 LOG_TIME("(((u64)(now - graph_rsp_start_time)*(1000000LL/15625LL))/((62500000LL*3/4)/15625LL))",
-                         OS_CYCLES_TO_USEC(now - sRSPGFXStartTime), "../sched.c", 427);
+                         OS_CYCLES_TO_USEC(now - sRSPGfxTimeStart), "../sched.c", 427);
                 osSendMesg(&sc->interruptQueue, (OSMesg)RSP_DONE_MSG, OS_MESG_NOBLOCK);
             }
             if (sc->curRDPTask != NULL) {
                 LOG_TIME("(((u64)(now - rdp_start_time)*(1000000LL/15625LL))/((62500000LL*3/4)/15625LL))",
-                         OS_CYCLES_TO_USEC(now - sRDPStartTime), "../sched.c", 431);
+                         OS_CYCLES_TO_USEC(now - sRDPTimeStart), "../sched.c", 431);
                 osSendMesg(&sc->interruptQueue, (OSMesg)RDP_DONE_MSG, OS_MESG_NOBLOCK);
             }
         }
     }
+#endif
 }
 
 void Sched_HandleNMI(Scheduler* sc) {
@@ -156,10 +173,9 @@ void Sched_QueueTask(Scheduler* sc, OSScTask* task) {
            463);
 
     if (type == M_AUDTASK) {
-        if (sLogScheduler) {
-            // "You have entered an audio task"
-            osSyncPrintf("オーディオタスクをエントリしました\n");
-        }
+        // "You have entered an audio task"
+        SCHED_DEBUG_PRINTF("オーディオタスクをエントリしました\n");
+
         // Add to audio queue
         if (sc->audioListTail != NULL) {
             sc->audioListTail->next = task;
@@ -171,10 +187,10 @@ void Sched_QueueTask(Scheduler* sc, OSScTask* task) {
         // Set audio flag
         sc->doAudio = true;
     } else {
-        if (sLogScheduler) {
-            // "Entered graph task"
-            osSyncPrintf("グラフタスクをエントリしました\n");
-        }
+
+        // "Entered graph task"
+        SCHED_DEBUG_PRINTF("グラフタスクをエントリしました\n");
+
         // Add to graphics queue
         if (sc->gfxListTail != NULL) {
             sc->gfxListTail->next = task;
@@ -197,9 +213,7 @@ void Sched_Yield(Scheduler* sc) {
         // Send yield request
         osSpTaskYield();
 
-        if (sLogScheduler) {
-            osSyncPrintf("%08d:osSpTaskYield\n", (u32)(OS_CYCLES_TO_USEC(osGetTime())));
-        }
+        SCHED_DEBUG_PRINTF("%08d:osSpTaskYield\n", (u32)(OS_CYCLES_TO_USEC(osGetTime())));
     }
 }
 
@@ -325,7 +339,7 @@ void Sched_SetNextFramebufferFromTask(Scheduler* sc, OSScTask* task) {
     if (sc->pendingSwapBuf1 == NULL) {
         sc->pendingSwapBuf1 = task->framebuffer;
 
-        LogUtils_CheckValidPointer("sc->pending_swapbuffer1", sc->pendingSwapBuf1, "../sched.c", 618);
+        LOG_UTILS_CHECK_VALID_POINTER("sc->pending_swapbuffer1", sc->pendingSwapBuf1, "../sched.c", 618);
 
         if (sc->curBuf == NULL || sc->curBuf->updateTimer <= 0) {
             Sched_SwapFrameBuffer(sc, task->framebuffer);
@@ -390,21 +404,19 @@ void Sched_RunTask(Scheduler* sc, OSScTask* spTask, OSScTask* dpTask) {
 
         // Begin profiling timers
         if (spTask->list.t.type == M_AUDTASK) {
-            sRSPAudioStartTime = osGetTime();
+            sRSPAudioTimeStart = osGetTime();
         } else if (spTask->list.t.type == M_GFXTASK) {
-            sRSPGFXStartTime = osGetTime();
+            sRSPGfxTimeStart = osGetTime();
         } else {
-            sRSPOtherStartTime = osGetTime();
+            sRSPOtherTimeStart = osGetTime();
         }
 
         // Run RSP
         osSpTaskStartGo(&spTask->list);
 
-        if (sLogScheduler) {
-            osSyncPrintf(
-                "%08d:osSpTaskStartGo(%08x) %s\n", (u32)OS_CYCLES_TO_USEC(osGetTime()), &spTask->list,
-                (spTask->list.t.type == M_AUDTASK ? "AUDIO" : (spTask->list.t.type == M_GFXTASK ? "GRAPH" : "OTHER")));
-        }
+        SCHED_DEBUG_PRINTF(
+            "%08d:osSpTaskStartGo(%08x) %s\n", (u32)OS_CYCLES_TO_USEC(osGetTime()), &spTask->list,
+            (spTask->list.t.type == M_AUDTASK ? "AUDIO" : (spTask->list.t.type == M_GFXTASK ? "GRAPH" : "OTHER")));
 
         // Set currently running RSP task
         sc->curRSPTask = spTask;
@@ -412,7 +424,7 @@ void Sched_RunTask(Scheduler* sc, OSScTask* spTask, OSScTask* dpTask) {
         // If the task also uses the RDP, set current running RDP task
         if (spTask == dpTask && sc->curRDPTask == NULL) {
             sc->curRDPTask = dpTask;
-            sRDPStartTime = sRSPGFXStartTime;
+            sRDPTimeStart = sRSPGfxTimeStart;
         }
     }
 }
@@ -437,9 +449,8 @@ void Sched_HandleNotification(Scheduler* sc) {
     // signal to the currently running task to yield the RSP so that the audio task may
     // be ran as soon as possible.
     if (sc->doAudio && sc->curRSPTask != NULL) {
-        if (sLogScheduler) {
-            osSyncPrintf("[YIELD B]");
-        }
+        SCHED_DEBUG_PRINTF("[YIELD B]");
+
         Sched_Yield(sc);
         return;
     }
@@ -449,15 +460,12 @@ void Sched_HandleNotification(Scheduler* sc) {
     if (Sched_Schedule(sc, &nextRSP, &nextRDP, state) != state) {
         Sched_RunTask(sc, nextRSP, nextRDP);
     }
-    if (sLogScheduler) {
-        osSyncPrintf("EN sc:%08x sp:%08x dp:%08x state:%x\n", sc, nextRSP, nextRDP, state);
-    }
+    SCHED_DEBUG_PRINTF("EN sc:%08x sp:%08x dp:%08x state:%x\n", sc, nextRSP, nextRDP, state);
 }
 
 void Sched_HandleRetrace(Scheduler* sc) {
-    if (sLogScheduler) {
-        osSyncPrintf("%08d:scHandleRetrace %08x\n", (u32)OS_CYCLES_TO_USEC(osGetTime()), osViGetCurrentFramebuffer());
-    }
+    SCHED_DEBUG_PRINTF("%08d:scHandleRetrace %08x\n", (u32)OS_CYCLES_TO_USEC(osGetTime()), osViGetCurrentFramebuffer());
+
     ViConfig_UpdateBlack();
     sc->retraceCount++;
 
@@ -485,11 +493,9 @@ void Sched_HandleRetrace(Scheduler* sc) {
         }
     }
 
-    if (sLogScheduler) {
-        osSyncPrintf("%08x %08x %08x %d\n", osViGetCurrentFramebuffer(), osViGetNextFramebuffer(),
-                     (sc->pendingSwapBuf1 != NULL) ? sc->pendingSwapBuf1->swapBuffer : NULL,
-                     (sc->curBuf != NULL) ? sc->curBuf->updateTimer : 0);
-    }
+    SCHED_DEBUG_PRINTF("%08x %08x %08x %d\n", osViGetCurrentFramebuffer(), osViGetNextFramebuffer(),
+                       (sc->pendingSwapBuf1 != NULL) ? sc->pendingSwapBuf1->swapBuffer : NULL,
+                       (sc->curBuf != NULL) ? sc->curBuf->updateTimer : 0);
 
     // Run the notification handler to enqueue any waiting tasks and possibly run one
     Sched_HandleNotification(sc);
@@ -508,25 +514,22 @@ void Sched_HandleRSPDone(Scheduler* sc) {
 
     // Task profiling
     if (sc->curRSPTask->list.t.type == M_AUDTASK) {
-        gRSPAudioTotalTime += osGetTime() - sRSPAudioStartTime;
+        gRSPAudioTimeAcc += osGetTime() - sRSPAudioTimeStart;
     } else if (sc->curRSPTask->list.t.type == M_GFXTASK) {
-        gRSPGFXTotalTime += osGetTime() - sRSPGFXStartTime;
+        gRSPGfxTimeAcc += osGetTime() - sRSPGfxTimeStart;
     } else {
-        gRSPOtherTotalTime += osGetTime() - sRSPOtherStartTime;
+        gRSPOtherTimeAcc += osGetTime() - sRSPOtherTimeStart;
     }
 
     // Clear current RSP task
     curRSPTask = sc->curRSPTask;
     sc->curRSPTask = NULL;
 
-    if (sLogScheduler) {
-        osSyncPrintf("RSP DONE %d %d", curRSPTask->state & OS_SC_YIELD, osSpTaskYielded(&curRSPTask->list));
-    }
+    SCHED_DEBUG_PRINTF("RSP DONE %d %d", curRSPTask->state & OS_SC_YIELD, osSpTaskYielded(&curRSPTask->list));
 
     if ((curRSPTask->state & OS_SC_YIELD) && osSpTaskYielded(&curRSPTask->list)) {
-        if (sLogScheduler) {
-            osSyncPrintf("[YIELDED]\n");
-        }
+        SCHED_DEBUG_PRINTF("[YIELDED]\n");
+
         // Task yielded, set yielded state
         curRSPTask->state |= OS_SC_YIELDED;
         // Add it to the front of the queue
@@ -536,9 +539,7 @@ void Sched_HandleRSPDone(Scheduler* sc) {
             sc->gfxListTail = curRSPTask;
         }
     } else {
-        if (sLogScheduler) {
-            osSyncPrintf("[NOT YIELDED]\n");
-        }
+        SCHED_DEBUG_PRINTF("[NOT YIELDED]\n");
         // Task has completed on the RSP, unset RSP flag and check if the task is fully complete
         curRSPTask->state &= ~OS_SC_SP;
         Sched_TaskComplete(sc, curRSPTask);
@@ -549,9 +550,7 @@ void Sched_HandleRSPDone(Scheduler* sc) {
     if (Sched_Schedule(sc, &nextRSP, &nextRDP, state) != state) {
         Sched_RunTask(sc, nextRSP, nextRDP);
     }
-    if (sLogScheduler) {
-        osSyncPrintf("SP sc:%08x sp:%08x dp:%08x state:%x\n", sc, nextRSP, nextRDP, state);
-    }
+    SCHED_DEBUG_PRINTF("SP sc:%08x sp:%08x dp:%08x state:%x\n", sc, nextRSP, nextRDP, state);
 }
 
 /**
@@ -564,7 +563,7 @@ void Sched_HandleRDPDone(Scheduler* sc) {
     s32 state;
 
     // Task profiling
-    gRDPTotalTime = osGetTime() - sRDPStartTime;
+    gRDPTimeAcc = osGetTime() - sRDPTimeStart;
 
     // Sanity check
     ASSERT(sc->curRDPTask != NULL, "sc->curRDPTask", "../sched.c", 878);
@@ -583,9 +582,7 @@ void Sched_HandleRDPDone(Scheduler* sc) {
     if (Sched_Schedule(sc, &nextRSP, &nextRDP, state) != state) {
         Sched_RunTask(sc, nextRSP, nextRDP);
     }
-    if (sLogScheduler) {
-        osSyncPrintf("DP sc:%08x sp:%08x dp:%08x state:%x\n", sc, nextRSP, nextRDP, state);
-    }
+    SCHED_DEBUG_PRINTF("DP sc:%08x sp:%08x dp:%08x state:%x\n", sc, nextRSP, nextRDP, state);
 }
 
 /**
@@ -596,9 +593,7 @@ void Sched_HandleRDPDone(Scheduler* sc) {
  * Original name: osScKickEntryMsg
  */
 void Sched_Notify(Scheduler* sc) {
-    if (sLogScheduler) {
-        osSyncPrintf("osScKickEntryMsg\n");
-    }
+    SCHED_DEBUG_PRINTF("osScKickEntryMsg\n");
 
     osSendMesg(&sc->interruptQueue, (OSMesg)NOTIFY_MSG, OS_MESG_BLOCK);
 }
@@ -608,41 +603,38 @@ void Sched_ThreadEntry(void* arg) {
     Scheduler* sc = (Scheduler*)arg;
 
     while (true) {
-        if (sLogScheduler) {
-            // "%08d: standby"
-            osSyncPrintf("%08d:待機中\n", (u32)OS_CYCLES_TO_USEC(osGetTime()));
-        }
+        // "%08d: standby"
+        SCHED_DEBUG_PRINTF("%08d:待機中\n", (u32)OS_CYCLES_TO_USEC(osGetTime()));
 
         // Await interrupt messages, either from the OS, IrqMgr, or another thread
         osRecvMesg(&sc->interruptQueue, &msg, OS_MESG_BLOCK);
 
         switch ((s32)msg) {
             case NOTIFY_MSG:
-                if (sLogScheduler) {
-                    osSyncPrintf("%08d:ENTRY_MSG\n", (u32)OS_CYCLES_TO_USEC(osGetTime()));
-                }
+                SCHED_DEBUG_PRINTF("%08d:ENTRY_MSG\n", (u32)OS_CYCLES_TO_USEC(osGetTime()));
                 Sched_HandleNotification(sc);
                 continue;
+
             case RSP_DONE_MSG:
-                if (sLogScheduler) {
-                    osSyncPrintf("%08d:RSP_DONE_MSG\n", (u32)OS_CYCLES_TO_USEC(osGetTime()));
-                }
+                SCHED_DEBUG_PRINTF("%08d:RSP_DONE_MSG\n", (u32)OS_CYCLES_TO_USEC(osGetTime()));
                 Sched_HandleRSPDone(sc);
                 continue;
+
             case RDP_DONE_MSG:
-                if (sLogScheduler) {
-                    osSyncPrintf("%08d:RDP_DONE_MSG\n", (u32)OS_CYCLES_TO_USEC(osGetTime()));
-                }
+                SCHED_DEBUG_PRINTF("%08d:RDP_DONE_MSG\n", (u32)OS_CYCLES_TO_USEC(osGetTime()));
                 Sched_HandleRDPDone(sc);
                 continue;
         }
+
         switch (((OSScMsg*)msg)->type) {
             case OS_SC_RETRACE_MSG:
                 Sched_HandleRetrace(sc);
                 continue;
+
             case OS_SC_PRE_NMI_MSG:
                 Sched_HandlePreNMI(sc);
                 continue;
+
             case OS_SC_NMI_MSG:
                 Sched_HandleNMI(sc);
                 continue;
@@ -650,7 +642,7 @@ void Sched_ThreadEntry(void* arg) {
     }
 }
 
-void Sched_Init(Scheduler* sc, void* stack, OSPri priority, UNK_TYPE arg3, UNK_TYPE arg4, IrqMgr* irqMgr) {
+void Sched_Init(Scheduler* sc, void* stack, OSPri priority, u8 viModeType, UNK_TYPE arg4, IrqMgr* irqMgr) {
     bzero(sc, sizeof(Scheduler));
     sc->isFirstSwap = true;
 

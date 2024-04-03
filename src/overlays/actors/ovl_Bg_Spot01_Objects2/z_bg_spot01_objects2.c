@@ -18,16 +18,16 @@ void func_808AC2BC(BgSpot01Objects2* this, PlayState* play);
 void func_808AC474(BgSpot01Objects2* this, PlayState* play);
 void func_808AC4A4(Actor* thisx, PlayState* play);
 
-const ActorInit Bg_Spot01_Objects2_InitVars = {
-    ACTOR_BG_SPOT01_OBJECTS2,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_GAMEPLAY_KEEP,
-    sizeof(BgSpot01Objects2),
-    (ActorFunc)BgSpot01Objects2_Init,
-    (ActorFunc)BgSpot01Objects2_Destroy,
-    (ActorFunc)BgSpot01Objects2_Update,
-    NULL,
+ActorInit Bg_Spot01_Objects2_InitVars = {
+    /**/ ACTOR_BG_SPOT01_OBJECTS2,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_GAMEPLAY_KEEP,
+    /**/ sizeof(BgSpot01Objects2),
+    /**/ BgSpot01Objects2_Init,
+    /**/ BgSpot01Objects2_Destroy,
+    /**/ BgSpot01Objects2_Update,
+    /**/ NULL,
 };
 
 static InitChainEntry sInitChain[] = {
@@ -59,10 +59,10 @@ void BgSpot01Objects2_Init(Actor* thisx, PlayState* play) {
     }
 
     if (this->objectId >= 0) {
-        this->objBankIndex = Object_GetIndex(&play->objectCtx, this->objectId);
-        if (this->objBankIndex < 0) {
+        this->requiredObjectSlot = Object_GetSlot(&play->objectCtx, this->objectId);
+        if (this->requiredObjectSlot < 0) {
             // "There was no bank setting."
-            osSyncPrintf("-----------------------------バンク設定ありませんでした.");
+            PRINTF("-----------------------------バンク設定ありませんでした.");
             Actor_Kill(&this->dyna.actor);
             return;
         }
@@ -91,13 +91,13 @@ void func_808AC2BC(BgSpot01Objects2* this, PlayState* play) {
     s32 pad;
     Vec3f position;
 
-    if (Object_IsLoaded(&play->objectCtx, this->objBankIndex)) {
+    if (Object_IsLoaded(&play->objectCtx, this->requiredObjectSlot)) {
         // "---- Successful bank switching!!"
-        osSyncPrintf("-----バンク切り換え成功！！\n");
-        gSegments[6] = VIRTUAL_TO_PHYSICAL(play->objectCtx.status[this->objBankIndex].segment);
+        PRINTF("-----バンク切り換え成功！！\n");
+        gSegments[6] = VIRTUAL_TO_PHYSICAL(play->objectCtx.slots[this->requiredObjectSlot].segment);
 
-        this->dyna.actor.objBankIndex = this->objBankIndex;
-        DynaPolyActor_Init(&this->dyna, DPM_PLAYER);
+        this->dyna.actor.objectSlot = this->requiredObjectSlot;
+        DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
 
         switch (this->dyna.actor.params & 7) {
             case 4: // Shooting gallery
@@ -108,7 +108,7 @@ void func_808AC2BC(BgSpot01Objects2* this, PlayState* play) {
                 CollisionHeader_GetVirtual(&object_spot01_matoyab_col, &colHeader);
                 this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, thisx, colHeader);
                 if (IS_DAY) {
-                    func_808AC22C(play->setupPathList, &position, ((s32)thisx->params >> 8) & 0xFF, 0);
+                    func_808AC22C(play->pathList, &position, ((s32)thisx->params >> 8) & 0xFF, 0);
                     Actor_SpawnAsChild(&play->actorCtx, thisx, play, ACTOR_EN_DAIKU_KAKARIKO, position.x, position.y,
                                        position.z, thisx->world.rot.x, thisx->world.rot.y, thisx->world.rot.z,
                                        ((((s32)thisx->params >> 8) & 0xFF) << 8) + 1);

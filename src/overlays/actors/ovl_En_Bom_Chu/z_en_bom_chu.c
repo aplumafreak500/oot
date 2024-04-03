@@ -15,16 +15,16 @@ void EnBomChu_WaitForRelease(EnBomChu* this, PlayState* play);
 void EnBomChu_Move(EnBomChu* this, PlayState* play);
 void EnBomChu_WaitForKill(EnBomChu* this, PlayState* play);
 
-const ActorInit En_Bom_Chu_InitVars = {
-    ACTOR_EN_BOM_CHU,
-    ACTORCAT_EXPLOSIVE,
-    FLAGS,
-    OBJECT_GAMEPLAY_KEEP,
-    sizeof(EnBomChu),
-    (ActorFunc)EnBomChu_Init,
-    (ActorFunc)EnBomChu_Destroy,
-    (ActorFunc)EnBomChu_Update,
-    (ActorFunc)EnBomChu_Draw,
+ActorInit En_Bom_Chu_InitVars = {
+    /**/ ACTOR_EN_BOM_CHU,
+    /**/ ACTORCAT_EXPLOSIVE,
+    /**/ FLAGS,
+    /**/ OBJECT_GAMEPLAY_KEEP,
+    /**/ sizeof(EnBomChu),
+    /**/ EnBomChu_Init,
+    /**/ EnBomChu_Destroy,
+    /**/ EnBomChu_Update,
+    /**/ EnBomChu_Draw,
 };
 
 static ColliderJntSphElementInit sJntSphElemInit[] = {
@@ -33,8 +33,8 @@ static ColliderJntSphElementInit sJntSphElemInit[] = {
             ELEMTYPE_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0xFFCFFFFF, 0x00, 0x00 },
-            TOUCH_NONE,
-            BUMP_ON,
+            ATELEM_NONE,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { 1, { { 0, 0, 0 }, 12 }, 100 },
@@ -112,7 +112,7 @@ void EnBomChu_Explode(EnBomChu* this, PlayState* play) {
     }
 
     this->timer = 1;
-    this->actor.speedXZ = 0.0f;
+    this->actor.speed = 0.0f;
 
     if (this->actor.yDistToWater > 0.0f) {
         for (i = 0; i < 40; i++) {
@@ -191,7 +191,7 @@ void EnBomChu_UpdateFloorPoly(EnBomChu* this, CollisionPoly* floorPoly, PlayStat
 
             // A hack for preventing bombchus from sticking to ledges.
             // The visual rotation reverts the sign inversion (shape.rot.x = -world.rot.x).
-            // The better fix would be making func_8002D908 compute XYZ velocity better,
+            // The better fix would be making Actor_UpdateVelocityXYZ compute XYZ velocity better,
             // or not using it and make the bombchu compute its own velocity.
             this->actor.world.rot.x = -this->actor.world.rot.x;
         }
@@ -230,7 +230,7 @@ void EnBomChu_WaitForRelease(EnBomChu* this, PlayState* play) {
         this->axisLeft.y = 0;
         this->axisLeft.z = Math_CosS(this->actor.shape.rot.y + 0x4000);
 
-        this->actor.speedXZ = 8.0f;
+        this->actor.speed = 8.0f;
         //! @bug there is no NULL check on the floor poly.  If the player is out of bounds the floor poly will be NULL
         //! and will cause a crash inside this function.
         EnBomChu_UpdateFloorPoly(this, this->actor.floorPoly, play);
@@ -252,8 +252,8 @@ void EnBomChu_Move(EnBomChu* this, PlayState* play) {
     Vec3f posSide;
     Vec3f posUpDown;
 
-    this->actor.speedXZ = 8.0f;
-    lineLength = this->actor.speedXZ * 2.0f;
+    this->actor.speed = 8.0f;
+    lineLength = this->actor.speed * 2.0f;
 
     if (this->timer != 0) {
         this->timer--;
@@ -275,8 +275,7 @@ void EnBomChu_Move(EnBomChu* this, PlayState* play) {
 
     if (BgCheck_EntityLineTest1(&play->colCtx, &posA, &posB, &posUpDown, &polyUpDown, true, true, true, true,
                                 &bgIdUpDown) &&
-        !(SurfaceType_GetWallFlags(&play->colCtx, polyUpDown, bgIdUpDown) &
-          (WALL_FLAG_4 | WALL_FLAG_5)) && // && not crawl space?
+        !(SurfaceType_GetWallFlags(&play->colCtx, polyUpDown, bgIdUpDown) & WALL_FLAG_CRAWLSPACE) &&
         !SurfaceType_IsIgnoredByProjectiles(&play->colCtx, polyUpDown, bgIdUpDown)) {
         // forwards
         posB.x = (this->axisForwards.x * lineLength) + posA.x;
@@ -285,12 +284,12 @@ void EnBomChu_Move(EnBomChu* this, PlayState* play) {
 
         if (BgCheck_EntityLineTest1(&play->colCtx, &posA, &posB, &posSide, &polySide, true, true, true, true,
                                     &bgIdSide) &&
-            !(SurfaceType_GetWallFlags(&play->colCtx, polySide, bgIdSide) & (WALL_FLAG_4 | WALL_FLAG_5)) &&
+            !(SurfaceType_GetWallFlags(&play->colCtx, polySide, bgIdSide) & WALL_FLAG_CRAWLSPACE) &&
             !SurfaceType_IsIgnoredByProjectiles(&play->colCtx, polySide, bgIdSide)) {
             EnBomChu_UpdateFloorPoly(this, polySide, play);
             this->actor.world.pos = posSide;
             this->actor.floorBgId = bgIdSide;
-            this->actor.speedXZ = 0.0f;
+            this->actor.speed = 0.0f;
         } else {
             if (this->actor.floorPoly != polyUpDown) {
                 EnBomChu_UpdateFloorPoly(this, polyUpDown, play);
@@ -300,7 +299,7 @@ void EnBomChu_Move(EnBomChu* this, PlayState* play) {
             this->actor.floorBgId = bgIdUpDown;
         }
     } else {
-        this->actor.speedXZ = 0.0f;
+        this->actor.speed = 0.0f;
         lineLength *= 3.0f;
         posA = posB;
 
@@ -324,7 +323,7 @@ void EnBomChu_Move(EnBomChu* this, PlayState* play) {
 
             if (BgCheck_EntityLineTest1(&play->colCtx, &posA, &posB, &posSide, &polySide, true, true, true, true,
                                         &bgIdSide) &&
-                !(SurfaceType_GetWallFlags(&play->colCtx, polySide, bgIdSide) & (WALL_FLAG_4 | WALL_FLAG_5)) &&
+                !(SurfaceType_GetWallFlags(&play->colCtx, polySide, bgIdSide) & WALL_FLAG_CRAWLSPACE) &&
                 !SurfaceType_IsIgnoredByProjectiles(&play->colCtx, polySide, bgIdSide)) {
                 EnBomChu_UpdateFloorPoly(this, polySide, play);
                 this->actor.world.pos = posSide;
@@ -400,7 +399,7 @@ void EnBomChu_Update(Actor* thisx, PlayState* play2) {
 
     if (this->actor.floorBgId != BGCHECK_SCENE) {
         yaw = this->actor.shape.rot.y;
-        func_800433A4(&play->colCtx, this->actor.floorBgId, &this->actor);
+        DynaPolyActor_TransformCarriedActor(&play->colCtx, this->actor.floorBgId, &this->actor);
 
         if (yaw != this->actor.shape.rot.y) {
             yaw = this->actor.shape.rot.y - yaw;
@@ -423,7 +422,7 @@ void EnBomChu_Update(Actor* thisx, PlayState* play2) {
     }
 
     this->actionFunc(this, play);
-    func_8002D97C(&this->actor);
+    Actor_MoveXYZ(&this->actor);
 
     this->collider.elements[0].dim.worldSphere.center.x = this->actor.world.pos.x;
     this->collider.elements[0].dim.worldSphere.center.y = this->actor.world.pos.y;
@@ -509,7 +508,7 @@ void EnBomChu_Draw(Actor* thisx, PlayState* play) {
     gDPSetEnvColor(POLY_OPA_DISP++, 9.0f + (colorIntensity * 209.0f), 9.0f + (colorIntensity * 34.0f),
                    35.0f + (colorIntensity * -35.0f), 255);
     Matrix_Translate(this->visualJitter * (1.0f / BOMBCHU_SCALE), 0.0f, 0.0f, MTXMODE_APPLY);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_en_bom_chu.c", 956),
+    gSPMatrix(POLY_OPA_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_en_bom_chu.c", 956),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(POLY_OPA_DISP++, gBombchuDL);
 

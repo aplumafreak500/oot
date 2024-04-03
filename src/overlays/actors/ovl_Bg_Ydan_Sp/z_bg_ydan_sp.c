@@ -24,16 +24,16 @@ typedef enum {
     /* 1 */ WEB_WALL
 } BgYdanSpType;
 
-const ActorInit Bg_Ydan_Sp_InitVars = {
-    ACTOR_BG_YDAN_SP,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_YDAN_OBJECTS,
-    sizeof(BgYdanSp),
-    (ActorFunc)BgYdanSp_Init,
-    (ActorFunc)BgYdanSp_Destroy,
-    (ActorFunc)BgYdanSp_Update,
-    (ActorFunc)BgYdanSp_Draw,
+ActorInit Bg_Ydan_Sp_InitVars = {
+    /**/ ACTOR_BG_YDAN_SP,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_YDAN_OBJECTS,
+    /**/ sizeof(BgYdanSp),
+    /**/ BgYdanSp_Init,
+    /**/ BgYdanSp_Destroy,
+    /**/ BgYdanSp_Update,
+    /**/ BgYdanSp_Draw,
 };
 
 static ColliderTrisElementInit sTrisItemsInit[2] = {
@@ -42,8 +42,8 @@ static ColliderTrisElementInit sTrisItemsInit[2] = {
             ELEMTYPE_UNK0,
             { 0xFFCFFFFF, 0x00, 0x00 },
             { 0x00020800, 0x00, 0x00 },
-            TOUCH_NONE,
-            BUMP_ON,
+            ATELEM_NONE,
+            ACELEM_ON,
             OCELEM_NONE,
         },
         { { { 75.0f, -8.0f, 75.0f }, { -75.0f, -8.0f, 75.0f }, { -75.0f, -8.0f, -75.0f } } },
@@ -53,8 +53,8 @@ static ColliderTrisElementInit sTrisItemsInit[2] = {
             ELEMTYPE_UNK0,
             { 0xFFCFFFFF, 0x00, 0x00 },
             { 0x00020800, 0x00, 0x00 },
-            TOUCH_NONE,
-            BUMP_ON,
+            ATELEM_NONE,
+            ACELEM_ON,
             OCELEM_NONE,
         },
         { { { 140.0f, 288.8f, 0.0f }, { -140.0f, 288.0f, 0.0f }, { -140.0f, 0.0f, 0.0f } } },
@@ -94,7 +94,7 @@ void BgYdanSp_Init(Actor* thisx, PlayState* play) {
     this->isDestroyedSwitchFlag = thisx->params & 0x3F;
     this->burnSwitchFlag = (thisx->params >> 6) & 0x3F;
     this->dyna.actor.params = (thisx->params >> 0xC) & 0xF;
-    DynaPolyActor_Init(&this->dyna, DPM_PLAYER);
+    DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
     Collider_InitTris(play, &this->trisCollider);
     Collider_SetTris(play, &this->trisCollider, &this->dyna.actor, &sTrisInit, this->trisColliderItems);
     if (this->dyna.actor.params == WEB_FLOOR) {
@@ -168,8 +168,7 @@ void BgYdanSp_UpdateFloorWebCollision(BgYdanSp* this) {
 
 void BgYdanSp_BurnWeb(BgYdanSp* this, PlayState* play) {
     this->timer = 30;
-    this = this;
-    func_80078884(NA_SE_SY_CORRECT_CHIME);
+    Sfx_PlaySfxCentered(NA_SE_SY_CORRECT_CHIME);
     Flags_SetSwitch(play, this->isDestroyedSwitchFlag);
     if (this->dyna.actor.params == WEB_FLOOR) {
         this->actionFunc = BgYdanSp_BurnFloorWeb;
@@ -252,7 +251,7 @@ void BgYdanSp_FloorWebBreaking(BgYdanSp* this, PlayState* play) {
     if (this->dyna.actor.home.pos.y - this->dyna.actor.world.pos.y > 190.0f) {
         DynaPoly_DisableCollision(play, &play->colCtx.dyna, this->dyna.bgId);
         this->timer = 40;
-        func_80078884(NA_SE_SY_CORRECT_CHIME);
+        Sfx_PlaySfxCentered(NA_SE_SY_CORRECT_CHIME);
         Flags_SetSwitch(play, this->isDestroyedSwitchFlag);
         this->actionFunc = BgYdanSp_FloorWebBroken;
         pos.y = this->dyna.actor.world.pos.y - 60.0f;
@@ -296,7 +295,7 @@ void BgYdanSp_FloorWebIdle(BgYdanSp* this, PlayState* play) {
                 this->dyna.actor.room = -1;
                 this->dyna.actor.flags |= ACTOR_FLAG_4;
                 this->timer = 40;
-                Audio_PlayActorSfx2(&this->dyna.actor, NA_SE_EV_WEB_BROKEN);
+                Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_WEB_BROKEN);
                 this->actionFunc = BgYdanSp_FloorWebBreaking;
                 return;
             }
@@ -308,15 +307,11 @@ void BgYdanSp_FloorWebIdle(BgYdanSp* this, PlayState* play) {
                 this->timer = 14;
             }
         }
-        if (player->actor.speedXZ != 0.0f) {
+        if (player->actor.speed != 0.0f) {
             if (this->unk_16C < 0.1f) {
                 this->timer = 14;
             }
-            if (this->unk_16C < 2.0f) {
-                this->unk_16C = 2.0f;
-            } else {
-                this->unk_16C = this->unk_16C;
-            }
+            this->unk_16C = CLAMP_MIN(this->unk_16C, 2.0f);
         }
     }
     if (this->timer != 0) {
@@ -329,7 +324,7 @@ void BgYdanSp_FloorWebIdle(BgYdanSp* this, PlayState* play) {
     Math_ApproachZeroF(&this->unk_16C, 1.0f, 0.8f);
     if (this->timer == 13) {
         if (this->unk_16C > 3.0f) {
-            Audio_PlayActorSfx2(&this->dyna.actor, NA_SE_EV_WEB_VIBRATION);
+            Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_WEB_VIBRATION);
         } else {
             Audio_StopSfxById(NA_SE_EV_WEB_VIBRATION);
         }
@@ -399,7 +394,7 @@ void BgYdanSp_WallWebIdle(BgYdanSp* this, PlayState* play) {
     if (Flags_GetSwitch(play, this->burnSwitchFlag) || (this->trisCollider.base.acFlags & AC_HIT)) {
         this->dyna.actor.home.pos.y = this->dyna.actor.world.pos.y + 80.0f;
         BgYdanSp_BurnWeb(this, play);
-    } else if (player->heldItemActionParam == PLAYER_AP_STICK && player->unk_860 != 0) {
+    } else if (player->heldItemAction == PLAYER_IA_DEKU_STICK && player->unk_860 != 0) {
         func_8002DBD0(&this->dyna.actor, &sp30, &player->meleeWeaponInfo[0].tip);
         if (fabsf(sp30.x) < 100.0f && sp30.z < 1.0f && sp30.y < 200.0f) {
             OnePointCutscene_Init(play, 3020, 40, &this->dyna.actor, CAM_ID_MAIN);
@@ -422,9 +417,12 @@ void BgYdanSp_Draw(Actor* thisx, PlayState* play) {
     MtxF mtxF;
 
     OPEN_DISPS(play->state.gfxCtx, "../z_bg_ydan_sp.c", 781);
+
+    if (1) {}
+
     Gfx_SetupDL_25Xlu(play->state.gfxCtx);
     if (thisx->params == WEB_WALL) {
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_bg_ydan_sp.c", 787),
+        gSPMatrix(POLY_XLU_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_bg_ydan_sp.c", 787),
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_XLU_DISP++, gDTWebWallDL);
     } else if (this->actionFunc == BgYdanSp_FloorWebBroken) {
@@ -432,7 +430,7 @@ void BgYdanSp_Draw(Actor* thisx, PlayState* play) {
         if (this->timer == 40) {
             Matrix_Translate(0.0f, (thisx->home.pos.y - thisx->world.pos.y) * 10.0f, 0.0f, MTXMODE_APPLY);
             Matrix_Scale(1.0f, ((thisx->home.pos.y - thisx->world.pos.y) + 10.0f) * 0.1f, 1.0f, MTXMODE_APPLY);
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_bg_ydan_sp.c", 808),
+            gSPMatrix(POLY_XLU_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_bg_ydan_sp.c", 808),
                       G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gSPDisplayList(POLY_XLU_DISP++, gDTWebFloorDL);
         }
@@ -441,14 +439,14 @@ void BgYdanSp_Draw(Actor* thisx, PlayState* play) {
             Matrix_RotateZYX(-0x5A0, i * 0x2000, 0, MTXMODE_APPLY);
             Matrix_Translate(0.0f, 700.0f, -900.0f, MTXMODE_APPLY);
             Matrix_Scale(3.5f, 5.0f, 1.0f, MTXMODE_APPLY);
-            gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_bg_ydan_sp.c", 830),
+            gSPMatrix(POLY_XLU_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_bg_ydan_sp.c", 830),
                       G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
             gSPDisplayList(POLY_XLU_DISP++, gDTUnknownWebDL);
         }
     } else {
         Matrix_Translate(0.0f, (thisx->home.pos.y - thisx->world.pos.y) * 10.0f, 0.0f, MTXMODE_APPLY);
         Matrix_Scale(1.0f, ((thisx->home.pos.y - thisx->world.pos.y) + 10.0f) * 0.1f, 1.0f, MTXMODE_APPLY);
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_bg_ydan_sp.c", 849),
+        gSPMatrix(POLY_XLU_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_bg_ydan_sp.c", 849),
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_XLU_DISP++, gDTWebFloorDL);
     }

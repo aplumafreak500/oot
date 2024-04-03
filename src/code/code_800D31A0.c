@@ -1,20 +1,23 @@
 #include "global.h"
-#include "vt.h"
+#include "terminal.h"
 
-//u32 gIsCtrlr2Valid = false;
+#if OOT_DEBUG
 u32 gIsCtrlr2Valid = true;
+#endif
 
-void func_800D31A0(void) {
-    osSyncPrintf(VT_FGCOL(RED) "\n**** Freeze!! ****\n" VT_RST);
-    while (true) {
+NORETURN void func_800D31A0(void) {
+    PRINTF(VT_FGCOL(RED) "\n**** Freeze!! ****\n" VT_RST);
+    for (;;) {
         Sleep_Msec(1000);
     }
 }
 
+#if OOT_DEBUG
 void func_800D31F0(void) {
-//    gIsCtrlr2Valid = (gPadMgr.validCtrlrsMask & 2) != 0;
+    //gIsCtrlr2Valid = (gPadMgr.validCtrlrsMask & 2) != 0;
 }
 
 void func_800D3210(void) {
-//    gIsCtrlr2Valid = false;
+    //gIsCtrlr2Valid = false;
 }
+#endif

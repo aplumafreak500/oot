@@ -7,10 +7,13 @@
 
 .section .bss
 
+# Note: This file is only included in the MATCHING build, the data is imported for non-matching
+
 .balign 16
 
 glabel sFaultDrawer
     .space 0x3C
+    .space 0x04 # padding
 
 glabel D_8016B6C0
     .space 0x20

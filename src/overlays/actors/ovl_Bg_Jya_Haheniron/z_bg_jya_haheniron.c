@@ -22,16 +22,16 @@ void BgJyaHaheniron_PillarCrumble(BgJyaHaheniron* this, PlayState* play);
 void BgJyaHaheniron_SetupRubbleCollide(BgJyaHaheniron* this);
 void BgJyaHaheniron_RubbleCollide(BgJyaHaheniron* this, PlayState* play);
 
-const ActorInit Bg_Jya_Haheniron_InitVars = {
-    ACTOR_BG_JYA_HAHENIRON,
-    ACTORCAT_PROP,
-    FLAGS,
-    OBJECT_JYA_IRON,
-    sizeof(BgJyaHaheniron),
-    (ActorFunc)BgJyaHaheniron_Init,
-    (ActorFunc)BgJyaHaheniron_Destroy,
-    (ActorFunc)BgJyaHaheniron_Update,
-    (ActorFunc)BgJyaHaheniron_Draw,
+ActorInit Bg_Jya_Haheniron_InitVars = {
+    /**/ ACTOR_BG_JYA_HAHENIRON,
+    /**/ ACTORCAT_PROP,
+    /**/ FLAGS,
+    /**/ OBJECT_JYA_IRON,
+    /**/ sizeof(BgJyaHaheniron),
+    /**/ BgJyaHaheniron_Init,
+    /**/ BgJyaHaheniron_Destroy,
+    /**/ BgJyaHaheniron_Update,
+    /**/ BgJyaHaheniron_Draw,
 };
 
 static ColliderJntSphElementInit sJntSphElementsInit[1] = {
@@ -40,8 +40,8 @@ static ColliderJntSphElementInit sJntSphElementsInit[1] = {
             ELEMTYPE_UNK0,
             { 0xFFCFFFFF, 0x00, 0x04 },
             { 0x00000000, 0x00, 0x00 },
-            TOUCH_ON | TOUCH_SFX_NORMAL,
-            BUMP_NONE,
+            ATELEM_ON | ATELEM_SFX_NORMAL,
+            ACELEM_NONE,
             OCELEM_NONE,
         },
         { 0, { { 0, 0, 0 }, 10 }, 100 },
@@ -148,7 +148,7 @@ void BgJyaHaheniron_SetupChairCrumble(BgJyaHaheniron* this) {
 void BgJyaHaheniron_ChairCrumble(BgJyaHaheniron* this, PlayState* play) {
     Vec3f vec;
 
-    Actor_MoveForward(&this->actor);
+    Actor_MoveXZGravity(&this->actor);
     Actor_UpdateBgCheckInfo(play, &this->actor, 5.0f, 8.0f, 0.0f,
                             UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_2 | UPDBGCHECKINFO_FLAG_7);
     if ((this->actor.bgCheckFlags & (BGCHECKFLAG_GROUND | BGCHECKFLAG_WALL)) ||
@@ -174,7 +174,7 @@ void BgJyaHaheniron_SetupPillarCrumble(BgJyaHaheniron* this) {
 
 void BgJyaHaheniron_PillarCrumble(BgJyaHaheniron* this, PlayState* play) {
     if (this->timer >= 8) {
-        Actor_MoveForward(&this->actor);
+        Actor_MoveXZGravity(&this->actor);
     } else if (this->timer >= 17) {
         BgJyaHaheniron_SpawnFragments(play, &this->actor.world.pos, D_808987A0);
         Actor_Kill(&this->actor);

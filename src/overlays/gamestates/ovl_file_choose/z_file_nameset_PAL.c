@@ -1,4 +1,5 @@
 #include "file_select.h"
+#include "terminal.h"
 #include "assets/textures/title_static/title_static.h"
 #include "assets/overlays/ovl_File_Choose/ovl_file_choose.h"
 
@@ -38,7 +39,7 @@ void FileSelect_SetKeyboardVtx(GameState* thisx) {
     s16 phi_t1;
     s16 phi_s2;
 
-    this->keyboardVtx = Graph_Alloc(this->state.gfxCtx, sizeof(Vtx) * 4 * 5 * 13);
+    this->keyboardVtx = GRAPH_ALLOC(this->state.gfxCtx, sizeof(Vtx) * 4 * 5 * 13);
 
     phi_s1 = 0x26;
 
@@ -117,7 +118,6 @@ void FileSelect_SetNameEntryVtx(GameState* thisx) {
     s16 phi_v0;
 
     if (1) {}
-    if (1) {}
 
     OPEN_DISPS(this->state.gfxCtx, "../z_file_nameset_PAL.c", 205);
 
@@ -143,7 +143,7 @@ void FileSelect_SetNameEntryVtx(GameState* thisx) {
         gSP1Quadrangle(POLY_OPA_DISP++, phi_s0, phi_s0 + 2, phi_s0 + 3, phi_s0 + 1, 0);
     }
 
-    this->nameEntryVtx = Graph_Alloc(this->state.gfxCtx, 44 * sizeof(Vtx));
+    this->nameEntryVtx = GRAPH_ALLOC(this->state.gfxCtx, 44 * sizeof(Vtx));
 
     for (phi_s0 = 0, phi_t1 = 0; phi_t1 < 44; phi_t1 += 4, phi_s0++) {
         if ((phi_s0 > 0) && (phi_s0 < 9)) {
@@ -232,9 +232,11 @@ void FileSelect_SetNameEntryVtx(GameState* thisx) {
 void FileSelect_DrawKeyboard(GameState* thisx) {
     FileSelectState* this = (FileSelectState*)thisx;
     Font* font = &this->font;
-    s16 i = 0;
+    s16 i;
     s16 tmp;
-    s16 vtx = 0;
+    s16 vtx;
+
+    i = vtx = 0;
 
     OPEN_DISPS(this->state.gfxCtx, "../z_file_nameset_PAL.c", 324);
 
@@ -285,7 +287,7 @@ void FileSelect_DrawNameEntry(GameState* thisx) {
     if ((this->kbdButton == FS_KBD_BTN_HIRA) || (this->kbdButton == FS_KBD_BTN_KATA) ||
         (this->kbdButton == FS_KBD_BTN_END)) {
         if (this->kbdX != this->kbdButton) {
-            osSyncPrintf("014 xpos=%d  contents=%d\n", this->kbdX, this->kbdButton);
+            PRINTF("014 xpos=%d  contents=%d\n", this->kbdX, this->kbdButton);
         }
         this->nameEntryVtx[40].v.ob[0] = this->nameEntryVtx[42].v.ob[0] = D_80811BB0[(this->kbdX + 1) * 4].v.ob[0] - 4;
         this->nameEntryVtx[41].v.ob[0] = this->nameEntryVtx[43].v.ob[0] = this->nameEntryVtx[40].v.ob[0] + 52;
@@ -293,15 +295,15 @@ void FileSelect_DrawNameEntry(GameState* thisx) {
 
     } else if ((this->kbdButton == FS_KBD_BTN_ENG) || (this->kbdButton == FS_KBD_BTN_BACKSPACE)) {
         if (this->kbdX != this->kbdButton) {
-            osSyncPrintf("23 xpos=%d  contents=%d\n", this->kbdX, this->kbdButton);
+            PRINTF("23 xpos=%d  contents=%d\n", this->kbdX, this->kbdButton);
         }
         this->nameEntryVtx[40].v.ob[0] = this->nameEntryVtx[42].v.ob[0] = D_80811BB0[(this->kbdX + 1) * 4].v.ob[0] - 4;
         this->nameEntryVtx[41].v.ob[0] = this->nameEntryVtx[43].v.ob[0] = this->nameEntryVtx[40].v.ob[0] + 40;
         this->nameEntryVtx[40].v.ob[1] = this->nameEntryVtx[41].v.ob[1] = D_80811BB0[(this->kbdX + 1) * 4].v.ob[1] + 4;
     } else {
         if (this->charIndex >= 65) {
-            osSyncPrintf("mjp=%d  xpos=%d  ypos=%d  name_contents=%d\n", this->charIndex, this->kbdX, this->kbdY,
-                         this->kbdButton);
+            PRINTF("mjp=%d  xpos=%d  ypos=%d  name_contents=%d\n", this->charIndex, this->kbdX, this->kbdY,
+                   this->kbdButton);
         }
 
         this->nameEntryVtx[40].v.ob[0] = this->nameEntryVtx[42].v.ob[0] =
@@ -440,13 +442,13 @@ void FileSelect_DrawNameEntry(GameState* thisx) {
                                                  &gSfxDefaultFreqAndVolScale, &gSfxDefaultFreqAndVolScale,
                                                  &gSfxDefaultReverb);
                             gSaveContext.fileNum = this->buttonIndex;
-                            dayTime = ((void)0, gSaveContext.dayTime);
+                            dayTime = ((void)0, gSaveContext.save.dayTime);
                             Sram_InitSave(this, &this->sramCtx);
-                            gSaveContext.dayTime = dayTime;
+                            gSaveContext.save.dayTime = dayTime;
                             this->configMode = CM_NAME_ENTRY_TO_MAIN;
                             this->nameBoxAlpha[this->buttonIndex] = this->nameAlpha[this->buttonIndex] = 200;
                             this->connectorAlpha[this->buttonIndex] = 255;
-                            func_800AA000(300.0f, 0xB4, 0x14, 0x64);
+                            Rumble_Request(300.0f, 180, 20, 100);
                         } else {
                             Audio_PlaySfxGeneral(NA_SE_SY_FSEL_ERROR, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                                                  &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
@@ -520,7 +522,7 @@ void FileSelect_UpdateKeyboardCursor(GameState* thisx) {
     this->kbdButton = 99;
 
     if (this->kbdY != 5) {
-        if (this->stickRelX < -30) {
+        if (this->stickAdjX < -30) {
             Audio_PlaySfxGeneral(NA_SE_SY_FSEL_CURSOR, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                                  &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
             this->charIndex--;
@@ -529,7 +531,7 @@ void FileSelect_UpdateKeyboardCursor(GameState* thisx) {
                 this->kbdX = 12;
                 this->charIndex = (this->kbdY * 13) + this->kbdX;
             }
-        } else if (this->stickRelX > 30) {
+        } else if (this->stickAdjX > 30) {
             Audio_PlaySfxGeneral(NA_SE_SY_FSEL_CURSOR, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                                  &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
             this->charIndex++;
@@ -540,14 +542,14 @@ void FileSelect_UpdateKeyboardCursor(GameState* thisx) {
             }
         }
     } else {
-        if (this->stickRelX < -30) {
+        if (this->stickAdjX < -30) {
             Audio_PlaySfxGeneral(NA_SE_SY_FSEL_CURSOR, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                                  &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
             this->kbdX--;
             if (this->kbdX < 3) {
                 this->kbdX = 4;
             }
-        } else if (this->stickRelX > 30) {
+        } else if (this->stickAdjX > 30) {
             Audio_PlaySfxGeneral(NA_SE_SY_FSEL_CURSOR, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                                  &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
             this->kbdX++;
@@ -557,13 +559,13 @@ void FileSelect_UpdateKeyboardCursor(GameState* thisx) {
         }
     }
 
-    if (this->stickRelY > 30) {
+    if (this->stickAdjY > 30) {
         Audio_PlaySfxGeneral(NA_SE_SY_FSEL_CURSOR, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                              &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
         this->kbdY--;
 
         if (this->kbdY < 0) {
-            // dont go to bottom row
+            // don't go to bottom row
             if (this->kbdX < 8) {
                 this->kbdY = 4;
                 this->charIndex = (s32)(this->kbdX + 52);
@@ -589,7 +591,7 @@ void FileSelect_UpdateKeyboardCursor(GameState* thisx) {
                 this->charIndex += this->kbdX;
             }
         }
-    } else if (this->stickRelY < -30) {
+    } else if (this->stickAdjY < -30) {
         Audio_PlaySfxGeneral(NA_SE_SY_FSEL_CURSOR, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                              &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
         this->kbdY++;
@@ -674,21 +676,21 @@ void FileSelect_UpdateOptionsMenu(GameState* thisx) {
         this->configMode = CM_OPTIONS_TO_MAIN;
         sramCtx->readBuff[0] = gSaveContext.audioSetting;
         sramCtx->readBuff[1] = gSaveContext.zTargetSetting;
-        osSyncPrintf("ＳＡＶＥ");
+        PRINTF("ＳＡＶＥ");
         Sram_WriteSramHeader(sramCtx);
-        osSyncPrintf(VT_FGCOL(YELLOW));
-        osSyncPrintf("sram->read_buff[2] = J_N = %x\n", sramCtx->readBuff[2]);
-        osSyncPrintf("sram->read_buff[2] = J_N = %x\n", &sramCtx->readBuff[2]);
-        osSyncPrintf("Na_SetSoundOutputMode = %d\n", gSaveContext.audioSetting);
-        osSyncPrintf("Na_SetSoundOutputMode = %d\n", gSaveContext.audioSetting);
-        osSyncPrintf("Na_SetSoundOutputMode = %d\n", gSaveContext.audioSetting);
-        osSyncPrintf(VT_RST);
+        PRINTF(VT_FGCOL(YELLOW));
+        PRINTF("sram->read_buff[2] = J_N = %x\n", sramCtx->readBuff[2]);
+        PRINTF("sram->read_buff[2] = J_N = %x\n", &sramCtx->readBuff[2]);
+        PRINTF("Na_SetSoundOutputMode = %d\n", gSaveContext.audioSetting);
+        PRINTF("Na_SetSoundOutputMode = %d\n", gSaveContext.audioSetting);
+        PRINTF("Na_SetSoundOutputMode = %d\n", gSaveContext.audioSetting);
+        PRINTF(VT_RST);
         func_800F6700(gSaveContext.audioSetting);
-        osSyncPrintf("終了\n");
+        PRINTF("終了\n");
         return;
     }
 
-    if (this->stickRelX < -30) {
+    if (this->stickAdjX < -30) {
         Audio_PlaySfxGeneral(NA_SE_SY_FSEL_CURSOR, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                              &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
 
@@ -702,7 +704,7 @@ void FileSelect_UpdateOptionsMenu(GameState* thisx) {
         } else {
             gSaveContext.zTargetSetting ^= 1;
         }
-    } else if (this->stickRelX > 30) {
+    } else if (this->stickAdjX > 30) {
         Audio_PlaySfxGeneral(NA_SE_SY_FSEL_CURSOR, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                              &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
 
@@ -717,7 +719,7 @@ void FileSelect_UpdateOptionsMenu(GameState* thisx) {
         }
     }
 
-    if ((this->stickRelY < -30) || (this->stickRelY > 30)) {
+    if ((this->stickAdjY < -30) || (this->stickAdjY > 30)) {
         Audio_PlaySfxGeneral(NA_SE_SY_FSEL_CURSOR, &gSfxDefaultPos, 4, &gSfxDefaultFreqAndVolScale,
                              &gSfxDefaultFreqAndVolScale, &gSfxDefaultReverb);
         sSelectedSetting ^= 1;
@@ -734,7 +736,7 @@ typedef struct {
     /* 0x12 */ u16 height;
 } OptionsMenuTextureInfo; // size = 0x14
 
-static OptionsMenuTextureInfo gOptionsMenuHeaders[] = {
+static OptionsMenuTextureInfo sOptionsMenuHeaders[] = {
     {
         { gFileSelOptionsENGTex, gFileSelOptionsGERTex, gFileSelOptionsENGTex },
         { 128, 128, 128 },
@@ -757,7 +759,7 @@ static OptionsMenuTextureInfo gOptionsMenuHeaders[] = {
     },
 };
 
-static OptionsMenuTextureInfo gOptionsMenuSettings[] = {
+static OptionsMenuTextureInfo sOptionsMenuSettings[] = {
     {
         { gFileSelStereoENGTex, gFileSelStereoENGTex, gFileSelStereoFRATex },
         { 48, 48, 48 },
@@ -890,9 +892,9 @@ void FileSelect_DrawOptionsImpl(GameState* thisx) {
     gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 255);
 
     for (i = 0, vtx = 0; i < 4; i++, vtx += 4) {
-        gDPLoadTextureBlock(POLY_OPA_DISP++, gOptionsMenuHeaders[i].texture[gSaveContext.language], G_IM_FMT_IA,
-                            G_IM_SIZ_8b, gOptionsMenuHeaders[i].width[gSaveContext.language],
-                            gOptionsMenuHeaders[i].height, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
+        gDPLoadTextureBlock(POLY_OPA_DISP++, sOptionsMenuHeaders[i].texture[gSaveContext.language], G_IM_FMT_IA,
+                            G_IM_SIZ_8b, sOptionsMenuHeaders[i].width[gSaveContext.language],
+                            sOptionsMenuHeaders[i].height, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
                             G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSP1Quadrangle(POLY_OPA_DISP++, vtx, vtx + 2, vtx + 3, vtx + 1, 0);
     }
@@ -919,9 +921,11 @@ void FileSelect_DrawOptionsImpl(GameState* thisx) {
             gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 255);
         }
 
-        gDPLoadTextureBlock(POLY_OPA_DISP++, gOptionsMenuSettings[i].texture[gSaveContext.language], G_IM_FMT_IA,
-                            G_IM_SIZ_8b, gOptionsMenuSettings[i].width[gSaveContext.language],
-                            gOptionsMenuHeaders[i].height, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
+        //! @bug Mistakenly using sOptionsMenuHeaders instead of sOptionsMenuSettings for the height.
+        //! This works out anyway because all heights are 16.
+        gDPLoadTextureBlock(POLY_OPA_DISP++, sOptionsMenuSettings[i].texture[gSaveContext.language], G_IM_FMT_IA,
+                            G_IM_SIZ_8b, sOptionsMenuSettings[i].width[gSaveContext.language],
+                            sOptionsMenuHeaders[i].height, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
                             G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSP1Quadrangle(POLY_OPA_DISP++, vtx, vtx + 2, vtx + 3, vtx + 1, 0);
     }
@@ -943,9 +947,12 @@ void FileSelect_DrawOptionsImpl(GameState* thisx) {
             gDPSetEnvColor(POLY_OPA_DISP++, 0, 0, 0, 255);
         }
 
-        gDPLoadTextureBlock(POLY_OPA_DISP++, gOptionsMenuSettings[i].texture[gSaveContext.language], G_IM_FMT_IA,
-                            G_IM_SIZ_8b, gOptionsMenuSettings[i].width[gSaveContext.language],
-                            gOptionsMenuHeaders[i].height, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
+        //! @bug Mistakenly using sOptionsMenuHeaders instead of sOptionsMenuSettings for the height.
+        //! This is also an OOB read that happens to access the height of the first two elements in
+        //! sOptionsMenuSettings, and since all heights are 16, it works out anyway.
+        gDPLoadTextureBlock(POLY_OPA_DISP++, sOptionsMenuSettings[i].texture[gSaveContext.language], G_IM_FMT_IA,
+                            G_IM_SIZ_8b, sOptionsMenuSettings[i].width[gSaveContext.language],
+                            sOptionsMenuHeaders[i].height, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP,
                             G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
         gSP1Quadrangle(POLY_OPA_DISP++, vtx, vtx + 2, vtx + 3, vtx + 1, 0);
     }
@@ -980,7 +987,7 @@ void FileSelect_DrawOptionsImpl(GameState* thisx) {
 
     Matrix_Push();
     Matrix_Translate(0.0f, 0.1f, 0.0f, MTXMODE_APPLY);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(this->state.gfxCtx, "../z_file_nameset_PAL.c", 1009),
+    gSPMatrix(POLY_OPA_DISP++, MATRIX_NEW(this->state.gfxCtx, "../z_file_nameset_PAL.c", 1009),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPVertex(POLY_OPA_DISP++, gOptionsDividerTopVtx, 4, 0);
     gSP1Quadrangle(POLY_OPA_DISP++, 0, 2, 3, 1, 0);
@@ -988,7 +995,7 @@ void FileSelect_DrawOptionsImpl(GameState* thisx) {
 
     Matrix_Push();
     Matrix_Translate(0.0f, 0.2f, 0.0f, MTXMODE_APPLY);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(this->state.gfxCtx, "../z_file_nameset_PAL.c", 1021),
+    gSPMatrix(POLY_OPA_DISP++, MATRIX_NEW(this->state.gfxCtx, "../z_file_nameset_PAL.c", 1021),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gSPVertex(POLY_OPA_DISP++, gOptionsDividerMiddleVtx, 4, 0);
@@ -997,7 +1004,7 @@ void FileSelect_DrawOptionsImpl(GameState* thisx) {
 
     Matrix_Push();
     Matrix_Translate(0.0f, 0.4f, 0.0f, MTXMODE_APPLY);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(this->state.gfxCtx, "../z_file_nameset_PAL.c", 1033),
+    gSPMatrix(POLY_OPA_DISP++, MATRIX_NEW(this->state.gfxCtx, "../z_file_nameset_PAL.c", 1033),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPVertex(POLY_OPA_DISP++, gOptionsDividerBottomVtx, 4, 0);
     gSP1Quadrangle(POLY_OPA_DISP++, 0, 2, 3, 1, 0);

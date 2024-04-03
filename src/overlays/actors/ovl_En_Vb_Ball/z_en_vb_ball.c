@@ -16,16 +16,16 @@ void EnVbBall_Destroy(Actor* thisx, PlayState* play);
 void EnVbBall_Update(Actor* thisx, PlayState* play2);
 void EnVbBall_Draw(Actor* thisx, PlayState* play);
 
-const ActorInit En_Vb_Ball_InitVars = {
-    0,
-    ACTORCAT_BOSS,
-    FLAGS,
-    OBJECT_FD,
-    sizeof(EnVbBall),
-    (ActorFunc)EnVbBall_Init,
-    (ActorFunc)EnVbBall_Destroy,
-    (ActorFunc)EnVbBall_Update,
-    (ActorFunc)EnVbBall_Draw,
+ActorInit En_Vb_Ball_InitVars = {
+    /**/ 0,
+    /**/ ACTORCAT_BOSS,
+    /**/ FLAGS,
+    /**/ OBJECT_FD,
+    /**/ sizeof(EnVbBall),
+    /**/ EnVbBall_Init,
+    /**/ EnVbBall_Destroy,
+    /**/ EnVbBall_Update,
+    /**/ EnVbBall_Draw,
 };
 
 static ColliderCylinderInit sCylinderInit = {
@@ -41,8 +41,8 @@ static ColliderCylinderInit sCylinderInit = {
         ELEMTYPE_UNK6,
         { 0x00100700, 0x00, 0x20 },
         { 0x00100700, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NORMAL,
-        BUMP_ON,
+        ATELEM_ON | ATELEM_SFX_NORMAL,
+        ACELEM_ON,
         OCELEM_ON,
     },
     { 20, 30, 10, { 0, 0, 0 } },
@@ -178,7 +178,7 @@ void EnVbBall_Update(Actor* thisx, PlayState* play2) {
     this->actor.shape.rot.y += (s16)this->yRotVel;
     this->actor.velocity.y += -1.0f;
     this->actor.gravity = -1.0f;
-    func_8002D7EC(&this->actor);
+    Actor_UpdatePos(&this->actor);
     if (this->actor.params >= 200) {
         EnVbBall_UpdateBones(this, play);
     } else {
@@ -191,7 +191,7 @@ void EnVbBall_Update(Actor* thisx, PlayState* play2) {
             if ((this->actor.params == 100) || (this->actor.params == 101)) {
                 Actor_Kill(&this->actor);
                 if (this->actor.params == 100) {
-                    func_80033E88(&this->actor, play, 5, 0xA);
+                    Actor_RequestQuakeAndRumble(&this->actor, play, 5, 10);
                 }
                 if (this->actor.params == 100) {
                     spawnNum = 2;
@@ -289,7 +289,7 @@ void EnVbBall_Update(Actor* thisx, PlayState* play2) {
             Player* player = GET_PLAYER(play);
 
             this->collider.base.atFlags &= ~AT_HIT;
-            Audio_PlayActorSfx2(&player->actor, NA_SE_PL_BODY_HIT);
+            Actor_PlaySfx(&player->actor, NA_SE_PL_BODY_HIT);
         }
         Collider_UpdateCylinder(&this->actor, &this->collider);
         CollisionCheck_SetAT(play, &play->colChkCtx, &this->collider.base);
@@ -303,7 +303,7 @@ void EnVbBall_Draw(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx, "../z_en_vb_ball.c", 604);
     if (1) {} // needed for match
     Gfx_SetupDL_25Opa(play->state.gfxCtx);
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_en_vb_ball.c", 607),
+    gSPMatrix(POLY_OPA_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_en_vb_ball.c", 607),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     if (this->actor.params >= 200) {
@@ -315,7 +315,7 @@ void EnVbBall_Draw(Actor* thisx, PlayState* play) {
         gDPSetPrimColor(POLY_XLU_DISP++, 0, 0, 0, 0, 0, (s8)this->shadowOpacity);
         Matrix_Translate(this->actor.world.pos.x, 100.0f, this->actor.world.pos.z, MTXMODE_NEW);
         Matrix_Scale(this->shadowSize, 1.0f, this->shadowSize, MTXMODE_APPLY);
-        gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_en_vb_ball.c", 626),
+        gSPMatrix(POLY_XLU_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_en_vb_ball.c", 626),
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_XLU_DISP++, SEGMENTED_TO_VIRTUAL(gCircleShadowDL));
     }

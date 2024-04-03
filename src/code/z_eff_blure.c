@@ -4,22 +4,16 @@
 void EffectBlure_AddVertex(EffectBlure* this, Vec3f* p1, Vec3f* p2) {
     EffectBlureElement* elem;
     s32 numElements;
-    Vec3f sp16C;
-    Vec3f sp160;
-    Vec3f sp154;
-    f32 scale;
-    MtxF sp110;
-    MtxF spD0;
-    MtxF sp90;
-    MtxF sp50;
-    Vec3f sp44;
-    Vec3f sp38;
+
+    // Necessary to match
+    if (this) {}
+    if (this) {}
 
     if (this != NULL) {
         numElements = this->numElements;
         if (numElements >= 16) {
             // "Blure vertex addition processing: Table over %d"
-            osSyncPrintf("ブラ─頂点追加処理:テーブルオーバー %d\n", numElements);
+            PRINTF("ブラ─頂点追加処理:テーブルオーバー %d\n", numElements);
             return;
         }
 
@@ -34,6 +28,17 @@ void EffectBlure_AddVertex(EffectBlure* this, Vec3f* p1, Vec3f* p2) {
             elem->p2.y = p2->y;
             elem->p2.z = p2->z;
         } else {
+            Vec3f sp16C;
+            Vec3f sp160;
+            Vec3f sp154;
+            f32 scale;
+            MtxF sp110;
+            MtxF spD0;
+            MtxF sp90;
+            MtxF sp50;
+            Vec3f sp44;
+            Vec3f sp38;
+
             sp16C.x = ((f32)(elem - 1)->p2.x + (f32)(elem - 1)->p1.x) * 0.5f;
             sp16C.y = ((f32)(elem - 1)->p2.y + (f32)(elem - 1)->p1.y) * 0.5f;
             sp16C.z = ((f32)(elem - 1)->p2.z + (f32)(elem - 1)->p1.z) * 0.5f;
@@ -77,7 +82,7 @@ void EffectBlure_AddSpace(EffectBlure* this) {
         numElements = this->numElements;
         if (numElements >= 16) {
             // "Blure space addition processing: Table over %d"
-            osSyncPrintf("ブラ─空白追加処理:テーブルオーバー %d\n", numElements);
+            PRINTF("ブラ─空白追加処理:テーブルオーバー %d\n", numElements);
             return;
         }
 
@@ -255,19 +260,16 @@ void EffectBlure_UpdateFlags(EffectBlureElement* elem) {
     Vec3f sp58;
     Vec3f sp4C;
     Vec3f sp40;
+    EffectBlureElement* prev = elem - 1;
+    EffectBlureElement* next = elem + 1;
+    f32 sp34;
+    f32 sp30;
+    f32 sp2C;
 
     if (((elem - 1)->state == 0) || ((elem + 1)->state == 0)) {
         elem->flags &= ~3;
         elem->flags |= 2;
     } else {
-        EffectBlureElement* prev = elem - 1;
-        EffectBlureElement* next = elem + 1;
-        f32 sp34;
-        f32 sp30;
-        f32 sp2C;
-
-        if (1) {} // Necessary to match
-
         Math_Vec3s_DiffToVec3f(&sp64, &elem->p1, &prev->p1);
         Math_Vec3s_DiffToVec3f(&sp58, &elem->p2, &prev->p2);
         Math_Vec3s_DiffToVec3f(&sp4C, &next->p1, &elem->p1);
@@ -295,9 +297,9 @@ void EffectBlure_GetComputedValues(EffectBlure* this, s32 index, f32 ratio, Vec3
 
     switch (this->calcMode) {
         case 1:
-            vec1->x = func_80027E34(elem->p1.x, elem->p2.x, ratio);
-            vec1->y = func_80027E34(elem->p1.y, elem->p2.y, ratio);
-            vec1->z = func_80027E34(elem->p1.z, elem->p2.z, ratio);
+            vec1->x = EffectSs_LerpS16(elem->p1.x, elem->p2.x, ratio);
+            vec1->y = EffectSs_LerpS16(elem->p1.y, elem->p2.y, ratio);
+            vec1->z = EffectSs_LerpS16(elem->p1.z, elem->p2.z, ratio);
             vec2->x = elem->p2.x;
             vec2->y = elem->p2.y;
             vec2->z = elem->p2.z;
@@ -307,19 +309,19 @@ void EffectBlure_GetComputedValues(EffectBlure* this, s32 index, f32 ratio, Vec3
             vec1->x = elem->p1.x;
             vec1->y = elem->p1.y;
             vec1->z = elem->p1.z;
-            vec2->x = func_80027E34(elem->p2.x, elem->p1.x, ratio);
-            vec2->y = func_80027E34(elem->p2.y, elem->p1.y, ratio);
-            vec2->z = func_80027E34(elem->p2.z, elem->p1.z, ratio);
+            vec2->x = EffectSs_LerpS16(elem->p2.x, elem->p1.x, ratio);
+            vec2->y = EffectSs_LerpS16(elem->p2.y, elem->p1.y, ratio);
+            vec2->z = EffectSs_LerpS16(elem->p2.z, elem->p1.z, ratio);
             break;
 
         case 3:
             ratio *= 0.5f;
-            vec1->x = func_80027E34(elem->p1.x, elem->p2.x, ratio);
-            vec1->y = func_80027E34(elem->p1.y, elem->p2.y, ratio);
-            vec1->z = func_80027E34(elem->p1.z, elem->p2.z, ratio);
-            vec2->x = func_80027E34(elem->p2.x, elem->p1.x, ratio);
-            vec2->y = func_80027E34(elem->p2.y, elem->p1.y, ratio);
-            vec2->z = func_80027E34(elem->p2.z, elem->p1.z, ratio);
+            vec1->x = EffectSs_LerpS16(elem->p1.x, elem->p2.x, ratio);
+            vec1->y = EffectSs_LerpS16(elem->p1.y, elem->p2.y, ratio);
+            vec1->z = EffectSs_LerpS16(elem->p1.z, elem->p2.z, ratio);
+            vec2->x = EffectSs_LerpS16(elem->p2.x, elem->p1.x, ratio);
+            vec2->y = EffectSs_LerpS16(elem->p2.y, elem->p1.y, ratio);
+            vec2->z = EffectSs_LerpS16(elem->p2.z, elem->p1.z, ratio);
             ratio *= 2.0f;
             break;
 
@@ -356,14 +358,14 @@ void EffectBlure_GetComputedValues(EffectBlure* this, s32 index, f32 ratio, Vec3
         color1->r = color1->g = color1->b = color1->a = 255;
         color2->r = color2->g = color2->b = color2->a = 255;
     } else {
-        color1->r = func_80027E84(this->p1StartColor[0], this->p1EndColor[0], ratio);
-        color1->g = func_80027E84(this->p1StartColor[1], this->p1EndColor[1], ratio);
-        color1->b = func_80027E84(this->p1StartColor[2], this->p1EndColor[2], ratio);
-        color1->a = func_80027E84(this->p1StartColor[3], this->p1EndColor[3], ratio);
-        color2->r = func_80027E84(this->p2StartColor[0], this->p2EndColor[0], ratio);
-        color2->g = func_80027E84(this->p2StartColor[1], this->p2EndColor[1], ratio);
-        color2->b = func_80027E84(this->p2StartColor[2], this->p2EndColor[2], ratio);
-        color2->a = func_80027E84(this->p2StartColor[3], this->p2EndColor[3], ratio);
+        color1->r = EffectSs_LerpU8(this->p1StartColor[0], this->p1EndColor[0], ratio);
+        color1->g = EffectSs_LerpU8(this->p1StartColor[1], this->p1EndColor[1], ratio);
+        color1->b = EffectSs_LerpU8(this->p1StartColor[2], this->p1EndColor[2], ratio);
+        color1->a = EffectSs_LerpU8(this->p1StartColor[3], this->p1EndColor[3], ratio);
+        color2->r = EffectSs_LerpU8(this->p2StartColor[0], this->p2EndColor[0], ratio);
+        color2->g = EffectSs_LerpU8(this->p2StartColor[1], this->p2EndColor[1], ratio);
+        color2->b = EffectSs_LerpU8(this->p2StartColor[2], this->p2EndColor[2], ratio);
+        color2->a = EffectSs_LerpU8(this->p2StartColor[3], this->p2EndColor[3], ratio);
     }
 }
 
@@ -393,10 +395,10 @@ void EffectBlure_DrawElemNoInterpolation(EffectBlure* this, EffectBlureElement* 
 
     Math_Vec3s_ToVec3f(&sp6C, &this->elements[0].p2);
 
-    vtx = Graph_Alloc(gfxCtx, sizeof(Vtx[4]));
+    vtx = GRAPH_ALLOC(gfxCtx, sizeof(Vtx[4]));
     if (vtx == NULL) {
         // "Vertices cannot be secured."
-        osSyncPrintf("z_eff_blure.c::SQ_NoInterpolate_disp() 頂点確保できず。\n");
+        PRINTF("z_eff_blure.c::SQ_NoInterpolate_disp() 頂点確保できず。\n");
     } else {
         vtx[0].v = baseVtx;
         vtx[1].v = baseVtx;
@@ -554,10 +556,10 @@ void EffectBlure_DrawElemHermiteInterpolation(EffectBlure* this, EffectBlureElem
     Math_Vec3f_Scale(&sp174, 0.5f);
     Math_Vec3f_Scale(&sp168, 0.5f);
 
-    vtx = Graph_Alloc(gfxCtx, sizeof(Vtx[16]));
+    vtx = GRAPH_ALLOC(gfxCtx, sizeof(Vtx[16]));
     if (vtx == NULL) {
         // "Vertices cannot be secured."
-        osSyncPrintf("z_eff_blure.c::SQ_HermiteInterpolate_disp() 頂点確保できず。\n");
+        PRINTF("z_eff_blure.c::SQ_HermiteInterpolate_disp() 頂点確保できず。\n");
     } else {
         Math_Vec3f_Diff(&sp1CC, &sp138, &sp158);
         Math_Vec3f_Scale(&sp158, 10.0f);
@@ -618,18 +620,18 @@ void EffectBlure_DrawElemHermiteInterpolation(EffectBlure* this, EffectBlureElem
             vtx[j1].v.ob[0] = Math_FNearbyIntF(sp158.x);
             vtx[j1].v.ob[1] = Math_FNearbyIntF(sp158.y);
             vtx[j1].v.ob[2] = Math_FNearbyIntF(sp158.z);
-            vtx[j1].v.cn[0] = func_80027E84(sp1A4.r, sp19C.r, temp_f28);
-            vtx[j1].v.cn[1] = func_80027E84(sp1A4.g, sp19C.g, temp_f28);
-            vtx[j1].v.cn[2] = func_80027E84(sp1A4.b, sp19C.b, temp_f28);
-            vtx[j1].v.cn[3] = func_80027E84(sp1A4.a, sp19C.a, temp_f28);
+            vtx[j1].v.cn[0] = EffectSs_LerpU8(sp1A4.r, sp19C.r, temp_f28);
+            vtx[j1].v.cn[1] = EffectSs_LerpU8(sp1A4.g, sp19C.g, temp_f28);
+            vtx[j1].v.cn[2] = EffectSs_LerpU8(sp1A4.b, sp19C.b, temp_f28);
+            vtx[j1].v.cn[3] = EffectSs_LerpU8(sp1A4.a, sp19C.a, temp_f28);
 
             vtx[j2].v.ob[0] = Math_FNearbyIntF(sp14C.x);
             vtx[j2].v.ob[1] = Math_FNearbyIntF(sp14C.y);
             vtx[j2].v.ob[2] = Math_FNearbyIntF(sp14C.z);
-            vtx[j2].v.cn[0] = func_80027E84(sp1A0.r, sp198.r, temp_f28);
-            vtx[j2].v.cn[1] = func_80027E84(sp1A0.g, sp198.g, temp_f28);
-            vtx[j2].v.cn[2] = func_80027E84(sp1A0.b, sp198.b, temp_f28);
-            vtx[j2].v.cn[3] = func_80027E84(sp1A0.a, sp198.a, temp_f28);
+            vtx[j2].v.cn[0] = EffectSs_LerpU8(sp1A0.r, sp198.r, temp_f28);
+            vtx[j2].v.cn[1] = EffectSs_LerpU8(sp1A0.g, sp198.g, temp_f28);
+            vtx[j2].v.cn[2] = EffectSs_LerpU8(sp1A0.b, sp198.b, temp_f28);
+            vtx[j2].v.cn[3] = EffectSs_LerpU8(sp1A0.a, sp198.a, temp_f28);
         }
 
         gSPVertex(POLY_XLU_DISP++, vtx, 16, 0);
@@ -800,7 +802,7 @@ void EffectBlure_DrawSimpleVertices(GraphicsContext* gfxCtx, EffectBlure* this, 
                     mtx = SkinMatrix_MtxFToNewMtx(gfxCtx, &sp94);
                     if (mtx == NULL) {
                         // "Forced termination because a matrix cannot be taken"
-                        osSyncPrintf("EffectBlureInfo2_disp_makeDisplayList()マトリックス取れないので,強制終了\n");
+                        PRINTF("EffectBlureInfo2_disp_makeDisplayList()マトリックス取れないので,強制終了\n");
                         break;
                     }
 
@@ -849,10 +851,10 @@ void EffectBlure_DrawSimple(EffectBlure* this2, GraphicsContext* gfxCtx) {
     if (this->numElements >= 2) {
         vtxCount = this->numElements * 4;
 
-        vtx = Graph_Alloc(gfxCtx, vtxCount * sizeof(Vtx));
+        vtx = GRAPH_ALLOC(gfxCtx, vtxCount * sizeof(Vtx));
         if (vtx == NULL) {
             // "Vertices cannot be secured. Forced termination"
-            osSyncPrintf("ブラ─表示:頂点確保できず。強制終了\n");
+            PRINTF("ブラ─表示:頂点確保できず。強制終了\n");
             return;
         }
 
@@ -943,10 +945,10 @@ void EffectBlure_Draw(void* thisx, GraphicsContext* gfxCtx) {
             Gfx_SetupDL_38Xlu(gfxCtx);
             gDPPipeSync(POLY_XLU_DISP++);
 
-            vtx = Graph_Alloc(gfxCtx, sizeof(Vtx[32]));
+            vtx = GRAPH_ALLOC(gfxCtx, sizeof(Vtx[32]));
             if (vtx == NULL) {
                 // "Blure display: Vertex table could not be secured"
-                osSyncPrintf("ブラ─表示:頂点テーブル確保できず\n");
+                PRINTF("ブラ─表示:頂点テーブル確保できず\n");
             } else {
                 j = 0;
                 for (i = 0; i < this->numElements; i++) {
@@ -957,9 +959,9 @@ void EffectBlure_Draw(void* thisx, GraphicsContext* gfxCtx) {
 
                         switch (this->calcMode) {
                             case 1:
-                                vtx[j].v.ob[0] = func_80027E34(elem->p1.x, elem->p2.x, ratio);
-                                vtx[j].v.ob[1] = func_80027E34(elem->p1.y, elem->p2.y, ratio);
-                                vtx[j].v.ob[2] = func_80027E34(elem->p1.z, elem->p2.z, ratio);
+                                vtx[j].v.ob[0] = EffectSs_LerpS16(elem->p1.x, elem->p2.x, ratio);
+                                vtx[j].v.ob[1] = EffectSs_LerpS16(elem->p1.y, elem->p2.y, ratio);
+                                vtx[j].v.ob[2] = EffectSs_LerpS16(elem->p1.z, elem->p2.z, ratio);
                                 vtx[j + 1].v.ob[0] = elem->p2.x;
                                 vtx[j + 1].v.ob[1] = elem->p2.y;
                                 vtx[j + 1].v.ob[2] = elem->p2.z;
@@ -968,19 +970,19 @@ void EffectBlure_Draw(void* thisx, GraphicsContext* gfxCtx) {
                                 vtx[j].v.ob[0] = elem->p1.x;
                                 vtx[j].v.ob[1] = elem->p1.y;
                                 vtx[j].v.ob[2] = elem->p1.z;
-                                vtx[j + 1].v.ob[0] = func_80027E34(elem->p2.x, elem->p1.x, ratio);
-                                vtx[j + 1].v.ob[1] = func_80027E34(elem->p2.y, elem->p1.y, ratio);
-                                vtx[j + 1].v.ob[2] = func_80027E34(elem->p2.z, elem->p1.z, ratio);
+                                vtx[j + 1].v.ob[0] = EffectSs_LerpS16(elem->p2.x, elem->p1.x, ratio);
+                                vtx[j + 1].v.ob[1] = EffectSs_LerpS16(elem->p2.y, elem->p1.y, ratio);
+                                vtx[j + 1].v.ob[2] = EffectSs_LerpS16(elem->p2.z, elem->p1.z, ratio);
                                 break;
                             case 3:
-                                ratio = ratio * 0.5f;
-                                vtx[j].v.ob[0] = func_80027E34(elem->p1.x, elem->p2.x, ratio);
-                                vtx[j].v.ob[1] = func_80027E34(elem->p1.y, elem->p2.y, ratio);
-                                vtx[j].v.ob[2] = func_80027E34(elem->p1.z, elem->p2.z, ratio);
-                                vtx[j + 1].v.ob[0] = func_80027E34(elem->p2.x, elem->p1.x, ratio);
-                                vtx[j + 1].v.ob[1] = func_80027E34(elem->p2.y, elem->p1.y, ratio);
-                                vtx[j + 1].v.ob[2] = func_80027E34(elem->p2.z, elem->p1.z, ratio);
-                                ratio = ratio + ratio;
+                                ratio *= 0.5f;
+                                vtx[j].v.ob[0] = EffectSs_LerpS16(elem->p1.x, elem->p2.x, ratio);
+                                vtx[j].v.ob[1] = EffectSs_LerpS16(elem->p1.y, elem->p2.y, ratio);
+                                vtx[j].v.ob[2] = EffectSs_LerpS16(elem->p1.z, elem->p2.z, ratio);
+                                vtx[j + 1].v.ob[0] = EffectSs_LerpS16(elem->p2.x, elem->p1.x, ratio);
+                                vtx[j + 1].v.ob[1] = EffectSs_LerpS16(elem->p2.y, elem->p1.y, ratio);
+                                vtx[j + 1].v.ob[2] = EffectSs_LerpS16(elem->p2.z, elem->p1.z, ratio);
+                                ratio *= 2.0f;
                                 break;
                             case 0:
                             default:
@@ -996,28 +998,28 @@ void EffectBlure_Draw(void* thisx, GraphicsContext* gfxCtx) {
                         vtx[j].v.flag = 0;
                         vtx[j].v.tc[0] = 0;
                         vtx[j].v.tc[1] = 0;
-                        vtx[j].v.cn[0] = func_80027E84(this->p1StartColor[0], this->p1EndColor[0], ratio);
-                        vtx[j].v.cn[1] = func_80027E84(this->p1StartColor[1], this->p1EndColor[1], ratio);
-                        vtx[j].v.cn[2] = func_80027E84(this->p1StartColor[2], this->p1EndColor[2], ratio);
-                        vtx[j].v.cn[3] = func_80027E84(this->p1StartColor[3], this->p1EndColor[3], ratio);
+                        vtx[j].v.cn[0] = EffectSs_LerpU8(this->p1StartColor[0], this->p1EndColor[0], ratio);
+                        vtx[j].v.cn[1] = EffectSs_LerpU8(this->p1StartColor[1], this->p1EndColor[1], ratio);
+                        vtx[j].v.cn[2] = EffectSs_LerpU8(this->p1StartColor[2], this->p1EndColor[2], ratio);
+                        vtx[j].v.cn[3] = EffectSs_LerpU8(this->p1StartColor[3], this->p1EndColor[3], ratio);
                         j++;
 
                         vtx[j].v.flag = 0;
                         vtx[j].v.tc[0] = 0;
                         vtx[j].v.tc[1] = 0;
-                        vtx[j].v.cn[0] = func_80027E84(this->p2StartColor[0], this->p2EndColor[0], ratio);
-                        vtx[j].v.cn[1] = func_80027E84(this->p2StartColor[1], this->p2EndColor[1], ratio);
-                        vtx[j].v.cn[2] = func_80027E84(this->p2StartColor[2], this->p2EndColor[2], ratio);
-                        vtx[j].v.cn[3] = func_80027E84(this->p2StartColor[3], this->p2EndColor[3], ratio);
+                        vtx[j].v.cn[0] = EffectSs_LerpU8(this->p2StartColor[0], this->p2EndColor[0], ratio);
+                        vtx[j].v.cn[1] = EffectSs_LerpU8(this->p2StartColor[1], this->p2EndColor[1], ratio);
+                        vtx[j].v.cn[2] = EffectSs_LerpU8(this->p2StartColor[2], this->p2EndColor[2], ratio);
+                        vtx[j].v.cn[3] = EffectSs_LerpU8(this->p2StartColor[3], this->p2EndColor[3], ratio);
                         j++;
                     }
                 }
 
+                flag = 0;
                 j = 0;
 
                 gSPVertex(POLY_XLU_DISP++, vtx, 32, 0);
 
-                flag = 0;
                 for (i = 0; i < this->numElements; i++) {
                     elem = &this->elements[i];
 

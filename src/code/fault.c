@@ -41,7 +41,7 @@
  * DPad-Down disables sending fault pages over osSyncPrintf.
  */
 #include "global.h"
-#include "vt.h"
+#include "terminal.h"
 #include "alloca.h"
 
 void FaultDrawer_Init(void);
@@ -76,12 +76,21 @@ const char* sFpExceptionNames[] = {
     "Unimplemented operation", "Invalid operation", "Division by zero", "Overflow", "Underflow", "Inexact operation",
 };
 
-// TODO: import .bss (has reordering issues)
+#ifndef NON_MATCHING
+// TODO: match .bss (has reordering issues)
 extern FaultMgr* sFaultInstance;
 extern u8 sFaultAwaitingInput;
 extern STACK(sFaultStack, 0x600);
 extern StackEntry sFaultThreadInfo;
 extern FaultMgr gFaultMgr;
+#else
+// Non-matching version for struct shiftability
+FaultMgr* sFaultInstance;
+u8 sFaultAwaitingInput;
+STACK(sFaultStack, 0x600);
+StackEntry sFaultThreadInfo;
+FaultMgr gFaultMgr;
+#endif
 
 typedef struct {
     /* 0x00 */ s32 (*callback)(void*, void*);
@@ -352,20 +361,14 @@ void Fault_Sleep(u32 msec) {
     Fault_SleepImpl(msec);
 }
 
-//void PadMgr_RequestPadData(Input* input, s32 mode);
-void PadMgr_RequestPadData(PadMgr* padMgr, Input* input, s32 mode);
+extern void PadMgr_RequestPadData(PadMgr* padMgr, Input* inputs, s32 gameRequest);
 
-void Fault_PadCallback(Input* input) {
-    //! @bug This function is not called correctly, it is missing a leading PadMgr* argument. This
-    //! renders the crash screen unusable.
-    //! In Majora's Mask, PadMgr functions were changed to not require this argument, and this was
-    //! likely just not addressed when backporting.
-//  PadMgr_RequestPadData(input, 0);
-    PadMgr_RequestPadData(&gPadMgr, input, 0);
+void Fault_PadCallback(Input* inputs) {
+    PadMgr_RequestPadData(&gPadMgr, inputs, false);
 }
 
 void Fault_UpdatePadImpl(void) {
-    sFaultInstance->padCallback(&sFaultInstance->padInput);
+    sFaultInstance->padCallback(sFaultInstance->inputs);
 }
 
 /**
@@ -378,7 +381,7 @@ void Fault_UpdatePadImpl(void) {
  * DPad-Left continues and returns false
  */
 u32 Fault_WaitForInputImpl(void) {
-    Input* input = &sFaultInstance->padInput;
+    Input* input = &sFaultInstance->inputs[0];
     s32 count = 600;
     u32 pressedBtn;
 
@@ -654,7 +657,7 @@ void Fault_Wait5Seconds(void) {
  */
 void Fault_WaitForButtonCombo(void) {
 	/*
-    Input* input = &sFaultInstance->padInput;
+    Input* input = &sFaultInstance->inputs[0];
     s32 state;
     u32 s1;
     u32 s2;
@@ -856,7 +859,7 @@ void Fault_DrawMemDumpContents(const char* title, uintptr_t addr, u32 arg2) {
  * @param cRightJump Unused parameter, pressing C-Right jumps to this address
  */
 void Fault_DrawMemDump(uintptr_t pc, uintptr_t sp, uintptr_t cLeftJump, uintptr_t cRightJump) {
-    Input* input = &sFaultInstance->padInput;
+    Input* input = &sFaultInstance->inputs[0];
     uintptr_t addr = pc;
     s32 scrollCountdown;
     u32 off;
@@ -1267,8 +1270,8 @@ void Fault_Init(void) {
     sFaultInstance->autoScroll = false;
     gFaultMgr.faultHandlerEnabled = true;
     osCreateMesgQueue(&sFaultInstance->queue, &sFaultInstance->msg, 1);
-    StackCheck_Init(&sFaultThreadInfo, &sFaultStack, STACK_TOP(sFaultStack), 0, 0x100, "fault");
-    osCreateThread(&sFaultInstance->thread, THREAD_ID_FAULT, Fault_ThreadEntry, 0, STACK_TOP(sFaultStack),
+    StackCheck_Init(&sFaultThreadInfo, sFaultStack, STACK_TOP(sFaultStack), 0, 0x100, "fault");
+    osCreateThread(&sFaultInstance->thread, THREAD_ID_FAULT, Fault_ThreadEntry, NULL, STACK_TOP(sFaultStack),
                    THREAD_PRI_FAULT);
     osStartThread(&sFaultInstance->thread);
 }
@@ -1291,19 +1294,25 @@ void Fault_HungupFaultClient(const char* exp1, const char* exp2) {
  * error occurs. The parameters specify two messages detailing the error, one
  * or both may be NULL.
  */
-void Fault_AddHungupAndCrashImpl(const char* exp1, const char* exp2) {
+NORETURN void Fault_AddHungupAndCrashImpl(const char* exp1, const char* exp2) {
     FaultClient client;
     s32 pad;
 
     Fault_AddClient(&client, Fault_HungupFaultClient, (void*)exp1, (void*)exp2);
     *(u32*)0x11111111 = 0; // trigger an exception via unaligned memory access
+
+    // Since the above line triggers an exception and transfers execution to the fault handler
+    // this function does not return and the rest of the function is unreachable.
+#ifdef __GNUC__
+    __builtin_unreachable();
+#endif
 }
 
 /**
  * Like `Fault_AddHungupAndCrashImpl`, however provides a fixed message containing
  * filename and line number
  */
-void Fault_AddHungupAndCrash(const char* file, s32 line) {
+NORETURN void Fault_AddHungupAndCrash(const char* file, int line) {
     char msg[256];
 
     sprintf(msg, "HungUp %s:%d", file, line);

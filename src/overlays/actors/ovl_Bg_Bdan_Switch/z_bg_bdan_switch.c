@@ -42,16 +42,16 @@ void func_8086DCE8(BgBdanSwitch* this, PlayState* play);
 void func_8086DDA8(BgBdanSwitch* this);
 void func_8086DDC0(BgBdanSwitch* this, PlayState* play);
 
-const ActorInit Bg_Bdan_Switch_InitVars = {
-    ACTOR_BG_BDAN_SWITCH,
-    ACTORCAT_SWITCH,
-    FLAGS,
-    OBJECT_BDAN_OBJECTS,
-    sizeof(BgBdanSwitch),
-    (ActorFunc)BgBdanSwitch_Init,
-    (ActorFunc)BgBdanSwitch_Destroy,
-    (ActorFunc)BgBdanSwitch_Update,
-    (ActorFunc)BgBdanSwitch_Draw,
+ActorInit Bg_Bdan_Switch_InitVars = {
+    /**/ ACTOR_BG_BDAN_SWITCH,
+    /**/ ACTORCAT_SWITCH,
+    /**/ FLAGS,
+    /**/ OBJECT_BDAN_OBJECTS,
+    /**/ sizeof(BgBdanSwitch),
+    /**/ BgBdanSwitch_Init,
+    /**/ BgBdanSwitch_Destroy,
+    /**/ BgBdanSwitch_Update,
+    /**/ BgBdanSwitch_Draw,
 };
 
 static ColliderJntSphElementInit sJntSphElementsInit[] = {
@@ -60,8 +60,8 @@ static ColliderJntSphElementInit sJntSphElementsInit[] = {
             ELEMTYPE_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0xEFC1FFFE, 0x00, 0x00 },
-            TOUCH_NONE,
-            BUMP_ON,
+            ATELEM_NONE,
+            ACELEM_ON,
             OCELEM_ON,
         },
         { 0, { { 0, 120, 0 }, 370 }, 100 },
@@ -90,17 +90,21 @@ static InitChainEntry sInitChain[] = {
 static Vec3f D_8086E0E0 = { 0.0f, 140.0f, 0.0f };
 
 void BgBdanSwitch_InitDynaPoly(BgBdanSwitch* this, PlayState* play, CollisionHeader* collision, s32 flag) {
-    s16 pad1;
+    s32 pad;
     CollisionHeader* colHeader = NULL;
-    s16 pad2;
 
     DynaPolyActor_Init(&this->dyna, flag);
     CollisionHeader_GetVirtual(collision, &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
+
+#if OOT_DEBUG
     if (this->dyna.bgId == BG_ACTOR_MAX) {
-        osSyncPrintf("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n", "../z_bg_bdan_switch.c", 325,
-                     this->dyna.actor.id, this->dyna.actor.params);
+        s32 pad2;
+
+        PRINTF("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n", "../z_bg_bdan_switch.c", 325,
+               this->dyna.actor.id, this->dyna.actor.params);
     }
+#endif
 }
 
 void BgBdanSwitch_InitCollision(BgBdanSwitch* this, PlayState* play) {
@@ -155,7 +159,7 @@ void BgBdanSwitch_Init(Actor* thisx, PlayState* play) {
         case BLUE:
         case YELLOW_HEAVY:
         case YELLOW:
-            BgBdanSwitch_InitDynaPoly(this, play, &gJabuFloorSwitchCol, DPM_PLAYER);
+            BgBdanSwitch_InitDynaPoly(this, play, &gJabuFloorSwitchCol, DYNA_TRANSFORM_POS);
             break;
         case YELLOW_TALL_1:
         case YELLOW_TALL_2:
@@ -192,12 +196,11 @@ void BgBdanSwitch_Init(Actor* thisx, PlayState* play) {
             }
             break;
         default:
-            osSyncPrintf("不正な ARG_DATA(arg_data 0x%04x)(%s %d)\n", this->dyna.actor.params, "../z_bg_bdan_switch.c",
-                         454);
+            PRINTF("不正な ARG_DATA(arg_data 0x%04x)(%s %d)\n", this->dyna.actor.params, "../z_bg_bdan_switch.c", 454);
             Actor_Kill(&this->dyna.actor);
             return;
     }
-    osSyncPrintf("(巨大魚ダンジョン 専用スイッチ)(arg_data 0x%04x)\n", this->dyna.actor.params);
+    PRINTF("(巨大魚ダンジョン 専用スイッチ)(arg_data 0x%04x)\n", this->dyna.actor.params);
 }
 
 void BgBdanSwitch_Destroy(Actor* thisx, PlayState* play) {
@@ -272,8 +275,8 @@ void func_8086D694(BgBdanSwitch* this, PlayState* play) {
         this->unk_1C8 -= 0.2f;
         if (this->unk_1C8 <= 0.1f) {
             func_8086D730(this);
-            Audio_PlayActorSfx2(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
-            func_800AA000(this->dyna.actor.xyzDistToPlayerSq, 0x78, 0x14, 0xA);
+            Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
+            Rumble_Request(this->dyna.actor.xyzDistToPlayerSq, 120, 20, 10);
         }
     }
 }
@@ -312,7 +315,7 @@ void func_8086D80C(BgBdanSwitch* this, PlayState* play) {
     this->unk_1C8 += 0.2f;
     if (this->unk_1C8 >= 1.0f) {
         func_8086D5C4(this);
-        Audio_PlayActorSfx2(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
+        Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
     }
 }
 
@@ -335,8 +338,8 @@ void func_8086D8CC(BgBdanSwitch* this, PlayState* play) {
     this->unk_1C8 -= 0.2f;
     if (this->unk_1C8 <= 0.6f) {
         func_8086D9F8(this);
-        Audio_PlayActorSfx2(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
-        func_800AA000(this->dyna.actor.xyzDistToPlayerSq, 0x78, 0x14, 0xA);
+        Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
+        Rumble_Request(this->dyna.actor.xyzDistToPlayerSq, 120, 20, 10);
     }
 }
 
@@ -350,8 +353,8 @@ void func_8086D95C(BgBdanSwitch* this, PlayState* play) {
         this->unk_1C8 -= 0.2f;
         if (this->unk_1C8 <= 0.1f) {
             func_8086DB24(this);
-            Audio_PlayActorSfx2(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
-            func_800AA000(this->dyna.actor.xyzDistToPlayerSq, 0x78, 0x14, 0xA);
+            Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
+            Rumble_Request(this->dyna.actor.xyzDistToPlayerSq, 120, 20, 10);
         }
     }
 }
@@ -389,7 +392,7 @@ void func_8086DAC4(BgBdanSwitch* this, PlayState* play) {
     this->unk_1C8 += 0.2f;
     if (this->unk_1C8 >= 1.0f) {
         func_8086D86C(this);
-        Audio_PlayActorSfx2(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
+        Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
     }
 }
 
@@ -437,7 +440,7 @@ void func_8086DC48(BgBdanSwitch* this, PlayState* play) {
         this->unk_1C8 -= 0.3f;
         if (this->unk_1C8 <= 1.0f) {
             func_8086DCCC(this);
-            Audio_PlayActorSfx2(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
+            Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
         }
     }
 }
@@ -475,7 +478,7 @@ void func_8086DDC0(BgBdanSwitch* this, PlayState* play) {
         this->unk_1C8 += 0.3f;
         if (this->unk_1C8 >= 2.0f) {
             func_8086DB4C(this);
-            Audio_PlayActorSfx2(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
+            Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_FOOT_SWITCH);
         }
     }
 }

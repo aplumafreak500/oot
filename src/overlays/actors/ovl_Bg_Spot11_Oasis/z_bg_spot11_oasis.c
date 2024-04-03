@@ -20,16 +20,16 @@ void func_808B29F0(BgSpot11Oasis* this, PlayState* play);
 void func_808B2AA8(BgSpot11Oasis* this);
 void func_808B2AB8(BgSpot11Oasis* this, PlayState* play);
 
-const ActorInit Bg_Spot11_Oasis_InitVars = {
-    ACTOR_BG_SPOT11_OASIS,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_SPOT11_OBJ,
-    sizeof(BgSpot11Oasis),
-    (ActorFunc)BgSpot11Oasis_Init,
-    (ActorFunc)Actor_Noop,
-    (ActorFunc)BgSpot11Oasis_Update,
-    NULL,
+ActorInit Bg_Spot11_Oasis_InitVars = {
+    /**/ ACTOR_BG_SPOT11_OASIS,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_SPOT11_OBJ,
+    /**/ sizeof(BgSpot11Oasis),
+    /**/ BgSpot11Oasis_Init,
+    /**/ Actor_Noop,
+    /**/ BgSpot11Oasis_Update,
+    /**/ NULL,
 };
 
 static s16 D_808B2E10[][2] = {
@@ -94,7 +94,7 @@ void func_808B2970(BgSpot11Oasis* this) {
 }
 
 void func_808B2980(BgSpot11Oasis* this, PlayState* play) {
-    if (Flags_GetEnv(play, 5) && func_808B280C(play)) {
+    if (CutsceneFlags_Get(play, 5) && func_808B280C(play)) {
         OnePointCutscene_Init(play, 4150, -99, &this->actor, CAM_ID_MAIN);
         func_808B29E0(this);
     }
@@ -109,7 +109,7 @@ void func_808B29F0(BgSpot11Oasis* this, PlayState* play) {
         func_808B2AA8(this);
         Actor_Spawn(&play->actorCtx, play, ACTOR_EN_ELF, this->actor.world.pos.x, this->actor.world.pos.y + 40.0f,
                     this->actor.world.pos.z, 0, 0, 0, FAIRY_SPAWNER);
-        func_80078884(NA_SE_SY_CORRECT_CHIME);
+        Sfx_PlaySfxCentered(NA_SE_SY_CORRECT_CHIME);
     }
     func_808B27F0(play, this->actor.world.pos.y);
 }
@@ -125,7 +125,6 @@ void BgSpot11Oasis_Update(Actor* thisx, PlayState* play) {
     BgSpot11Oasis* this = (BgSpot11Oasis*)thisx;
     s32 pad;
     u32 gameplayFrames;
-    Vec3f sp30;
 
     this->actionFunc(this, play);
     if (this->actionFunc == func_808B2980) {
@@ -136,6 +135,8 @@ void BgSpot11Oasis_Update(Actor* thisx, PlayState* play) {
     if (this->unk_150 && (this->actor.projectedPos.z < 400.0f) && (this->actor.projectedPos.z > -40.0f)) {
         gameplayFrames = play->gameplayFrames;
         if (gameplayFrames & 4) {
+            Vec3f sp30;
+
             Math_Vec3f_Sum(&this->actor.world.pos, &D_808B2E34[this->unk_151], &sp30);
             EffectSsBubble_Spawn(play, &sp30, 0.0f, 15.0f, 50.0f, (Rand_ZeroOne() * 0.12f) + 0.02f);
             if (Rand_ZeroOne() < 0.3f) {
@@ -152,7 +153,7 @@ void BgSpot11Oasis_Draw(Actor* thisx, PlayState* play) {
 
     OPEN_DISPS(play->state.gfxCtx, "../z_bg_spot11_oasis.c", 327);
     Gfx_SetupDL_25Xlu(play->state.gfxCtx);
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_bg_spot11_oasis.c", 331),
+    gSPMatrix(POLY_XLU_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_bg_spot11_oasis.c", 331),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPSegment(POLY_XLU_DISP++, 0x08,
                Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, 127 - (gameplayFrames % 128),

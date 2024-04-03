@@ -1,11 +1,15 @@
 #include "global.h"
 
-void DynaPolyActor_Init(DynaPolyActor* dynaActor, s32 flags) {
+/**
+ * @param transformFlags How other actors standing on the dynapoly actor's collision move when the dynapoly actor moves.
+ *   See `DYNA_TRANSFORM_POS`, `DYNA_TRANSFORM_ROT_Y`.
+ */
+void DynaPolyActor_Init(DynaPolyActor* dynaActor, s32 transformFlags) {
     dynaActor->bgId = -1;
-    dynaActor->unk_15C = flags;
-    dynaActor->interactFlags = 0;
     dynaActor->unk_150 = 0.0f;
     dynaActor->unk_154 = 0.0f;
+    dynaActor->transformFlags = transformFlags;
+    dynaActor->interactFlags = 0;
 }
 
 void DynaPolyActor_UnsetAllInteractFlags(DynaPolyActor* dynaActor) {

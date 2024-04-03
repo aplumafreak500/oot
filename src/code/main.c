@@ -1,5 +1,7 @@
 #include "global.h"
-#include "vt.h"
+#include "terminal.h"
+
+extern u8 _buffersSegmentEnd[];
 
 s32 gScreenWidth = SCREEN_WIDTH;
 s32 gScreenHeight = SCREEN_HEIGHT;
@@ -9,7 +11,7 @@ PreNmiBuff* gAppNmiBufferPtr;
 Scheduler gScheduler;
 PadMgr gPadMgr;
 IrqMgr gIrqMgr;
-u32 gSegments[NUM_SEGMENTS];
+uintptr_t gSegments[NUM_SEGMENTS];
 OSThread sGraphThread;
 STACK(sGraphStack, 0x1800);
 STACK(sSchedStack, 0x600);
@@ -25,65 +27,76 @@ AudioMgr gAudioMgr;
 OSMesgQueue sSerialEventQueue;
 OSMesg sSerialMsgBuf[1];
 
+#if OOT_DEBUG
 void Main_LogSystemHeap(void) {
-    osSyncPrintf(VT_FGCOL(GREEN));
+    PRINTF(VT_FGCOL(GREEN));
     // "System heap size% 08x (% dKB) Start address% 08x"
-    osSyncPrintf("システムヒープサイズ %08x(%dKB) 開始アドレス %08x\n", gSystemHeapSize, gSystemHeapSize / 1024,
-                 gSystemHeap);
-    osSyncPrintf(VT_RST);
+    PRINTF("システムヒープサイズ %08x(%dKB) 開始アドレス %08x\n", gSystemHeapSize, gSystemHeapSize / 1024,
+           _buffersSegmentEnd);
+    PRINTF(VT_RST);
 }
+#endif
 
 void Main(void* arg) {
     IrqMgrClient irqClient;
     OSMesgQueue irqMgrMsgQueue;
     OSMesg irqMgrMsgBuf[60];
-    u32 systemHeapStart;
-    u32 fb;
-    u32 debugHeapStart;
-    u32 debugHeapSize;
-    s16* msg;
+    uintptr_t systemHeapStart;
+    uintptr_t fb;
 
-    osSyncPrintf("mainproc 実行開始\n"); // "Start running"
+    PRINTF("mainproc 実行開始\n"); // "Start running"
     gScreenWidth = SCREEN_WIDTH;
     gScreenHeight = SCREEN_HEIGHT;
     gAppNmiBufferPtr = (PreNmiBuff*)osAppNMIBuffer;
     PreNmiBuff_Init(gAppNmiBufferPtr);
     Fault_Init();
     SysCfb_Init(0);
-    systemHeapStart = (u32)gSystemHeap;
-    fb = SysCfb_GetFbPtr(0);
+    systemHeapStart = (uintptr_t)_buffersSegmentEnd;
+    fb = (uintptr_t)SysCfb_GetFbPtr(0);
     gSystemHeapSize = fb - systemHeapStart;
     // "System heap initalization"
-    osSyncPrintf("システムヒープ初期化 %08x-%08x %08x\n", systemHeapStart, fb, gSystemHeapSize);
+    PRINTF("システムヒープ初期化 %08x-%08x %08x\n", systemHeapStart, fb, gSystemHeapSize);
     SystemHeap_Init((void*)systemHeapStart, gSystemHeapSize); // initializes the system heap
-    if (osMemSize >= 0x800000) {
-        debugHeapStart = SysCfb_GetFbEnd();
-        debugHeapSize = PHYS_TO_K0(0x600000) - debugHeapStart;
-    } else {
-        debugHeapSize = 0x400;
-        debugHeapStart = (u32)SystemArena_MallocDebug(debugHeapSize, "../main.c", 565);
+
+#if OOT_DEBUG
+    {
+        void* debugHeapStart;
+        u32 debugHeapSize;
+
+        if (osMemSize >= 0x800000) {
+            debugHeapStart = SysCfb_GetFbEnd();
+            debugHeapSize = PHYS_TO_K0(0x600000) - (uintptr_t)debugHeapStart;
+        } else {
+            debugHeapSize = 0x400;
+            debugHeapStart = SYSTEM_ARENA_MALLOC(debugHeapSize, "../main.c", 565);
+        }
+
+        PRINTF("debug_InitArena(%08x, %08x)\n", debugHeapStart, debugHeapSize);
+        DebugArena_Init(debugHeapStart, debugHeapSize);
     }
-    osSyncPrintf("debug_InitArena(%08x, %08x)\n", debugHeapStart, debugHeapSize);
-    DebugArena_Init((void*)debugHeapStart, debugHeapSize);
-    func_800636C0();
+#endif
+
+    Regs_Init();
 
     R_ENABLE_ARENA_DBG = 0;
-#ifndef DEBUG
+#if !OOT_DEBUG
     R_DISABLE_INPUT_DISPLAY = 1;
 #endif
 
     osCreateMesgQueue(&sSerialEventQueue, sSerialMsgBuf, ARRAY_COUNT(sSerialMsgBuf));
     osSetEventMesg(OS_EVENT_SI, &sSerialEventQueue, NULL);
 
+#if OOT_DEBUG
     Main_LogSystemHeap();
+#endif
 
     osCreateMesgQueue(&irqMgrMsgQueue, irqMgrMsgBuf, ARRAY_COUNT(irqMgrMsgBuf));
     StackCheck_Init(&sIrqMgrStackInfo, sIrqMgrStack, STACK_TOP(sIrqMgrStack), 0, 0x100, "irqmgr");
     IrqMgr_Init(&gIrqMgr, STACK_TOP(sIrqMgrStack), THREAD_PRI_IRQMGR, 1);
 
-    osSyncPrintf("タスクスケジューラの初期化\n"); // "Initialize the task scheduler"
+    PRINTF("タスクスケジューラの初期化\n"); // "Initialize the task scheduler"
     StackCheck_Init(&sSchedStackInfo, sSchedStack, STACK_TOP(sSchedStack), 0, 0x100, "sched");
-    Sched_Init(&gScheduler, STACK_TOP(sSchedStack), THREAD_PRI_SCHED, D_80013960, 1, &gIrqMgr);
+    Sched_Init(&gScheduler, STACK_TOP(sSchedStack), THREAD_PRI_SCHED, gViConfigModeType, 1, &gIrqMgr);
 
     IrqMgr_AddClient(&gIrqMgr, &irqClient, &irqMgrMsgQueue);
 
@@ -93,7 +106,7 @@ void Main(void* arg) {
     StackCheck_Init(&sPadMgrStackInfo, sPadMgrStack, STACK_TOP(sPadMgrStack), 0, 0x100, "padmgr");
     PadMgr_Init(&gPadMgr, &sSerialEventQueue, &gIrqMgr, THREAD_ID_PADMGR, THREAD_PRI_PADMGR, STACK_TOP(sPadMgrStack));
 
-    AudioMgr_Unlock(&gAudioMgr);
+    AudioMgr_WaitForInit(&gAudioMgr);
 
     StackCheck_Init(&sGraphStackInfo, sGraphStack, STACK_TOP(sGraphStack), 0, 0x100, "graph");
     osCreateThread(&sGraphThread, THREAD_ID_GRAPH, Graph_ThreadEntry, arg, STACK_TOP(sGraphStack), THREAD_PRI_GRAPH);
@@ -101,19 +114,20 @@ void Main(void* arg) {
     osSetThreadPri(NULL, THREAD_PRI_MAIN);
 
     while (true) {
-        msg = NULL;
+        s16* msg = NULL;
+
         osRecvMesg(&irqMgrMsgQueue, (OSMesg*)&msg, OS_MESG_BLOCK);
         if (msg == NULL) {
             break;
         }
         if (*msg == OS_SC_PRE_NMI_MSG) {
-            osSyncPrintf("main.c: リセットされたみたいだよ\n"); // "Looks like it's been reset"
+            PRINTF("main.c: リセットされたみたいだよ\n"); // "Looks like it's been reset"
             PreNmiBuff_SetReset(gAppNmiBufferPtr);
         }
     }
 
-    osSyncPrintf("mainproc 後始末\n"); // "Cleanup"
+    PRINTF("mainproc 後始末\n"); // "Cleanup"
     osDestroyThread(&sGraphThread);
     RcpUtils_Reset();
-    osSyncPrintf("mainproc 実行終了\n"); // "End of execution"
+    PRINTF("mainproc 実行終了\n"); // "End of execution"
 }

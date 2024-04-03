@@ -16,16 +16,16 @@ void BgSpot07Taki_Draw(Actor* thisx, PlayState* play);
 
 void BgSpot07Taki_DoNothing(BgSpot07Taki* this, PlayState* play);
 
-const ActorInit Bg_Spot07_Taki_InitVars = {
-    ACTOR_BG_SPOT07_TAKI,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_SPOT07_OBJECT,
-    sizeof(BgSpot07Taki),
-    (ActorFunc)BgSpot07Taki_Init,
-    (ActorFunc)BgSpot07Taki_Destroy,
-    (ActorFunc)BgSpot07Taki_Update,
-    (ActorFunc)BgSpot07Taki_Draw,
+ActorInit Bg_Spot07_Taki_InitVars = {
+    /**/ ACTOR_BG_SPOT07_TAKI,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_SPOT07_OBJECT,
+    /**/ sizeof(BgSpot07Taki),
+    /**/ BgSpot07Taki_Init,
+    /**/ BgSpot07Taki_Destroy,
+    /**/ BgSpot07Taki_Update,
+    /**/ BgSpot07Taki_Draw,
 };
 
 static InitChainEntry sInitChain[] = {
@@ -37,7 +37,7 @@ void BgSpot07Taki_Init(Actor* thisx, PlayState* play) {
     s32 pad;
     CollisionHeader* colHeader = NULL;
 
-    DynaPolyActor_Init(&this->dyna, DPM_PLAYER);
+    DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS);
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
     if (LINK_IS_ADULT) {
         if (this->dyna.actor.params == 0) {
@@ -73,7 +73,7 @@ void BgSpot07Taki_Draw(Actor* thisx, PlayState* play) {
     frames = play->gameplayFrames;
     if (LINK_IS_ADULT) {
         Gfx_SetupDL_25Opa(play->state.gfxCtx);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_bg_spot07_taki.c", 177),
+        gSPMatrix(POLY_OPA_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_bg_spot07_taki.c", 177),
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         if (this->dyna.actor.params == 0) {
             gSPDisplayList(POLY_OPA_DISP++, object_spot07_object_DL_001CF0);
@@ -83,7 +83,7 @@ void BgSpot07Taki_Draw(Actor* thisx, PlayState* play) {
     }
     Gfx_SetupDL_25Xlu(play->state.gfxCtx);
 
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_bg_spot07_taki.c", 191),
+    gSPMatrix(POLY_XLU_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_bg_spot07_taki.c", 191),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gSPSegment(POLY_XLU_DISP++, 0x08,

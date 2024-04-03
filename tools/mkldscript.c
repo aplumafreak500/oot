@@ -9,13 +9,13 @@
 #include "spec.h"
 #include "util.h"
 
-// Note: *SECTION ALIGNMENT* Object files built with a compiler such as GCC can, by default, use narrower 
+// Note: *SECTION ALIGNMENT* Object files built with a compiler such as GCC can, by default, use narrower
 // alignment for sections size, compared to IDO padding sections to a 0x10-aligned size.
-// To properly generate relocations relative to section starts, sections currently need to be aligned 
-// explicitly (to 0x10 currently, a narrower alignment might work), otherwise the linker does implicit alignment 
-// and inserts padding between the address indicated by section start symbols (such as *SegmentRoDataStart) and 
+// To properly generate relocations relative to section starts, sections currently need to be aligned
+// explicitly (to 0x10 currently, a narrower alignment might work), otherwise the linker does implicit alignment
+// and inserts padding between the address indicated by section start symbols (such as *SegmentRoDataStart) and
 // the actual aligned start of the section.
-// With IDO, the padding of sections to an aligned size makes the section start at aligned addresses out of the box, 
+// With IDO, the padding of sections to an aligned size makes the section start at aligned addresses out of the box,
 // so the explicit alignment has no further effect.
 
 struct Segment *g_segments;
@@ -51,11 +51,13 @@ static void write_ld_script(FILE *fout)
                   "    ..%s ", seg->name, seg->name, seg->name, seg->name);
 
         if (seg->fields & (1 << STMT_after))
-            fprintf(fout, "_%sSegmentEnd ", seg->after);
+            fprintf(fout, "(_%sSegmentEnd + %i) & ~ %i ", seg->after, seg->align - 1, seg->align - 1);
         else if (seg->fields & (1 << STMT_number))
             fprintf(fout, "0x%02X000000 ", seg->number);
         else if (seg->fields & (1 << STMT_address))
             fprintf(fout, "0x%08X ", seg->address);
+        else
+            fprintf(fout, "ALIGN(0x%X) ", seg->align);
 
         // (AT(_RomSize) isn't necessary, but adds useful "load address" lines to the map file)
         fprintf(fout, ": AT(_RomSize)\n    {\n"
@@ -63,9 +65,6 @@ static void write_ld_script(FILE *fout)
                   "        . = ALIGN(0x10);\n"
                   "        _%sSegmentTextStart = .;\n",
                   seg->name, seg->name);
-
-        if (seg->fields & (1 << STMT_align))
-            fprintf(fout, "        . = ALIGN(0x%X);\n", seg->align);
 
         for (j = 0; j < seg->includesCount; j++)
         {
@@ -109,8 +108,6 @@ static void write_ld_script(FILE *fout)
                 fprintf(fout, "            %s (.data)\n"
                               "        . = ALIGN(0x10);\n", seg->includes[j].fpath);
 
-            fprintf(fout, "            %s (.rodata)\n"
-                          "        . = ALIGN(0x10);\n", seg->includes[j].fpath);
             // Compilers other than IDO, such as GCC, produce different sections such as
             // the ones named directly below. These sections do not contain values that
             // need relocating, but we need to ensure that the base .rodata section
@@ -119,12 +116,11 @@ static void write_ld_script(FILE *fout)
             // the beginning of the entire rodata area in order to remain consistent.
             // Inconsistencies will lead to various .rodata reloc crashes as a result of
             // either missing relocs or wrong relocs.
-            fprintf(fout, "            %s (.rodata.str1.4)\n"
-                          "        . = ALIGN(0x10);\n", seg->includes[j].fpath);
-            fprintf(fout, "            %s (.rodata.cst4)\n"
-                          "        . = ALIGN(0x10);\n", seg->includes[j].fpath);
-            fprintf(fout, "            %s (.rodata.cst8)\n"
-                          "        . = ALIGN(0x10);\n", seg->includes[j].fpath);
+            fprintf(fout, "            %s (.rodata)\n"
+                          "            %s (.rodata.str*)\n"
+                          "            %s (.rodata.cst*)\n"
+                          "        . = ALIGN(0x10);\n",
+                    seg->includes[j].fpath, seg->includes[j].fpath, seg->includes[j].fpath);
         }
 
         fprintf(fout, "        _%sSegmentRoDataEnd = .;\n", seg->name);
@@ -168,9 +164,6 @@ static void write_ld_script(FILE *fout)
                       "        . = ALIGN(0x10);\n"
                       "        _%sSegmentBssStart = .;\n",
                       seg->name, seg->name, seg->name, seg->name);
-
-        if (seg->fields & (1 << STMT_align))
-            fprintf(fout, "        . = ALIGN(0x%X);\n", seg->align);
 
         for (j = 0; j < seg->includesCount; j++)
             fprintf(fout, "            %s (.sbss)\n"
@@ -219,7 +212,8 @@ static void write_ld_script(FILE *fout)
 
     // Debugging sections
     fputs(
-        // mdebug debug sections
+        // mdebug sections
+          "    .pdr              : { *(.pdr) }"                                             "\n"
           "    .mdebug           : { *(.mdebug) }"                                          "\n"
           "    .mdebug.abi32     : { *(.mdebug.abi32) }"                                    "\n"
         // DWARF debug sections
@@ -249,8 +243,16 @@ static void write_ld_script(FILE *fout)
         // DWARF 3
           "    .debug_pubtypes 0 : { *(.debug_pubtypes) }"                                  "\n"
           "    .debug_ranges   0 : { *(.debug_ranges) }"                                    "\n"
-        // DWARF Extension
+        // DWARF 5
+          "    .debug_addr     0 : { *(.debug_addr) }"                                      "\n"
+          "    .debug_line_str 0 : { *(.debug_line_str) }"                                  "\n"
+          "    .debug_loclists 0 : { *(.debug_loclists) }"                                  "\n"
           "    .debug_macro    0 : { *(.debug_macro) }"                                     "\n"
+          "    .debug_names    0 : { *(.debug_names) }"                                     "\n"
+          "    .debug_rnglists 0 : { *(.debug_rnglists) }"                                  "\n"
+          "    .debug_str_offsets 0 : { *(.debug_str_offsets) }"                            "\n"
+          "    .debug_sup      0 : { *(.debug_sup) }\n"
+        // gnu attributes
           "    .gnu.attributes 0 : { KEEP (*(.gnu.attributes)) }"                           "\n", fout);
 
     // Discard all other sections not mentioned above

@@ -24,16 +24,16 @@ void BgJyaIronobj_SpawnThroneParticles(BgJyaIronobj* this, PlayState* play, EnIk
 
 static int sUnused = 0;
 
-const ActorInit Bg_Jya_Ironobj_InitVars = {
-    ACTOR_BG_JYA_IRONOBJ,
-    ACTORCAT_PROP,
-    FLAGS,
-    OBJECT_JYA_IRON,
-    sizeof(BgJyaIronobj),
-    (ActorFunc)BgJyaIronobj_Init,
-    (ActorFunc)BgJyaIronobj_Destroy,
-    (ActorFunc)BgJyaIronobj_Update,
-    (ActorFunc)BgJyaIronobj_Draw,
+ActorInit Bg_Jya_Ironobj_InitVars = {
+    /**/ ACTOR_BG_JYA_IRONOBJ,
+    /**/ ACTORCAT_PROP,
+    /**/ FLAGS,
+    /**/ OBJECT_JYA_IRON,
+    /**/ sizeof(BgJyaIronobj),
+    /**/ BgJyaIronobj_Init,
+    /**/ BgJyaIronobj_Destroy,
+    /**/ BgJyaIronobj_Update,
+    /**/ BgJyaIronobj_Draw,
 };
 
 static Gfx* sOpaDL[] = { gPillarDL, gThroneDL };
@@ -51,8 +51,8 @@ static ColliderCylinderInit sCylinderInit = {
         ELEMTYPE_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0xFFCFFFFF, 0x00, 0x00 },
-        TOUCH_NONE,
-        BUMP_ON,
+        ATELEM_NONE,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 30, 150, 0, { 0, 0, 0 } },
@@ -106,11 +106,14 @@ void BgJyaIronobj_SpawnPillarParticles(BgJyaIronobj* this, PlayState* play, EnIk
     f32 sins;
     s32 pad[2];
 
+#if OOT_DEBUG
     if (enIk->unk_2FF <= 0 || enIk->unk_2FF >= 4) {
-        osSyncPrintf("Error 攻撃方法が分からない(%s %d)\n", "../z_bg_jya_ironobj.c", 233, enIk->unk_2FF);
+        PRINTF("Error 攻撃方法が分からない(%s %d)\n", "../z_bg_jya_ironobj.c", 233, enIk->unk_2FF);
         return;
     }
-    osSyncPrintf("¢ attack_type(%d)\n", enIk->unk_2FF);
+#endif
+
+    PRINTF("¢ attack_type(%d)\n", enIk->unk_2FF);
     rotY = Actor_WorldYawTowardActor(&this->dyna.actor, &enIk->actor) + D_808994D8[enIk->unk_2FF - 1];
 
     for (i = 0; i < 8; i++) {
@@ -119,7 +122,7 @@ void BgJyaIronobj_SpawnPillarParticles(BgJyaIronobj* this, PlayState* play, EnIk
                         Rand_ZeroOne() * 80.0f + this->dyna.actor.world.pos.y + 20.0f, this->dyna.actor.world.pos.z, 0,
                         (s16)(Rand_ZeroOne() * 0x4000) + rotY - 0x2000, 0, 0);
         if (actor != NULL) {
-            actor->speedXZ = Rand_ZeroOne() * 8.0f + 9.0f;
+            actor->speed = Rand_ZeroOne() * 8.0f + 9.0f;
             actor->velocity.y = Rand_ZeroOne() * 10.0f + 6.0f;
         }
     }
@@ -169,11 +172,14 @@ void BgJyaIronobj_SpawnThroneParticles(BgJyaIronobj* this, PlayState* play, EnIk
     f32 sins;
     s32 pad[2];
 
+#if OOT_DEBUG
     if (enIk->unk_2FF <= 0 || enIk->unk_2FF >= 4) {
-        osSyncPrintf("Error 攻撃方法が分からない(%s %d)\n", "../z_bg_jya_ironobj.c", 362, enIk->unk_2FF);
+        PRINTF("Error 攻撃方法が分からない(%s %d)\n", "../z_bg_jya_ironobj.c", 362, enIk->unk_2FF);
         return;
     }
-    osSyncPrintf("¢ attack_type(%d)\n", enIk->unk_2FF);
+#endif
+
+    PRINTF("¢ attack_type(%d)\n", enIk->unk_2FF);
     rotY = Actor_WorldYawTowardActor(&this->dyna.actor, &enIk->actor) + D_808994D8[enIk->unk_2FF - 1];
     for (i = 0; i < 8; i++) {
         Actor* actor =
@@ -181,7 +187,7 @@ void BgJyaIronobj_SpawnThroneParticles(BgJyaIronobj* this, PlayState* play, EnIk
                         (Rand_ZeroOne() * 80.0f) + this->dyna.actor.world.pos.y + 10.0f, this->dyna.actor.world.pos.z,
                         0, ((s16)(s32)(Rand_ZeroOne() * 0x4000) + rotY) - 0x2000, 0, 0);
         if (actor != NULL) {
-            actor->speedXZ = Rand_ZeroOne() * 8.0f + 9.0f;
+            actor->speed = Rand_ZeroOne() * 8.0f + 9.0f;
             actor->velocity.y = Rand_ZeroOne() * 10.0f + 6.0f;
         }
     }

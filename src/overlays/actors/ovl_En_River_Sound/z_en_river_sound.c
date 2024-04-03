@@ -13,16 +13,16 @@ void EnRiverSound_Destroy(Actor* thisx, PlayState* play);
 void EnRiverSound_Update(Actor* thisx, PlayState* play);
 void EnRiverSound_Draw(Actor* thisx, PlayState* play);
 
-const ActorInit En_River_Sound_InitVars = {
-    ACTOR_EN_RIVER_SOUND,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_GAMEPLAY_KEEP,
-    sizeof(EnRiverSound),
-    (ActorFunc)EnRiverSound_Init,
-    (ActorFunc)EnRiverSound_Destroy,
-    (ActorFunc)EnRiverSound_Update,
-    (ActorFunc)EnRiverSound_Draw,
+ActorInit En_River_Sound_InitVars = {
+    /**/ ACTOR_EN_RIVER_SOUND,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_GAMEPLAY_KEEP,
+    /**/ sizeof(EnRiverSound),
+    /**/ EnRiverSound_Init,
+    /**/ EnRiverSound_Destroy,
+    /**/ EnRiverSound_Update,
+    /**/ EnRiverSound_Draw,
 };
 
 void EnRiverSound_Init(Actor* thisx, PlayState* play) {
@@ -30,7 +30,7 @@ void EnRiverSound_Init(Actor* thisx, PlayState* play) {
 
     this->playSfx = false;
     this->pathIndex = (this->actor.params >> 8) & 0xFF;
-    this->actor.params = this->actor.params & 0xFF;
+    this->actor.params &= 0xFF;
 
     if (this->actor.params >= RS_GANON_TOWER_0) {
         // Incrementally increase volume of NA_BGM_GANON_TOWER for each new room during the climb of Ganon's Tower
@@ -200,11 +200,11 @@ void EnRiverSound_Update(Actor* thisx, PlayState* play) {
 
     if ((thisx->params == RS_RIVER_DEFAULT_LOW_FREQ) || (thisx->params == RS_RIVER_DEFAULT_MEDIUM_FREQ) ||
         (thisx->params == RS_RIVER_DEFAULT_HIGH_FREQ)) {
-        path = &play->setupPathList[this->pathIndex];
+        path = &play->pathList[this->pathIndex];
         pos = &thisx->world.pos;
 
         if (EnRiverSound_GetSfxPos(SEGMENTED_TO_VIRTUAL(path->points), path->count, &player->actor.world.pos, pos)) {
-            if (BgCheck_EntityRaycastFloor4(&play->colCtx, &thisx->floorPoly, &bgId, thisx, pos) != BGCHECK_Y_MIN) {
+            if (BgCheck_EntityRaycastDown4(&play->colCtx, &thisx->floorPoly, &bgId, thisx, pos) != BGCHECK_Y_MIN) {
                 // Get the river sfx frequency based on the speed of the river current under the actor
                 this->sfxFreqIndex = SurfaceType_GetConveyorSpeed(&play->colCtx, thisx->floorPoly, bgId);
             } else {
@@ -227,7 +227,7 @@ void EnRiverSound_Update(Actor* thisx, PlayState* play) {
         }
     } else if ((thisx->params == RS_GORON_CITY_SARIAS_SONG) || (thisx->params == RS_GREAT_FAIRY)) {
         func_8002DBD0(&player->actor, &thisx->home.pos, &thisx->world.pos);
-    } else if (play->sceneId == SCENE_DDAN_BOSS && Flags_GetClear(play, thisx->room)) {
+    } else if (play->sceneId == SCENE_DODONGOS_CAVERN_BOSS && Flags_GetClear(play, thisx->room)) {
         Actor_Kill(thisx);
     }
 }
@@ -289,9 +289,9 @@ void EnRiverSound_Draw(Actor* thisx, PlayState* play) {
     } else if ((this->actor.params == RS_SANDSTORM) || (this->actor.params == RS_CHAMBER_OF_SAGES_1) ||
                (this->actor.params == RS_CHAMBER_OF_SAGES_2) || (this->actor.params == RS_RUMBLING)) {
         // Play sfx in the fixed center of the screen
-        func_800788CC(soundEffects[this->actor.params]);
+        Sfx_PlaySfxCentered2(soundEffects[this->actor.params]);
     } else {
         // Play sfx at the location of riverSounds projected position
-        Audio_PlayActorSfx2(&this->actor, soundEffects[this->actor.params]);
+        Actor_PlaySfx(&this->actor, soundEffects[this->actor.params]);
     }
 }

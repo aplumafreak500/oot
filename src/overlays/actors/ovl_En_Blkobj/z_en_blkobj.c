@@ -19,16 +19,16 @@ void EnBlkobj_SpawnDarkLink(EnBlkobj* this, PlayState* play);
 void EnBlkobj_DarkLinkFight(EnBlkobj* this, PlayState* play);
 void EnBlkobj_DoNothing(EnBlkobj* this, PlayState* play);
 
-const ActorInit En_Blkobj_InitVars = {
-    ACTOR_EN_BLKOBJ,
-    ACTORCAT_PROP,
-    FLAGS,
-    OBJECT_BLKOBJ,
-    sizeof(EnBlkobj),
-    (ActorFunc)EnBlkobj_Init,
-    (ActorFunc)EnBlkobj_Destroy,
-    (ActorFunc)EnBlkobj_Update,
-    (ActorFunc)EnBlkobj_Draw,
+ActorInit En_Blkobj_InitVars = {
+    /**/ ACTOR_EN_BLKOBJ,
+    /**/ ACTORCAT_PROP,
+    /**/ FLAGS,
+    /**/ OBJECT_BLKOBJ,
+    /**/ sizeof(EnBlkobj),
+    /**/ EnBlkobj_Init,
+    /**/ EnBlkobj_Destroy,
+    /**/ EnBlkobj_Update,
+    /**/ EnBlkobj_Draw,
 };
 
 static InitChainEntry sInitChain[] = {
@@ -59,7 +59,7 @@ void EnBlkobj_Init(Actor* thisx, PlayState* play) {
     CollisionHeader* colHeader = NULL;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
-    DynaPolyActor_Init(&this->dyna, DPM_UNK);
+    DynaPolyActor_Init(&this->dyna, 0);
     if (Flags_GetClear(play, this->dyna.actor.room)) {
         this->alpha = 255;
         EnBlkobj_SetupAction(this, EnBlkobj_DoNothing);
@@ -159,7 +159,7 @@ void EnBlkobj_Draw(Actor* thisx, PlayState* play) {
     gSPSegment(
         POLY_XLU_DISP++, 0x0D,
         Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, gameplayFrames, 0, 32, 32, 1, gameplayFrames, 0, 32, 32));
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_en_blkobj.c", 363),
+    gSPMatrix(POLY_XLU_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_en_blkobj.c", 363),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     if (this->alpha != 0) {

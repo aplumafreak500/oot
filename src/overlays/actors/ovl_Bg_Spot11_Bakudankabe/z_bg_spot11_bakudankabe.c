@@ -16,16 +16,16 @@ void BgSpot11Bakudankabe_Destroy(Actor* thisx, PlayState* play);
 void BgSpot11Bakudankabe_Update(Actor* thisx, PlayState* play);
 void BgSpot11Bakudankabe_Draw(Actor* thisx, PlayState* play);
 
-const ActorInit Bg_Spot11_Bakudankabe_InitVars = {
-    ACTOR_BG_SPOT11_BAKUDANKABE,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_SPOT11_OBJ,
-    sizeof(BgSpot11Bakudankabe),
-    (ActorFunc)BgSpot11Bakudankabe_Init,
-    (ActorFunc)BgSpot11Bakudankabe_Destroy,
-    (ActorFunc)BgSpot11Bakudankabe_Update,
-    (ActorFunc)BgSpot11Bakudankabe_Draw,
+ActorInit Bg_Spot11_Bakudankabe_InitVars = {
+    /**/ ACTOR_BG_SPOT11_BAKUDANKABE,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_SPOT11_OBJ,
+    /**/ sizeof(BgSpot11Bakudankabe),
+    /**/ BgSpot11Bakudankabe_Init,
+    /**/ BgSpot11Bakudankabe_Destroy,
+    /**/ BgSpot11Bakudankabe_Update,
+    /**/ BgSpot11Bakudankabe_Draw,
 };
 
 static ColliderCylinderInit sCylinderInit = {
@@ -41,8 +41,8 @@ static ColliderCylinderInit sCylinderInit = {
         ELEMTYPE_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000008, 0x00, 0x00 },
-        TOUCH_NONE,
-        BUMP_ON,
+        ATELEM_NONE,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 40, 80, 0, { 2259, 108, -1580 } },
@@ -112,7 +112,7 @@ void BgSpot11Bakudankabe_Init(Actor* thisx, PlayState* play) {
     s32 pad;
     CollisionHeader* colHeader = NULL;
 
-    DynaPolyActor_Init(&this->dyna, DPM_UNK);
+    DynaPolyActor_Init(&this->dyna, 0);
     if (Flags_GetSwitch(play, (this->dyna.actor.params & 0x3F))) {
         Actor_Kill(&this->dyna.actor);
         return;
@@ -121,7 +121,7 @@ void BgSpot11Bakudankabe_Init(Actor* thisx, PlayState* play) {
     CollisionHeader_GetVirtual(&gDesertColossusBombableWallCol, &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
     Actor_SetScale(&this->dyna.actor, 1.0f);
-    osSyncPrintf("(spot11 爆弾壁)(arg_data 0x%04x)\n", this->dyna.actor.params);
+    PRINTF("(spot11 爆弾壁)(arg_data 0x%04x)\n", this->dyna.actor.params);
 }
 
 void BgSpot11Bakudankabe_Destroy(Actor* thisx, PlayState* play) {
@@ -138,7 +138,7 @@ void BgSpot11Bakudankabe_Update(Actor* thisx, PlayState* play) {
         func_808B2218(this, play);
         Flags_SetSwitch(play, (this->dyna.actor.params & 0x3F));
         SfxSource_PlaySfxAtFixedWorldPos(play, &D_808B2738, 40, NA_SE_EV_WALL_BROKEN);
-        func_80078884(NA_SE_SY_CORRECT_CHIME);
+        Sfx_PlaySfxCentered(NA_SE_SY_CORRECT_CHIME);
         Actor_Kill(&this->dyna.actor);
         return;
     }

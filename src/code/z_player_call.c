@@ -17,16 +17,16 @@ void Player_Destroy(Actor* thisx, PlayState* play);
 void Player_Update(Actor* thisx, PlayState* play);
 void Player_Draw(Actor* thisx, PlayState* play);
 
-const ActorInit Player_InitVars = {
-    ACTOR_PLAYER,
-    ACTORCAT_PLAYER,
-    FLAGS,
-    OBJECT_GAMEPLAY_KEEP,
-    sizeof(Player),
-    (ActorFunc)PlayerCall_Init,
-    (ActorFunc)PlayerCall_Destroy,
-    (ActorFunc)PlayerCall_Update,
-    (ActorFunc)PlayerCall_Draw,
+ActorInit Player_InitVars = {
+    /**/ ACTOR_PLAYER,
+    /**/ ACTORCAT_PLAYER,
+    /**/ FLAGS,
+    /**/ OBJECT_GAMEPLAY_KEEP,
+    /**/ sizeof(Player),
+    /**/ PlayerCall_Init,
+    /**/ PlayerCall_Destroy,
+    /**/ PlayerCall_Update,
+    /**/ PlayerCall_Draw,
 };
 
 void PlayerCall_InitFuncPtrs(void) {

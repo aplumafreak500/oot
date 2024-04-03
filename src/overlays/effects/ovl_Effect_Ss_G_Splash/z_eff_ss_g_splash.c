@@ -7,7 +7,7 @@
 #include "z_eff_ss_g_splash.h"
 #include "assets/objects/gameplay_keep/gameplay_keep.h"
 
-//! @bug the reuse of regs[11] means that EffectSs_DrawGEffect will treat the type as an object bank index
+//! @bug the reuse of regs[11] means that EffectSs_DrawGEffect will treat the type as an object slot (`rgObjectSlot`)
 // this ends up having no effect because the texture provided does not use segment 6
 #define rType regs[11]
 
@@ -132,7 +132,7 @@ void EffectSsGSplash_Update(PlayState* play, u32 index, EffectSs* this) {
     if ((this->rType == 1) && (this->life == 5)) {
         newSplashPos = this->pos;
         newSplashPos.y += ((this->rgScale * 20) * 0.002f);
-        EffectSsGSplash_Spawn(play, &newSplashPos, 0, 0, 2, this->rgScale / 2);
+        EffectSsGSplash_Spawn(play, &newSplashPos, NULL, NULL, 2, this->rgScale / 2);
     }
 
     this->rgTexIdx += this->rgTexIdxStep;

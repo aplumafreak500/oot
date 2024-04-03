@@ -5,7 +5,7 @@
  */
 
 #include "z_en_rl.h"
-#include "vt.h"
+#include "terminal.h"
 #include "assets/objects/object_rl/object_rl.h"
 
 #define FLAGS ACTOR_FLAG_4
@@ -50,6 +50,7 @@ void func_80AE72D0(EnRl* this) {
     }
 }
 
+#if OOT_DEBUG
 void func_80AE7358(EnRl* this) {
     Animation_Change(&this->skelAnime, &object_rl_Anim_000A3C, 1.0f, 0.0f,
                      Animation_GetLastFrame(&object_rl_Anim_000A3C), ANIMMODE_LOOP, 0.0f);
@@ -75,6 +76,7 @@ void func_80AE73D8(EnRl* this, PlayState* play) {
         D_80AE81AC = 1;
     }
 }
+#endif
 
 void func_80AE744C(EnRl* this, PlayState* play) {
     Actor_UpdateBgCheckInfo(play, &this->actor, 75.0f, 30.0f, 30.0f, UPDBGCHECKINFO_FLAG_0 | UPDBGCHECKINFO_FLAG_2);
@@ -84,28 +86,30 @@ s32 func_80AE7494(EnRl* this) {
     return SkelAnime_Update(&this->skelAnime);
 }
 
-s32 func_80AE74B4(EnRl* this, PlayState* play, u16 arg2, s32 arg3) {
-    CsCmdActorAction* csCmdActorAction;
+s32 func_80AE74B4(EnRl* this, PlayState* play, u16 cueId, s32 cueChannel) {
+    CsCmdActorCue* cue;
 
     if (play->csCtx.state != CS_STATE_IDLE) {
-        csCmdActorAction = play->csCtx.npcActions[arg3];
-        if (csCmdActorAction != NULL && csCmdActorAction->action == arg2) {
-            return 1;
+        cue = play->csCtx.actorCues[cueChannel];
+
+        if (cue != NULL && cue->id == cueId) {
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
-s32 func_80AE74FC(EnRl* this, PlayState* play, u16 arg2, s32 arg3) {
-    CsCmdActorAction* csCmdActorAction;
+s32 func_80AE74FC(EnRl* this, PlayState* play, u16 cueId, s32 cueChannel) {
+    CsCmdActorCue* cue;
 
     if (play->csCtx.state != CS_STATE_IDLE) {
-        csCmdActorAction = play->csCtx.npcActions[arg3];
-        if (csCmdActorAction != NULL && csCmdActorAction->action != arg2) {
-            return 1;
+        cue = play->csCtx.actorCues[cueChannel];
+
+        if (cue != NULL && cue->id != cueId) {
+            return true;
         }
     }
-    return 0;
+    return false;
 }
 
 void func_80AE7544(EnRl* this, PlayState* play) {
@@ -118,8 +122,9 @@ void func_80AE7590(EnRl* this, PlayState* play) {
     Vec3f pos;
     s16 sceneId = play->sceneId;
 
-    if (gSaveContext.sceneLayer == 4 && sceneId == SCENE_KENJYANOMA && play->csCtx.state != CS_STATE_IDLE &&
-        play->csCtx.npcActions[6] != NULL && play->csCtx.npcActions[6]->action == 2 && !this->lightMedallionGiven) {
+    if ((gSaveContext.sceneLayer == 4) && (sceneId == SCENE_CHAMBER_OF_THE_SAGES) &&
+        (play->csCtx.state != CS_STATE_IDLE) && (play->csCtx.actorCues[6] != NULL) &&
+        (play->csCtx.actorCues[6]->id == 2) && !this->lightMedallionGiven) {
         player = GET_PLAYER(play);
         pos.x = player->actor.world.pos.x;
         pos.y = player->actor.world.pos.y + 80.0f;
@@ -139,11 +144,12 @@ void func_80AE7668(EnRl* this, PlayState* play) {
 }
 
 void func_80AE7698(EnRl* this, PlayState* play) {
-    CsCmdActorAction* csCmdActorAction;
+    CsCmdActorCue* cue;
 
     if (play->csCtx.state != CS_STATE_IDLE) {
-        csCmdActorAction = play->csCtx.npcActions[0];
-        if (csCmdActorAction != NULL && csCmdActorAction->action == 3) {
+        cue = play->csCtx.actorCues[0];
+
+        if (cue != NULL && cue->id == 3) {
             Animation_Change(&this->skelAnime, &object_rl_Anim_00040C, 1.0f, 0.0f,
                              Animation_GetLastFrame(&object_rl_Anim_00040C), ANIMMODE_ONCE, 0.0f);
             this->action = 2;
@@ -239,8 +245,9 @@ void func_80AE79A4(EnRl* this, PlayState* play) {
 
 void func_80AE7AF8(EnRl* this, PlayState* play) {
     if (func_80AE74B4(this, play, 3, 0)) {
-        Animation_Change(&this->skelAnime, &object_rl_Anim_00040C, 1.0f, 0.0f,
-                         Animation_GetLastFrame(&object_rl_Anim_00040C), ANIMMODE_ONCE, -8.0f);
+        f32 frame = Animation_GetLastFrame(&object_rl_Anim_00040C);
+
+        Animation_Change(&this->skelAnime, &object_rl_Anim_00040C, 1.0f, 0.0f, frame, ANIMMODE_ONCE, -8.0f);
         this->action = 6;
     } else if (func_80AE74FC(this, play, 4, 0)) {
         this->action = 5;
@@ -265,7 +272,9 @@ void func_80AE7BF8(EnRl* this, s32 arg1) {
 
 void func_80AE7C64(EnRl* this, PlayState* play) {
     func_80AE7954(this, play);
+#if OOT_DEBUG
     func_80AE73D8(this, play);
+#endif
 }
 
 void func_80AE7C94(EnRl* this, PlayState* play) {
@@ -273,7 +282,9 @@ void func_80AE7C94(EnRl* this, PlayState* play) {
     func_80AE7494(this);
     func_80AE72D0(this);
     func_80AE79A4(this, play);
+#if OOT_DEBUG
     func_80AE73D8(this, play);
+#endif
 }
 
 void func_80AE7CE8(EnRl* this, PlayState* play) {
@@ -283,7 +294,9 @@ void func_80AE7CE8(EnRl* this, PlayState* play) {
     temp = func_80AE7494(this);
     func_80AE72D0(this);
     func_80AE7BF8(this, temp);
+#if OOT_DEBUG
     func_80AE73D8(this, play);
+#endif
 }
 
 void func_80AE7D40(EnRl* this, PlayState* play) {
@@ -291,7 +304,9 @@ void func_80AE7D40(EnRl* this, PlayState* play) {
     func_80AE7494(this);
     func_80AE72D0(this);
     func_80AE7AF8(this, play);
+#if OOT_DEBUG
     func_80AE73D8(this, play);
+#endif
 }
 
 void func_80AE7D94(EnRl* this, PlayState* play) {
@@ -324,7 +339,7 @@ void EnRl_Update(Actor* thisx, PlayState* play) {
     EnRl* this = (EnRl*)thisx;
 
     if ((this->action < 0) || (this->action > 7) || (sActionFuncs[this->action] == NULL)) {
-        osSyncPrintf(VT_FGCOL(RED) "メインモードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
+        PRINTF(VT_FGCOL(RED) "メインモードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
         return;
     }
     sActionFuncs[this->action](this, play);
@@ -373,20 +388,20 @@ void EnRl_Draw(Actor* thisx, PlayState* play) {
     EnRl* this = (EnRl*)thisx;
 
     if (this->drawConfig < 0 || this->drawConfig >= 3 || sDrawFuncs[this->drawConfig] == NULL) {
-        osSyncPrintf(VT_FGCOL(RED) "描画モードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
+        PRINTF(VT_FGCOL(RED) "描画モードがおかしい!!!!!!!!!!!!!!!!!!!!!!!!!\n" VT_RST);
         return;
     }
     sDrawFuncs[this->drawConfig](this, play);
 }
 
-const ActorInit En_Rl_InitVars = {
-    ACTOR_EN_RL,
-    ACTORCAT_NPC,
-    FLAGS,
-    OBJECT_RL,
-    sizeof(EnRl),
-    (ActorFunc)EnRl_Init,
-    (ActorFunc)EnRl_Destroy,
-    (ActorFunc)EnRl_Update,
-    (ActorFunc)EnRl_Draw,
+ActorInit En_Rl_InitVars = {
+    /**/ ACTOR_EN_RL,
+    /**/ ACTORCAT_NPC,
+    /**/ FLAGS,
+    /**/ OBJECT_RL,
+    /**/ sizeof(EnRl),
+    /**/ EnRl_Init,
+    /**/ EnRl_Destroy,
+    /**/ EnRl_Update,
+    /**/ EnRl_Draw,
 };

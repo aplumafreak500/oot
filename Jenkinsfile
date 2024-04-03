@@ -4,38 +4,53 @@ pipeline {
     }
 
     stages {
-        stage('Check for unused asm') {
+        stage('Check formatting (full)') {
+            when {
+                branch 'main'
+            }
             steps {
-                sh './tools/find_unused_asm.sh'
+                echo 'Checking formatting on all files...'
+                sh 'python3 tools/check_format.py'
+            }
+        }
+        stage('Check formatting (modified)') {
+            when {
+                not {
+                    branch 'main'
+                }
+            }
+            steps {
+                echo 'Checking formatting on modified files...'
+                sh 'python3 tools/check_format.py --verbose --compare-to origin/main'
             }
         }
         stage('Setup') {
             steps {
-                sh 'cp /usr/local/etc/roms/baserom_oot.z64 baserom_original.z64'
+                sh 'cp /usr/local/etc/roms/baserom_oot.z64 baseroms/gc-eu-mq-dbg/baserom.z64'
                 sh 'make -j setup'
             }
         }
         stage('Build (qemu-irix)') {
             when {
-                branch 'master'
+                branch 'main'
             }
             steps {
-                sh 'ORIG_COMPILER=1 make -j'
+                sh 'make -j ORIG_COMPILER=1'
             }
         }
         stage('Build') {
             when {
                 not {
-                    branch 'master'
+                    branch 'main'
                 }
             }
             steps {
-                sh 'make -j'
+                sh 'make -j RUN_CC_CHECK=0'
             }
         }
         stage('Report Progress') {
             when {
-                branch 'master'
+                branch 'main'
             }
             steps {
                 sh 'mkdir reports'
@@ -47,10 +62,10 @@ pipeline {
         }
         stage('Update Progress') {
             when {
-                branch 'master'
+                branch 'main'
             }
             agent {
-                label 'master'
+                label 'zeldaret_website'
             }
             steps {
                 unstash 'reports'
@@ -62,7 +77,15 @@ pipeline {
     }
     post {
         always {
-            cleanWs()
+            echo "Finished, deleting directory."
+            deleteDir()
+        }
+        cleanup {
+            echo "Clean up in post."
+            cleanWs(cleanWhenNotBuilt: false,
+                    deleteDirs: true,
+                    disableDeferredWipeout: true,
+                    notFailBuild: true)
         }
     }
 }

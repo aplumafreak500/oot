@@ -13,7 +13,11 @@ typedef struct InitFunc {
 // .data
 void* sInitFuncs = NULL;
 
-char sNew[] = { 'n', 'e', 'w' };
+#if OOT_DEBUG
+char sNew[] = "new";
+#else
+char sNew[] = "";
+#endif
 
 char D_80134488[0x18] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x7F, 0x80, 0x00, 0x00,
@@ -26,7 +30,11 @@ void* func_800FC800(u32 size) {
         size = 1;
     }
 
+#if OOT_DEBUG
     return __osMallocDebug(&gSystemArena, size, sNew, 0);
+#else
+    return __osMalloc(&gSystemArena, size);
+#endif
 }
 
 // possibly some kind of delete() function
@@ -73,10 +81,10 @@ void func_800FCA18(void* blk, u32 nBlk, u32 blkSize, arg3_800FCA18 arg3, s32 arg
     u32 pos;
     u32 end;
 
-    if (blk == 0) {
+    if (blk == NULL) {
         return;
     }
-    if (arg3 != 0) {
+    if (arg3 != NULL) {
         end = (u32)blk;
         pos = (u32)end + (nBlk * blkSize);
 
@@ -100,7 +108,7 @@ void func_800FCB34(void) {
         initFunc = (InitFunc*)((s32)initFunc + nextOffset);
 
         if (initFunc->func != NULL) {
-            (*initFunc->func)();
+            initFunc->func();
         }
 
         nextOffset = initFunc->nextOffset;

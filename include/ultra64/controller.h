@@ -3,19 +3,6 @@
 
 #include "message.h"
 
-/**
- * Controller channel
- * Each game controller channel has 4 error bits that are defined in bit 6-7 of
- * the Rx and Tx data size area bytes. Programmers need to clear these bits
- * when setting the Tx/Rx size area values for a channel
- */
-#define CHNL_ERR_NORESP     0x80    /* Bit 7 (Rx): No response error */
-#define CHNL_ERR_OVERRUN    0x40    /* Bit 6 (Rx): Overrun error */
-#define CHNL_ERR_FRAME      0x80    /* Bit 7 (Tx): Frame error */
-#define CHNL_ERR_COLLISION  0x40    /* Bit 6 (Tx): Collision error */
-
-#define CHNL_ERR_MASK       0xC0    /* Bit 6-7: channel errors */
-
 #define CHNL_ERR(readFormat) (((readFormat).rxsize & CHNL_ERR_MASK) >> 4)
 
 #define BLOCKSIZE 32
@@ -132,6 +119,12 @@
 #define BTN_B           0x4000
 #define BTN_A           0x8000
 
+#ifdef __GNUC__
+// Ensure data cache coherency for OSPifRam structures by aligning to the data cache line size.
+// On older compilers such as IDO this was done by placing each OSPifRam at the top of the file it is declared in,
+// however file alignment should not be relied on in general.
+__attribute__((aligned(0x10)))
+#endif
 typedef union {
     struct {
     /* 0x00 */ u32 ram[15];

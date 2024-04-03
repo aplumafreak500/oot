@@ -6,6 +6,7 @@
 
 #include "z_bg_mori_bigst.h"
 #include "assets/objects/object_mori_objects/object_mori_objects.h"
+#include "quake.h"
 
 #define FLAGS ACTOR_FLAG_4
 
@@ -27,16 +28,16 @@ void BgMoriBigst_SetupStalfosPairFight(BgMoriBigst* this, PlayState* play);
 void BgMoriBigst_StalfosPairFight(BgMoriBigst* this, PlayState* play);
 void BgMoriBigst_SetupDone(BgMoriBigst* this, PlayState* play);
 
-const ActorInit Bg_Mori_Bigst_InitVars = {
-    ACTOR_BG_MORI_BIGST,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_MORI_OBJECTS,
-    sizeof(BgMoriBigst),
-    (ActorFunc)BgMoriBigst_Init,
-    (ActorFunc)BgMoriBigst_Destroy,
-    (ActorFunc)BgMoriBigst_Update,
-    NULL,
+ActorInit Bg_Mori_Bigst_InitVars = {
+    /**/ ACTOR_BG_MORI_BIGST,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_MORI_OBJECTS,
+    /**/ sizeof(BgMoriBigst),
+    /**/ BgMoriBigst_Init,
+    /**/ BgMoriBigst_Destroy,
+    /**/ BgMoriBigst_Update,
+    /**/ NULL,
 };
 
 static InitChainEntry sInitChain[] = {
@@ -52,17 +53,20 @@ void BgMoriBigst_SetupAction(BgMoriBigst* this, BgMoriBigstActionFunc actionFunc
 void BgMoriBigst_InitDynapoly(BgMoriBigst* this, PlayState* play, CollisionHeader* collision, s32 moveFlag) {
     s32 pad;
     CollisionHeader* colHeader = NULL;
-    s32 pad2;
 
     DynaPolyActor_Init(&this->dyna, moveFlag);
     CollisionHeader_GetVirtual(collision, &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
 
+#if OOT_DEBUG
     if (this->dyna.bgId == BG_ACTOR_MAX) {
+        s32 pad2;
+
         // "Warning : move BG login failed"
-        osSyncPrintf("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n", "../z_bg_mori_bigst.c", 190,
-                     this->dyna.actor.id, this->dyna.actor.params);
+        PRINTF("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n", "../z_bg_mori_bigst.c", 190,
+               this->dyna.actor.id, this->dyna.actor.params);
     }
+#endif
 }
 
 void BgMoriBigst_Init(Actor* thisx, PlayState* play) {
@@ -70,17 +74,17 @@ void BgMoriBigst_Init(Actor* thisx, PlayState* play) {
     BgMoriBigst* this = (BgMoriBigst*)thisx;
 
     // "mori (bigST.keyceiling)"
-    osSyncPrintf("mori (bigST.鍵型天井)(arg : %04x)(sw %d)(noE %d)(roomC %d)(playerPosY %f)\n", this->dyna.actor.params,
-                 Flags_GetSwitch(play, (this->dyna.actor.params >> 8) & 0x3F),
-                 Flags_GetTempClear(play, this->dyna.actor.room), Flags_GetClear(play, this->dyna.actor.room),
-                 GET_PLAYER(play)->actor.world.pos.y);
-    BgMoriBigst_InitDynapoly(this, play, &gMoriBigstCol, DPM_UNK);
+    PRINTF("mori (bigST.鍵型天井)(arg : %04x)(sw %d)(noE %d)(roomC %d)(playerPosY %f)\n", this->dyna.actor.params,
+           Flags_GetSwitch(play, (this->dyna.actor.params >> 8) & 0x3F),
+           Flags_GetTempClear(play, this->dyna.actor.room), Flags_GetClear(play, this->dyna.actor.room),
+           GET_PLAYER(play)->actor.world.pos.y);
+    BgMoriBigst_InitDynapoly(this, play, &gMoriBigstCol, 0);
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
-    this->moriTexObjIndex = Object_GetIndex(&play->objectCtx, OBJECT_MORI_TEX);
-    if (this->moriTexObjIndex < 0) {
+    this->moriTexObjectSlot = Object_GetSlot(&play->objectCtx, OBJECT_MORI_TEX);
+    if (this->moriTexObjectSlot < 0) {
         // "【Big Stalfos key ceiling】 bank danger!"
-        osSyncPrintf("【ビッグスタルフォス鍵型天井】 バンク危険！\n");
-        osSyncPrintf("%s %d\n", "../z_bg_mori_bigst.c", 234);
+        PRINTF("【ビッグスタルフォス鍵型天井】 バンク危険！\n");
+        PRINTF("%s %d\n", "../z_bg_mori_bigst.c", 234);
         Actor_Kill(&this->dyna.actor);
         return;
     }
@@ -107,7 +111,7 @@ void BgMoriBigst_SetupWaitForMoriTex(BgMoriBigst* this, PlayState* play) {
 void BgMoriBigst_WaitForMoriTex(BgMoriBigst* this, PlayState* play) {
     Actor* thisx = &this->dyna.actor;
 
-    if (Object_IsLoaded(&play->objectCtx, this->moriTexObjIndex)) {
+    if (Object_IsLoaded(&play->objectCtx, this->moriTexObjectSlot)) {
         thisx->draw = BgMoriBigst_Draw;
         if (Flags_GetClear(play, thisx->room) && (GET_PLAYER(play)->actor.world.pos.y > 700.0f)) {
             if (Flags_GetSwitch(play, (thisx->params >> 8) & 0x3F)) {
@@ -137,7 +141,7 @@ void BgMoriBigst_SetupStalfosFight(BgMoriBigst* this, PlayState* play) {
         this->dyna.actor.home.rot.z++;
     } else {
         // "Second Stalfos failure"
-        osSyncPrintf("Warning : 第２スタルフォス発生失敗\n");
+        PRINTF("Warning : 第２スタルフォス発生失敗\n");
     }
     Flags_SetClear(play, this->dyna.actor.room);
 }
@@ -157,26 +161,27 @@ void BgMoriBigst_SetupFall(BgMoriBigst* this, PlayState* play) {
 }
 
 void BgMoriBigst_Fall(BgMoriBigst* this, PlayState* play) {
-    Actor_MoveForward(&this->dyna.actor);
+    Actor_MoveXZGravity(&this->dyna.actor);
     if (this->dyna.actor.world.pos.y <= this->dyna.actor.home.pos.y) {
         this->dyna.actor.world.pos.y = this->dyna.actor.home.pos.y;
         BgMoriBigst_SetupLanding(this, play);
-        Audio_PlayActorSfx2(&this->dyna.actor, NA_SE_EV_STONE_BOUND);
+        Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_STONE_BOUND);
         OnePointCutscene_Init(play, 1020, 8, &this->dyna.actor, CAM_ID_MAIN);
-        func_8002DF38(play, NULL, 0x3C);
+        Player_SetCsAction(play, NULL, PLAYER_CSACTION_60);
     }
 }
 
 void BgMoriBigst_SetupLanding(BgMoriBigst* this, PlayState* play) {
     s32 pad;
-    s32 quake;
+    s32 quakeIndex;
 
     BgMoriBigst_SetupAction(this, BgMoriBigst_Landing);
     this->waitTimer = 18;
-    quake = Quake_Add(GET_ACTIVE_CAM(play), 3);
-    Quake_SetSpeed(quake, 25000);
-    Quake_SetQuakeValues(quake, 5, 0, 0, 0);
-    Quake_SetCountdown(quake, 16);
+
+    quakeIndex = Quake_Request(GET_ACTIVE_CAM(play), QUAKE_TYPE_3);
+    Quake_SetSpeed(quakeIndex, 25000);
+    Quake_SetPerturbations(quakeIndex, 5, 0, 0, 0);
+    Quake_SetDuration(quakeIndex, 16);
 }
 
 void BgMoriBigst_Landing(BgMoriBigst* this, PlayState* play) {
@@ -198,7 +203,7 @@ void BgMoriBigst_SetupStalfosPairFight(BgMoriBigst* this, PlayState* play) {
         this->dyna.actor.home.rot.z++;
     } else {
         // "Warning: 3-1 Stalfos failure"
-        osSyncPrintf("Warning : 第３-1スタルフォス発生失敗\n");
+        PRINTF("Warning : 第３-1スタルフォス発生失敗\n");
     }
     stalfos2 = Actor_SpawnAsChild(&play->actorCtx, &this->dyna.actor, play, ACTOR_EN_TEST, 170.0f, 827.0f, -3260.0f, 0,
                                   0, 0, 5);
@@ -207,7 +212,7 @@ void BgMoriBigst_SetupStalfosPairFight(BgMoriBigst* this, PlayState* play) {
         this->dyna.actor.home.rot.z++;
     } else {
         // "Warning: 3-2 Stalfos failure"
-        osSyncPrintf("Warning : 第３-2スタルフォス発生失敗\n");
+        PRINTF("Warning : 第３-2スタルフォス発生失敗\n");
     }
     Flags_SetClear(play, this->dyna.actor.room);
 }
@@ -246,9 +251,9 @@ void BgMoriBigst_Draw(Actor* thisx, PlayState* play) {
     OPEN_DISPS(play->state.gfxCtx, "../z_bg_mori_bigst.c", 541);
     Gfx_SetupDL_25Opa(play->state.gfxCtx);
 
-    gSPSegment(POLY_OPA_DISP++, 0x08, play->objectCtx.status[this->moriTexObjIndex].segment);
+    gSPSegment(POLY_OPA_DISP++, 0x08, play->objectCtx.slots[this->moriTexObjectSlot].segment);
 
-    gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_bg_mori_bigst.c", 548),
+    gSPMatrix(POLY_OPA_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_bg_mori_bigst.c", 548),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
 
     gSPDisplayList(POLY_OPA_DISP++, gMoriBigstDL);

@@ -20,16 +20,16 @@ void BgDodoago_OpenJaw(BgDodoago* this, PlayState* play);
 void BgDodoago_DoNothing(BgDodoago* this, PlayState* play);
 void BgDodoago_LightOneEye(BgDodoago* this, PlayState* play);
 
-const ActorInit Bg_Dodoago_InitVars = {
-    ACTOR_BG_DODOAGO,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_DDAN_OBJECTS,
-    sizeof(BgDodoago),
-    (ActorFunc)BgDodoago_Init,
-    (ActorFunc)BgDodoago_Destroy,
-    (ActorFunc)BgDodoago_Update,
-    (ActorFunc)BgDodoago_Draw,
+ActorInit Bg_Dodoago_InitVars = {
+    /**/ ACTOR_BG_DODOAGO,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_DDAN_OBJECTS,
+    /**/ sizeof(BgDodoago),
+    /**/ BgDodoago_Init,
+    /**/ BgDodoago_Destroy,
+    /**/ BgDodoago_Update,
+    /**/ BgDodoago_Draw,
 };
 
 static ColliderCylinderInit sColCylinderInitMain = {
@@ -45,8 +45,8 @@ static ColliderCylinderInit sColCylinderInitMain = {
         ELEMTYPE_UNK2,
         { 0x00000000, 0x00, 0x00 },
         { 0xFFCFFFFF, 0x00, 0x00 },
-        TOUCH_NONE,
-        BUMP_ON,
+        ATELEM_NONE,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 80, 30, 80, { 0, 0, 0 } },
@@ -65,8 +65,8 @@ static ColliderCylinderInit sColCylinderInitLeftRight = {
         ELEMTYPE_UNK2,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000000, 0x00, 0x00 },
-        TOUCH_NONE,
-        BUMP_NONE,
+        ATELEM_NONE,
+        ACELEM_NONE,
         OCELEM_ON,
     },
     { 50, 60, 280, { 0, 0, 0 } },
@@ -113,7 +113,7 @@ void BgDodoago_Init(Actor* thisx, PlayState* play) {
     CollisionHeader* colHeader = NULL;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
-    DynaPolyActor_Init(&this->dyna, DPM_UNK);
+    DynaPolyActor_Init(&this->dyna, 0);
     CollisionHeader_GetVirtual(&gDodongoLowerJawCol, &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
     ActorShape_Init(&this->dyna.actor.shape, 0.0f, NULL, 0.0f);
@@ -244,7 +244,7 @@ void BgDodoago_OpenJaw(BgDodoago* this, PlayState* play) {
     BgDodoago_SpawnSparkles(&pos, play);
 
     Math_StepToS(&this->state, 100, 3);
-    func_800AA000(500.0f, 0x78, 0x14, 0xA);
+    Rumble_Request(500.0f, 120, 20, 10);
 
     if (Math_SmoothStepToS(&this->dyna.actor.shape.rot.x, 0x1333, 110 - this->state, 0x3E8, 0x32) == 0) {
         BgDodoago_SetupAction(this, BgDodoago_DoNothing);
@@ -290,7 +290,7 @@ void BgDodoago_Update(Actor* thisx, PlayState* play) {
                 // disable the bomb catcher for a few seconds
                 this->dyna.actor.parent = &bomb->actor;
                 bomb->timer = 50;
-                bomb->actor.speedXZ = 0.0f;
+                bomb->actor.speed = 0.0f;
                 sTimer = 0;
             }
         }
@@ -314,7 +314,7 @@ void BgDodoago_Draw(Actor* thisx, PlayState* play) {
 
     if (Flags_GetEventChkInf(EVENTCHKINF_B0)) {
         Gfx_SetupDL_25Opa(play->state.gfxCtx);
-        gSPMatrix(POLY_OPA_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_bg_dodoago.c", 677),
+        gSPMatrix(POLY_OPA_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_bg_dodoago.c", 677),
                   G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
         gSPDisplayList(POLY_OPA_DISP++, gDodongoLowerJawDL);
     }

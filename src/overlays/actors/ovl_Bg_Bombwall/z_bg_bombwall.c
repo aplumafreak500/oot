@@ -7,7 +7,7 @@
 #include "z_bg_bombwall.h"
 #include "assets/objects/gameplay_field_keep/gameplay_field_keep.h"
 
-#define FLAGS ACTOR_FLAG_22
+#define FLAGS ACTOR_FLAG_IGNORE_POINT_LIGHTS
 
 void BgBombwall_Init(Actor* thisx, PlayState* play);
 void BgBombwall_Destroy(Actor* thisx, PlayState* play);
@@ -26,8 +26,8 @@ static ColliderTrisElementInit sTrisElementsInit[3] = {
             ELEMTYPE_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0x40000048, 0x00, 0x00 },
-            TOUCH_NONE,
-            BUMP_ON,
+            ATELEM_NONE,
+            ACELEM_ON,
             OCELEM_NONE,
         },
         { { { -70.0f, 176.0f, 0.0f }, { -70.0f, -4.0f, 0.0f }, { 0.0f, -4.0f, 30.0f } } },
@@ -37,8 +37,8 @@ static ColliderTrisElementInit sTrisElementsInit[3] = {
             ELEMTYPE_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0x40000048, 0x00, 0x00 },
-            TOUCH_NONE,
-            BUMP_ON,
+            ATELEM_NONE,
+            ACELEM_ON,
             OCELEM_NONE,
         },
         { { { 70.0f, 176.0f, 0.0f }, { -70.0f, 176.0f, 0.0f }, { 0.0f, -4.0f, 30.0f } } },
@@ -48,8 +48,8 @@ static ColliderTrisElementInit sTrisElementsInit[3] = {
             ELEMTYPE_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0x40000048, 0x00, 0x00 },
-            TOUCH_NONE,
-            BUMP_ON,
+            ATELEM_NONE,
+            ACELEM_ON,
             OCELEM_NONE,
         },
         { { { 70.0f, -4.0f, 0.0f }, { 70.0f, 176.0f, 0.0f }, { 0.0f, -4.0f, 30.0f } } },
@@ -69,16 +69,16 @@ static ColliderTrisInit sTrisInit = {
     sTrisElementsInit,
 };
 
-const ActorInit Bg_Bombwall_InitVars = {
-    ACTOR_BG_BOMBWALL,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_GAMEPLAY_FIELD_KEEP,
-    sizeof(BgBombwall),
-    (ActorFunc)BgBombwall_Init,
-    (ActorFunc)BgBombwall_Destroy,
-    (ActorFunc)BgBombwall_Update,
-    (ActorFunc)BgBombwall_Draw,
+ActorInit Bg_Bombwall_InitVars = {
+    /**/ ACTOR_BG_BOMBWALL,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_GAMEPLAY_FIELD_KEEP,
+    /**/ sizeof(BgBombwall),
+    /**/ BgBombwall_Init,
+    /**/ BgBombwall_Destroy,
+    /**/ BgBombwall_Update,
+    /**/ BgBombwall_Draw,
 };
 
 void BgBombwall_InitDynapoly(BgBombwall* this, PlayState* play) {
@@ -86,14 +86,14 @@ void BgBombwall_InitDynapoly(BgBombwall* this, PlayState* play) {
     s32 pad2;
     CollisionHeader* colHeader = NULL;
 
-    DynaPolyActor_Init(&this->dyna, DPM_UNK);
+    DynaPolyActor_Init(&this->dyna, 0);
     CollisionHeader_GetVirtual(&gBgBombwallCol, &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
 
     if (this->dyna.bgId == BG_ACTOR_MAX) {
         // "Warning : move BG login failed"
-        osSyncPrintf("Warning : move BG 登録失敗(%s %d)(arg_data 0x%04x)\n", "../z_bg_bombwall.c", 243,
-                     this->dyna.actor.params);
+        PRINTF("Warning : move BG 登録失敗(%s %d)(arg_data 0x%04x)\n", "../z_bg_bombwall.c", 243,
+               this->dyna.actor.params);
     }
 }
 
@@ -149,8 +149,8 @@ void BgBombwall_Init(Actor* thisx, PlayState* play) {
         func_8086ED50(this, play);
     }
 
-    osSyncPrintf("(field keep 汎用爆弾壁)(arg_data 0x%04x)(angY %d)\n", this->dyna.actor.params,
-                 this->dyna.actor.shape.rot.y);
+    PRINTF("(field keep 汎用爆弾壁)(arg_data 0x%04x)(angY %d)\n", this->dyna.actor.params,
+           this->dyna.actor.shape.rot.y);
 }
 
 void BgBombwall_DestroyCollision(BgBombwall* this, PlayState* play) {
@@ -233,7 +233,7 @@ void func_8086EE40(BgBombwall* this, PlayState* play) {
         func_8086EE94(this, play);
 
         if (((this->dyna.actor.params >> 0xF) & 1) != 0) {
-            func_80078884(NA_SE_SY_CORRECT_CHIME);
+            Sfx_PlaySfxCentered(NA_SE_SY_CORRECT_CHIME);
         }
     }
 }

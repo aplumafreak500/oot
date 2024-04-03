@@ -18,16 +18,16 @@ void func_8088960C(BgHidanHrock* this, PlayState* play);
 void func_808896B8(BgHidanHrock* this, PlayState* play);
 void func_808894A4(BgHidanHrock* this, PlayState* play);
 
-const ActorInit Bg_Hidan_Hrock_InitVars = {
-    ACTOR_BG_HIDAN_HROCK,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_HIDAN_OBJECTS,
-    sizeof(BgHidanHrock),
-    (ActorFunc)BgHidanHrock_Init,
-    (ActorFunc)BgHidanHrock_Destroy,
-    (ActorFunc)BgHidanHrock_Update,
-    (ActorFunc)BgHidanHrock_Draw,
+ActorInit Bg_Hidan_Hrock_InitVars = {
+    /**/ ACTOR_BG_HIDAN_HROCK,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_HIDAN_OBJECTS,
+    /**/ sizeof(BgHidanHrock),
+    /**/ BgHidanHrock_Init,
+    /**/ BgHidanHrock_Destroy,
+    /**/ BgHidanHrock_Update,
+    /**/ BgHidanHrock_Draw,
 };
 
 static ColliderTrisElementInit sTrisElementsInit[2] = {
@@ -36,8 +36,8 @@ static ColliderTrisElementInit sTrisElementsInit[2] = {
             ELEMTYPE_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0x40000040, 0x00, 0x00 },
-            TOUCH_NONE,
-            BUMP_ON | BUMP_NO_AT_INFO | BUMP_NO_DAMAGE | BUMP_NO_SWORD_SFX | BUMP_NO_HITMARK,
+            ATELEM_NONE,
+            ACELEM_ON | ACELEM_NO_AT_INFO | ACELEM_NO_DAMAGE | ACELEM_NO_SWORD_SFX | ACELEM_NO_HITMARK,
             OCELEM_NONE,
         },
         { { { -40.0f, 3.0f, -40.0f }, { -40.0f, 3.0f, 40.0f }, { 40.0f, 3.0f, 40.0f } } },
@@ -47,8 +47,8 @@ static ColliderTrisElementInit sTrisElementsInit[2] = {
             ELEMTYPE_UNK0,
             { 0x00000000, 0x00, 0x00 },
             { 0x40000040, 0x00, 0x00 },
-            TOUCH_NONE,
-            BUMP_ON | BUMP_NO_AT_INFO | BUMP_NO_DAMAGE | BUMP_NO_SWORD_SFX | BUMP_NO_HITMARK,
+            ATELEM_NONE,
+            ACELEM_ON | ACELEM_NO_AT_INFO | ACELEM_NO_DAMAGE | ACELEM_NO_SWORD_SFX | ACELEM_NO_HITMARK,
             OCELEM_NONE,
         },
         { { { 40.0f, 3.0f, 40.0f }, { 40.0f, 3.0f, -40.0f }, { -40.0f, 3.0f, -40.0f } } },
@@ -82,13 +82,14 @@ void BgHidanHrock_Init(Actor* thisx, PlayState* play) {
     s32 i;
     s32 j;
     CollisionHeader* collisionHeader = NULL;
+    Vec3f* vtx;
 
     Actor_ProcessInitChain(thisx, sInitChain);
     this->unk_16A = thisx->params & 0x3F;
     thisx->params = (thisx->params >> 8) & 0xFF;
     Collider_InitTris(play, &this->collider);
     Collider_SetTris(play, &this->collider, thisx, &sTrisInit, this->colliderItems);
-    DynaPolyActor_Init(&this->dyna, DPM_UNK);
+    DynaPolyActor_Init(&this->dyna, 0);
 
     sinRotY = Math_SinS(thisx->shape.rot.y);
     cosRotY = Math_CosS(thisx->shape.rot.y);
@@ -103,7 +104,7 @@ void BgHidanHrock_Init(Actor* thisx, PlayState* play) {
 
         if (1) {
             for (j = 0; j < 3; j++) {
-                Vec3f* vtx = &colliderElementInit->dim.vtx[j];
+                vtx = &colliderElementInit->dim.vtx[j];
 
                 vertices[j].x = vtx->z * sinRotY + (thisx->home.pos.x + vtx->x * cosRotY);
                 vertices[j].y = vtx->y + thisx->home.pos.y;
@@ -161,8 +162,8 @@ void func_808894B0(BgHidanHrock* this, PlayState* play) {
         (Math_CosS(this->dyna.actor.world.rot.y + (this->unk_168 << 0xE)) * 5.0f) + this->dyna.actor.home.pos.z;
 
     if (!(this->unk_168 % 4)) {
-        func_800AA000(this->dyna.actor.xyzDistToPlayerSq, 180, 10, 100);
-        Audio_PlayActorSfx2(&this->dyna.actor, NA_SE_EV_BLOCK_SHAKE);
+        Rumble_Request(this->dyna.actor.xyzDistToPlayerSq, 180, 10, 100);
+        Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_BLOCK_SHAKE);
     }
 
     if (this->unk_168 == 0) {
@@ -185,7 +186,7 @@ void func_8088960C(BgHidanHrock* this, PlayState* play) {
 
     if (Math_StepToF(&this->dyna.actor.world.pos.y, this->dyna.actor.home.pos.y, this->dyna.actor.velocity.y)) {
         this->dyna.actor.flags &= ~(ACTOR_FLAG_4 | ACTOR_FLAG_5);
-        Audio_PlayActorSfx2(&this->dyna.actor, NA_SE_EV_BLOCK_BOUND);
+        Actor_PlaySfx(&this->dyna.actor, NA_SE_EV_BLOCK_BOUND);
 
         if (this->dyna.actor.params == 0) {
             if (play->roomCtx.curRoom.num == 10) {

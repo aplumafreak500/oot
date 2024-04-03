@@ -18,16 +18,16 @@ void BgHakaTubo_Draw(Actor* thisx, PlayState* play);
 void BgHakaTubo_Idle(BgHakaTubo* this, PlayState* play);
 void BgHakaTubo_DropCollectible(BgHakaTubo* this, PlayState* play);
 
-const ActorInit Bg_Haka_Tubo_InitVars = {
-    ACTOR_BG_HAKA_TUBO,
-    ACTORCAT_BG,
-    FLAGS,
-    OBJECT_HAKA_OBJECTS,
-    sizeof(BgHakaTubo),
-    (ActorFunc)BgHakaTubo_Init,
-    (ActorFunc)BgHakaTubo_Destroy,
-    (ActorFunc)BgHakaTubo_Update,
-    (ActorFunc)BgHakaTubo_Draw,
+ActorInit Bg_Haka_Tubo_InitVars = {
+    /**/ ACTOR_BG_HAKA_TUBO,
+    /**/ ACTORCAT_BG,
+    /**/ FLAGS,
+    /**/ OBJECT_HAKA_OBJECTS,
+    /**/ sizeof(BgHakaTubo),
+    /**/ BgHakaTubo_Init,
+    /**/ BgHakaTubo_Destroy,
+    /**/ BgHakaTubo_Update,
+    /**/ BgHakaTubo_Draw,
 };
 
 static ColliderCylinderInit sPotColliderInit = {
@@ -43,8 +43,8 @@ static ColliderCylinderInit sPotColliderInit = {
         ELEMTYPE_UNK0,
         { 0x00000000, 0x00, 0x00 },
         { 0x00000008, 0x00, 0x00 },
-        TOUCH_NONE,
-        BUMP_ON,
+        ATELEM_NONE,
+        ACELEM_ON,
         OCELEM_NONE,
     },
     { 25, 60, 30, { 0, 0, 0 } },
@@ -63,8 +63,8 @@ static ColliderCylinderInit sFlamesColliderInit = {
         ELEMTYPE_UNK0,
         { 0x20000000, 0x01, 0x04 },
         { 0x00000008, 0x00, 0x00 },
-        TOUCH_ON | TOUCH_SFX_NONE,
-        BUMP_NONE,
+        ATELEM_ON | ATELEM_SFX_NONE,
+        ACELEM_NONE,
         OCELEM_ON,
     },
     { 60, 45, 235, { 0, 0, 0 } },
@@ -82,7 +82,7 @@ void BgHakaTubo_Init(Actor* thisx, PlayState* play) {
     CollisionHeader* colHeader = NULL;
 
     Actor_ProcessInitChain(&this->dyna.actor, sInitChain);
-    DynaPolyActor_Init(&this->dyna, DPM_UNK3);
+    DynaPolyActor_Init(&this->dyna, DYNA_TRANSFORM_POS | DYNA_TRANSFORM_ROT_Y);
     CollisionHeader_GetVirtual(&object_haka_objects_Col_0108B8, &colHeader);
     this->dyna.bgId = DynaPoly_SetBgActor(play, &play->colCtx.dyna, &this->dyna.actor, colHeader);
     Collider_InitCylinder(play, &this->potCollider);
@@ -116,7 +116,7 @@ void BgHakaTubo_Idle(BgHakaTubo* this, PlayState* play) {
         this->flamesCollider.base.atFlags &= ~AT_HIT;
         func_8002F71C(play, &this->dyna.actor, 5.0f, this->dyna.actor.yawTowardsPlayer, 5.0f);
     }
-    // Colliding with hitbox inside the pot
+    // Colliding with collider inside the pot
     if (this->potCollider.base.acFlags & AC_HIT) {
         this->potCollider.base.acFlags &= ~AC_HIT;
         // If the colliding actor is within a 50 unit radius and 50 unit height cylinder centered
@@ -161,7 +161,7 @@ void BgHakaTubo_DropCollectible(BgHakaTubo* this, PlayState* play) {
             if (sPotsDestroyed == 3) {
                 // All 3 pots destroyed
                 collectibleParams = -1;
-                func_80078884(NA_SE_SY_CORRECT_CHIME);
+                Sfx_PlaySfxCentered(NA_SE_SY_CORRECT_CHIME);
                 // Drop rupees
                 for (i = 0; i < 9; i++) {
                     collectible = Item_DropCollectible(
@@ -177,7 +177,7 @@ void BgHakaTubo_DropCollectible(BgHakaTubo* this, PlayState* play) {
                 Actor_Spawn(&play->actorCtx, play, ACTOR_EN_FIREFLY, this->dyna.actor.world.pos.x,
                             this->dyna.actor.world.pos.y + 80.0f, this->dyna.actor.world.pos.z, 0,
                             this->dyna.actor.shape.rot.y, 0, 2);
-                func_80078884(NA_SE_SY_ERROR);
+                Sfx_PlaySfxCentered(NA_SE_SY_ERROR);
             } else {
                 // Random rewards
                 if (rnd < 0.4f) {
@@ -189,16 +189,16 @@ void BgHakaTubo_DropCollectible(BgHakaTubo* this, PlayState* play) {
                 } else {
                     collectibleParams = ITEM00_ARROWS_SMALL;
                 }
-                func_80078884(NA_SE_SY_TRE_BOX_APPEAR);
+                Sfx_PlaySfxCentered(NA_SE_SY_TRE_BOX_APPEAR);
             }
         } else if (Flags_GetCollectible(play, this->dyna.actor.params) != 0) {
             // If small key already collected, drop recovery heart instead
             collectibleParams = ITEM00_RECOVERY_HEART;
-            func_80078884(NA_SE_SY_TRE_BOX_APPEAR);
+            Sfx_PlaySfxCentered(NA_SE_SY_TRE_BOX_APPEAR);
         } else {
             // Drops a small key and sets a collect flag
             collectibleParams = ((this->dyna.actor.params & 0x3F) << 8) | ITEM00_SMALL_KEY;
-            func_80078884(NA_SE_SY_CORRECT_CHIME);
+            Sfx_PlaySfxCentered(NA_SE_SY_CORRECT_CHIME);
         }
         if (collectibleParams != -1) {
             collectible = Item_DropCollectible(play, &spawnPos, collectibleParams);
@@ -234,7 +234,7 @@ void BgHakaTubo_DrawFlameCircle(BgHakaTubo* this, PlayState* play) {
     gSPSegment(POLY_XLU_DISP++, 0x08,
                Gfx_TwoTexScroll(play->state.gfxCtx, G_TX_RENDERTILE, this->fireScroll & 127, 0, 32, 64, 1, 0,
                                 (this->fireScroll * -15) & 0xFF, 32, 64));
-    gSPMatrix(POLY_XLU_DISP++, Matrix_NewMtx(play->state.gfxCtx, "../z_bg_haka_tubo.c", 497),
+    gSPMatrix(POLY_XLU_DISP++, MATRIX_NEW(play->state.gfxCtx, "../z_bg_haka_tubo.c", 497),
               G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
     gSPDisplayList(POLY_XLU_DISP++, gEffFireCircleDL);
 

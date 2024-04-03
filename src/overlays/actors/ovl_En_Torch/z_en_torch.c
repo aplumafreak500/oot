@@ -10,16 +10,16 @@
 
 void EnTorch_Init(Actor* thisx, PlayState* play);
 
-const ActorInit En_Torch_InitVars = {
-    ACTOR_EN_TORCH,
-    ACTORCAT_ITEMACTION,
-    FLAGS,
-    OBJECT_GAMEPLAY_KEEP,
-    sizeof(EnTorch),
-    (ActorFunc)EnTorch_Init,
-    NULL,
-    NULL,
-    NULL,
+ActorInit En_Torch_InitVars = {
+    /**/ ACTOR_EN_TORCH,
+    /**/ ACTORCAT_ITEMACTION,
+    /**/ FLAGS,
+    /**/ OBJECT_GAMEPLAY_KEEP,
+    /**/ sizeof(EnTorch),
+    /**/ EnTorch_Init,
+    /**/ NULL,
+    /**/ NULL,
+    /**/ NULL,
 };
 
 static u8 sChestContents[] = {
