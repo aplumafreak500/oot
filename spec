@@ -9702,6 +9702,7 @@ endseg
 #if OOT_DEBUG
 beginseg
     name "syotes_scene"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/syotes/syotes_scene.o"
     number 2
@@ -9709,6 +9710,7 @@ endseg
 
 beginseg
     name "syotes_room_0"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/syotes/syotes_room_0.header.o"
     include "$(BUILD_DIR)/assets/scenes/test_levels/syotes/syotes_room_0.o"
@@ -9717,6 +9719,7 @@ endseg
 
 beginseg
     name "syotes2_scene"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/syotes2/syotes2_scene.o"
     number 2
@@ -9724,6 +9727,7 @@ endseg
 
 beginseg
     name "syotes2_room_0"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/syotes2/syotes2_room_0.o"
     number 3
@@ -9731,6 +9735,7 @@ endseg
 
 beginseg
     name "depth_test_scene"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/depth_test/depth_test_scene.o"
     number 2
@@ -9738,6 +9743,7 @@ endseg
 
 beginseg
     name "depth_test_room_0"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/depth_test/depth_test_room_0.o"
     number 3
@@ -10227,6 +10233,7 @@ endseg
 #if OOT_DEBUG
 beginseg
     name "testroom_scene"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/testroom/testroom_scene.o"
     number 2
@@ -10234,6 +10241,7 @@ endseg
 
 beginseg
     name "testroom_room_0"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/testroom/testroom_room_0.o"
     number 3
@@ -10241,6 +10249,7 @@ endseg
 
 beginseg
     name "testroom_room_1"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/testroom/testroom_room_1.o"
     number 3
@@ -10248,6 +10257,7 @@ endseg
 
 beginseg
     name "testroom_room_2"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/testroom/testroom_room_2.o"
     number 3
@@ -10255,6 +10265,7 @@ endseg
 
 beginseg
     name "testroom_room_3"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/testroom/testroom_room_3.o"
     number 3
@@ -10262,6 +10273,7 @@ endseg
 
 beginseg
     name "testroom_room_4"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/testroom/testroom_room_4.o"
     number 3
@@ -10311,6 +10323,7 @@ endseg
 #if OOT_DEBUG
 beginseg
     name "sutaru_scene"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/sutaru/sutaru_scene.o"
     number 2
@@ -10318,6 +10331,7 @@ endseg
 
 beginseg
     name "sutaru_room_0"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/sutaru/sutaru_room_0.o"
     number 3
@@ -10599,6 +10613,7 @@ endseg
 #if OOT_DEBUG
 beginseg
     name "sasatest_scene"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/sasatest/sasatest_scene.o"
     number 2
@@ -10606,6 +10621,7 @@ endseg
 
 beginseg
     name "sasatest_room_0"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/sasatest/sasatest_room_0.o"
     number 3
@@ -11351,6 +11367,7 @@ endseg
 #if OOT_DEBUG
 beginseg
     name "hairal_niwa2_scene"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/indoors/hairal_niwa2/hairal_niwa2_scene.o"
     number 2
@@ -11358,6 +11375,7 @@ endseg
 
 beginseg
     name "hairal_niwa2_room_0"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/indoors/hairal_niwa2/hairal_niwa2_room_0.o"
     number 3
@@ -11839,6 +11857,7 @@ endseg
 #if OOT_DEBUG
 beginseg
     name "besitu_scene"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/besitu/besitu_scene.o"
     number 2
@@ -11846,6 +11865,7 @@ endseg
 
 beginseg
     name "besitu_room_0"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/besitu/besitu_room_0.o"
     number 3
@@ -11911,6 +11931,7 @@ endseg
 #if OOT_DEBUG
 beginseg
     name "test01_scene"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/test01/test01_scene.o"
     number 2
@@ -11918,6 +11939,7 @@ endseg
 
 beginseg
     name "test01_room_0"
+    compress
     romalign 0x1000
     include "$(BUILD_DIR)/assets/scenes/test_levels/test01/test01_room_0.o"
     number 3
