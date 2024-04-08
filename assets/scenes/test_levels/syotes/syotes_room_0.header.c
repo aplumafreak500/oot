@@ -8,8 +8,8 @@
 #include "variables.h"
 #include "syotes_scene.h"
 
-s16 syotes_room_0ObjectList[];
-ActorEntry syotes_room_0ActorList[];
+//s16 syotes_room_0ObjectList[];
+//ActorEntry syotes_room_0ActorList[];
 
 SceneCmd syotes_room_0Commands[] = {
     SCENE_CMD_ECHO_SETTINGS(5),
@@ -21,9 +21,10 @@ SceneCmd syotes_room_0Commands[] = {
 //    SCENE_CMD_ACTOR_LIST(1, syotes_room_0ActorList),
     SCENE_CMD_END(),
 };
-
+/*
 s16 syotes_room_0ObjectList[] = {
 };
 
 ActorEntry syotes_room_0ActorList[] = {
 };
+*/
