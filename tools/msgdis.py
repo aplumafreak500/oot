@@ -449,6 +449,12 @@ def main():
         fra_message_entry_table_addr = 0x00B84C28
         staff_message_entry_table_addr = 0x00B86D38
         staff_message_entry_table_addr_end = 0x00B86EC0
+    elif version == "gc-eu-dbg":
+        nes_message_entry_table_addr = 0x00BC24E0
+        ger_message_entry_table_addr = 0x00BC6708
+        fra_message_entry_table_addr = 0x00BC8818
+        staff_message_entry_table_addr = 0x00BCA928
+        staff_message_entry_table_addr_end = 0x00BCAAB0
     elif version == "gc-eu":
         nes_message_entry_table_addr = 0x00B7E910
         ger_message_entry_table_addr = 0x00B82B38
