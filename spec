@@ -25,7 +25,6 @@ beginseg
 #endif
     include "$(BUILD_DIR)/src/boot/is_debug.o"
     include "$(BUILD_DIR)/src/libultra/io/driverominit.o"
-    include "$(BUILD_DIR)/src/boot/mio0.o"
     include "$(BUILD_DIR)/src/boot/stackcheck.o"
     include "$(BUILD_DIR)/src/boot/logutils.o"
 #if OOT_DEBUG

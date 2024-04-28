@@ -42,7 +42,6 @@ void* is_proutSyncPrintf(void* arg, const char* str, size_t count);
 NORETURN void func_80002384(const char* exp, const char* file, int line);
 #endif
 OSPiHandle* osDriveRomInit(void);
-void Mio0_Decompress(u8* src, u8* dst);
 void StackCheck_Init(StackEntry* entry, void* stackBottom, void* stackTop, u32 initValue, s32 minSpace,
                      const char* name);
 void StackCheck_Cleanup(StackEntry* entry);
