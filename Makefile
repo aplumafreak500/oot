@@ -13,7 +13,7 @@ NON_MATCHING := 1
 # If ORIG_COMPILER is 1, compile with QEMU_IRIX and the original compiler
 ORIG_COMPILER := 0
 # If COMPILER is "gcc", compile with GCC instead of IDO.
-COMPILER := gcc
+COMPILER := ido
 # Target game version. Currently only the following version is supported:
 #   gc-eu-mq-dbg   GameCube Europe/PAL Master Quest Debug (default)
 # The following versions are work-in-progress and not yet matching:
@@ -42,7 +42,7 @@ endif
 
 # Set prefix to mips binutils binaries (mips-linux-gnu-ld => 'mips-linux-gnu-') - Change at your own risk!
 # In nearly all cases, not having 'mips-linux-gnu-*' binaries on the PATH is indicative of missing dependencies
-MIPS_BINUTILS_PREFIX ?= mips64-elf-
+MIPS_BINUTILS_PREFIX := mips64-elf-
 
 ifeq ($(NON_MATCHING),1)
   CFLAGS += -DNON_MATCHING -DAVOID_UB
@@ -71,15 +71,14 @@ VENV := .venv
 
 MAKE = make
 CPPFLAGS += -P -xc -fno-dollars-in-identifiers
+OPTFLAGS := -O2 -g3
 
 ifeq ($(DEBUG),1)
   CFLAGS += -DOOT_DEBUG=1
   CPPFLAGS += -DOOT_DEBUG=1
-  OPTFLAGS := -O2
 else
   CFLAGS += -DNDEBUG -DOOT_DEBUG=0
   CPPFLAGS += -DNDEBUG -DOOT_DEBUG=0
-  OPTFLAGS := -O2 -g3
 endif
 
 ifeq ($(OS),Windows_NT)
@@ -149,9 +148,9 @@ PYTHON     ?= $(VENV)/bin/python3
 # preprocessor for this because it won't substitute inside string literals.
 SPEC_REPLACE_VARS := sed -e 's|$$(BUILD_DIR)|$(BUILD_DIR)|g'
 
-#ifeq ($(COMPILER),gcc)
-#  OPTFLAGS := -Os -ffast-math -fno-unsafe-math-optimizations
-#endif
+ifeq ($(COMPILER),gcc)
+  OPTFLAGS := -Os -ffast-math -fno-unsafe-math-optimizations
+endif
 
 ASFLAGS := -march=vr4300 -32 -no-pad-sections -Iinclude
 
