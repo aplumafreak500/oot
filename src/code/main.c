@@ -78,8 +78,10 @@ void Main(void* arg) {
 
     Regs_Init();
 
+#if OOT_DEBUG
+    R_ENABLE_ARENA_DBG = 1;
+#else
     R_ENABLE_ARENA_DBG = 0;
-#if !OOT_DEBUG
     R_DISABLE_INPUT_DISPLAY = 1;
 #endif
 
