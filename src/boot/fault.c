@@ -44,6 +44,15 @@
 #include "terminal.h"
 #include "alloca.h"
 
+// For retail BSS ordering, the block number of sFaultInstance must be 0 or
+// just above (the exact upper bound depends on the block numbers assigned to
+// extern variables declared in headers).
+#if OOT_DEBUG
+#pragma increment_block_number 20
+#else
+#pragma increment_block_number 25
+#endif
+
 void FaultDrawer_Init(void);
 void FaultDrawer_SetOsSyncPrintfEnabled(u32 enabled);
 void FaultDrawer_DrawRecImpl(s32 xStart, s32 yStart, s32 xEnd, s32 yEnd, u16 color);
