@@ -154,20 +154,20 @@ PYTHON     ?= $(VENV)/bin/python3
 SPEC_REPLACE_VARS := sed -e 's|$$(BUILD_DIR)|$(BUILD_DIR)|g'
 
 ifeq ($(COMPILER),gcc)
-  OPTFLAGS := -Os -ffast-math -fno-unsafe-math-optimizations
+  OPTFLAGS += -ffast-math -fno-unsafe-math-optimizations
 endif
 
 ASFLAGS := -march=vr4300 -32 -no-pad-sections -Iinclude
+MIPS_VERSION := -mips3
 
 ifeq ($(COMPILER),gcc)
   CFLAGS += -G 0 -nostdinc $(INC) -march=vr4300 -mfix4300 -mabi=32 -mno-abicalls -mdivide-breaks -fno-PIC -fno-common -ffreestanding -fbuiltin -fno-builtin-sinf -fno-builtin-cosf $(CHECK_WARNINGS) -funsigned-char
-  MIPS_VERSION := -mips3
 else
   # Suppress warnings for wrong number of macro arguments (to fake variadic
   # macros) and Microsoft extensions such as anonymous structs (which the
   # compiler does support but warns for their usage).
   CFLAGS += -G 0 -non_shared -fullwarn -verbose -Xcpluscomm $(INC) -Wab,-r4300_mul -woff 516,609,649,838,712
-  MIPS_VERSION := -mips2
+  MIPS_VERSION += -32
 endif
 
 ifeq ($(COMPILER),ido)
@@ -238,78 +238,16 @@ TEXTURE_FILES_OUT := $(foreach f,$(TEXTURE_FILES_PNG:.png=.inc.c),$(BUILD_DIR)/$
 $(shell mkdir -p $(BUILD_DIR)/baserom $(EXTRACTED_DIR)/text $(BUILD_DIR)/assets/text $(foreach dir,$(SRC_DIRS) $(UNDECOMPILED_DATA_DIRS) $(ASSET_BIN_DIRS),$(BUILD_DIR)/$(dir)))
 
 ifeq ($(COMPILER),ido)
-$(BUILD_DIR)/src/boot/stackcheck.o: OPTFLAGS := -O2
-
-$(BUILD_DIR)/src/code/__osMalloc.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/code_800FC620.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/code_800FCE80.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/rand.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/gfxprint.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/jpegutils.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/jpegdecoder.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/load.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/loadfragment2.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/logutils.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/mtxuty-cvt.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/padsetup.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/padutils.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/printutils.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/relocation.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/sleep.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/system_malloc.o: OPTFLAGS := -O2
-
 $(BUILD_DIR)/src/code/fault.o: CFLAGS += -trapuv
-$(BUILD_DIR)/src/code/fault.o: OPTFLAGS := -O2 -g3
 $(BUILD_DIR)/src/code/fault_drawer.o: CFLAGS += -trapuv
-$(BUILD_DIR)/src/code/fault_drawer.o: OPTFLAGS := -O2 -g3
-$(BUILD_DIR)/src/code/ucode_disas.o: OPTFLAGS := -O2 -g3
-
-ifeq ($(DEBUG),1)
-$(BUILD_DIR)/src/code/fmodf.o: OPTFLAGS := -g
-$(BUILD_DIR)/src/code/__osMemset.o: OPTFLAGS := -g
-$(BUILD_DIR)/src/code/__osMemmove.o: OPTFLAGS := -g
-else
-$(BUILD_DIR)/src/code/fmodf.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/__osMemset.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/code/__osMemmove.o: OPTFLAGS := -O2
-endif
-
-$(BUILD_DIR)/src/audio/%.o: OPTFLAGS := -O2
-
-# Use signed chars instead of unsigned for this audio file (needed to match AudioDebug_ScrPrt)
-$(BUILD_DIR)/src/audio/general.o: CFLAGS += -signed
-
-# Put string literals in .data for some audio files (needed to match these files with literals)
-$(BUILD_DIR)/src/audio/sfx.o: CFLAGS += -use_readwrite_const
-$(BUILD_DIR)/src/audio/sequence.o: CFLAGS += -use_readwrite_const
-
-ifeq ($(DEBUG),1)
-$(BUILD_DIR)/src/libultra/libc/absf.o: OPTFLAGS := -O2 -g3
-$(BUILD_DIR)/src/libultra/libc/sqrt.o: OPTFLAGS := -O2 -g3
-else
-$(BUILD_DIR)/src/libultra/libc/absf.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/libultra/libc/sqrt.o: OPTFLAGS := -O2
-endif
-
-$(BUILD_DIR)/src/libultra/libc/ll.o: OPTFLAGS := -O1
-$(BUILD_DIR)/src/libultra/libc/ll.o: MIPS_VERSION := -mips3 -32
-$(BUILD_DIR)/src/libultra/libc/llcvt.o: OPTFLAGS := -O1
-$(BUILD_DIR)/src/libultra/libc/llcvt.o: MIPS_VERSION := -mips3 -32
-
-$(BUILD_DIR)/src/libultra/os/%.o: OPTFLAGS := -O1
-$(BUILD_DIR)/src/libultra/io/%.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/libultra/libc/%.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/libultra/rmon/%.o: OPTFLAGS := -O2
-$(BUILD_DIR)/src/libultra/gu/%.o: OPTFLAGS := -O2
-
 $(BUILD_DIR)/assets/misc/z_select_static/%.o: CFLAGS += -DF3DEX_GBI
-
+$(BUILD_DIR)/src/libultra/libc/ll.o: MIPS_VERSION := -mips3 -32
+$(BUILD_DIR)/src/libultra/libc/llcvt.o: MIPS_VERSION := -mips3 -32
 $(BUILD_DIR)/src/libultra/gu/%.o: CC := $(CC_OLD)
 $(BUILD_DIR)/src/libultra/io/%.o: CC := $(CC_OLD)
 $(BUILD_DIR)/src/libultra/libc/%.o: CC := $(CC_OLD)
 $(BUILD_DIR)/src/libultra/os/%.o: CC := $(CC_OLD)
 $(BUILD_DIR)/src/libultra/rmon/%.o: CC := $(CC_OLD)
-
 $(BUILD_DIR)/src/code/jpegutils.o: CC := $(CC_OLD)
 $(BUILD_DIR)/src/code/jpegdecoder.o: CC := $(CC_OLD)
 
