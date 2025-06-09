@@ -17,6 +17,12 @@ import crunch64
 import dmadata
 
 
+COMPRESSION_METHODS = {
+    "yaz0": crunch64.yaz0.compress,
+    "gzip": crunch64.gzip.compress,
+}
+
+
 def align(v: int):
     v += 0xF
     return v // 0x10 * 0x10
@@ -48,14 +54,23 @@ def compress_rom(
     rom_data: memoryview,
     dmadata_start: int,
     compress_entries_indices: set[int],
+    compression_format: str,
+    pad_to_multiple_of: int,
+    fill_padding_bytes: bool,
     n_threads: int = None,
 ):
     """
     rom_data: the uncompressed rom data
     dmadata_start: the offset in the rom where the dmadata starts
     compress_entries_indices: the indices in the dmadata of the segments that should be compressed
+    compression_format: the compression format to use
+    pad_to_multiple_of: pad the compressed rom to a multiple of this size, in bytes
+    fill_padding_bytes: fill the padding bytes with a 0x00 0x01 0x02 ... pattern instead of zeros
     n_threads: how many cores to use for compression
     """
+
+    # Compression function
+    compress = COMPRESSION_METHODS[compression_format]
 
     # Segments of the compressed rom (not all are compressed)
     compressed_rom_segments: list[RomSegment] = []
@@ -80,7 +95,7 @@ def compress_rom(
             if is_compressed:
                 segment_data = None
                 segment_data_async = p.apply_async(
-                    crunch64.yaz0.compress,
+                    compress,
                     (bytes(segment_data_uncompressed),),
                 )
             else:
@@ -225,6 +240,25 @@ def main():
         ),
     )
     parser.add_argument(
+        "--format",
+        dest="format",
+        choices=COMPRESSION_METHODS.keys(),
+        default="yaz0",
+        help="compression format to use (default: yaz0)",
+    )
+    parser.add_argument(
+        "--pad-to",
+        dest="pad_to",
+        type=lambda s: int(s, 16),
+        help="pad the compressed rom to a multiple of this size, in hex (e.g. 0x800000 for 8 MiB)",
+    )
+    parser.add_argument(
+        "--fill-padding-bytes",
+        dest="fill_padding_bytes",
+        action="store_true",
+        help="fill the padding bytes with a 0x00 0x01 0x02 ... pattern instead of zeros",
+    )
+    parser.add_argument(
         "--threads",
         dest="n_threads",
         type=int,
@@ -260,6 +294,9 @@ def main():
                 range(compress_range_first, compress_range_last + 1)
             )
 
+    compression_format = args.format
+    pad_to_multiple_of = args.pad_to
+    fill_padding_bytes = args.fill_padding_bytes
     n_threads = args.n_threads
 
     in_rom_data = in_rom_p.read_bytes()
@@ -267,6 +304,9 @@ def main():
         memoryview(in_rom_data),
         dmadata_start,
         compress_entries_indices,
+        compression_format,
+        pad_to_multiple_of,
+        fill_padding_bytes,
         n_threads,
     )
     out_rom_p.write_bytes(out_rom_data)
