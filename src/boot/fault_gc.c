@@ -668,7 +668,6 @@ void Fault_Wait5Seconds(void) {
  * (L & R & Z) + DPad-Up + C-Down + C-Up + DPad-Down + DPad-Left + C-Left + C-Right + DPad-Right + (B & A & START)
  */
 void Fault_WaitForButtonCombo(void) {
-	/*
     Input* input = &sFaultInstance->inputs[0];
     s32 state;
     u32 s1;
@@ -814,7 +813,6 @@ void Fault_WaitForButtonCombo(void) {
         }
         osWritebackDCacheAll();
     }
-	*/
 }
 
 void Fault_DrawMemDumpContents(const char* title, uintptr_t addr, u32 arg2) {
@@ -1233,7 +1231,7 @@ void Fault_ThreadEntry(void* arg) {
         } else {
             // Draw error bar signifying the crash screen is available
             Fault_DrawCornerRec(GPACK_RGBA5551(255, 0, 0, 1));
-            Fault_WaitForButtonCombo();
+            //Fault_WaitForButtonCombo();
         }
 
         // Set auto-scrolling and default colors
