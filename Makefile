@@ -20,7 +20,7 @@ NON_MATCHING ?= 1
 # If ORIG_COMPILER is 1, compile with QEMU_IRIX and the original compiler.
 ORIG_COMPILER ?= 0
 # If COMPILER is "gcc", compile with GCC instead of IDO.
-COMPILER ?= ido
+COMPILER ?= gcc
 # Target game version. Ensure the corresponding input ROM is placed in baseroms/$(VERSION)/baserom.z64.
 # Currently the following versions are supported:
 #   ntsc-1.0       N64 NTSC 1.0 (Japan/US depending on REGION)
@@ -506,11 +506,10 @@ ifneq ($(NON_MATCHING),1)
 $(BUILD_DIR)/src/boot/driverominit.o: POSTPROCESS_OBJ := $(PYTHON) tools/patch_ique_driverominit.py
 endif
 endif
-endif
 
-$(BUILD_DIR)/src/code/fault_n64.o: CFLAGS += -trapuv
-$(BUILD_DIR)/src/code/fault_gc.o: CFLAGS += -trapuv
-$(BUILD_DIR)/src/code/fault_gc_drawer.o: CFLAGS += -trapuv
+$(BUILD_DIR)/src/boot/fault_n64.o: CFLAGS += -trapuv
+$(BUILD_DIR)/src/boot/fault_gc.o: CFLAGS += -trapuv
+$(BUILD_DIR)/src/boot/fault_gc_drawer.o: CFLAGS += -trapuv
 
 ifeq ($(PLATFORM),N64)
 $(BUILD_DIR)/src/code/z_rumble.o: CFLAGS += -DNO_SQRTF_INTRINSIC
@@ -552,6 +551,7 @@ $(BUILD_DIR)/src/libc/%.o: CFLAGS := $(EGCS_CFLAGS) -mno-abicalls
 $(BUILD_DIR)/src/libc/%.o: CCASFLAGS := $(EGCS_CCASFLAGS)
 $(BUILD_DIR)/src/libc/%.o: MIPS_VERSION :=
 $(BUILD_DIR)/src/libc/memmove.o: MIPS_VERSION := -mips2
+endif
 
 # Use signed chars instead of unsigned for this audio file (needed to match AudioDebug_ScrPrt)
 $(BUILD_DIR)/src/audio/game/general.o: CFLAGS += -signed
@@ -662,7 +662,7 @@ venv:
 	$(PYTHON) -m pip install -U pip
 	$(PYTHON) -m pip install -U -r requirements.txt
 
-setup: venv
+setup:
 	$(MAKE) -C tools
 	$(PYTHON) tools/decompress_baserom.py $(VERSION)
 	$(PYTHON) tools/extract_baserom.py $(BASEROM_DIR)/baserom-decompressed.z64 $(EXTRACTED_DIR)/baserom -v $(VERSION)
