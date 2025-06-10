@@ -58,6 +58,7 @@ REGION ?= US
 
 # Version-specific settings
 REGIONAL_CHECKSUM := 0
+MQ ?= 0
 ifeq ($(VERSION),ntsc-1.0)
   REGIONAL_CHECKSUM := 1
   REGION ?= JP
@@ -95,6 +96,7 @@ else ifeq ($(VERSION),gc-jp-mq)
   REGION ?= JP
   PLATFORM ?= GC
   DEBUG_FEATURES ?= 0
+  MQ ?= 1
   REVISION := 15
 else ifeq ($(VERSION),gc-us)
   REGION ?= US
@@ -105,11 +107,13 @@ else ifeq ($(VERSION),gc-us-mq)
   REGION ?= US
   PLATFORM ?= GC
   DEBUG_FEATURES ?= 0
+  MQ ?= 1
   REVISION := 15
 else ifeq ($(VERSION),gc-eu-mq-dbg)
   REGION ?= EU
   PLATFORM ?= GC
   DEBUG_FEATURES ?= 1
+  MQ ?= 1
   REVISION := 15
 else ifeq ($(VERSION),gc-eu)
   REGION ?= EU
@@ -120,6 +124,7 @@ else ifeq ($(VERSION),gc-eu-mq)
   REGION ?= EU
   PLATFORM ?= GC
   DEBUG_FEATURES ?= 0
+  MQ ?= 1
   REVISION := 15
 else ifeq ($(VERSION),gc-jp-ce)
   REGION ?= JP
@@ -163,19 +168,22 @@ MAKE = make
 
 ifeq ($(PLATFORM),N64)
   CPP_DEFINES += -DPLATFORM_N64=1 -DPLATFORM_GC=0 -DPLATFORM_IQUE=0
-  LIBULTRA_VERSION := I
-  LIBULTRA_PATCH := 1
 else ifeq ($(PLATFORM),GC)
   CPP_DEFINES += -DPLATFORM_N64=0 -DPLATFORM_GC=1 -DPLATFORM_IQUE=0
-  LIBULTRA_VERSION := L
-  LIBULTRA_PATCH := 0
 else ifeq ($(PLATFORM),IQUE)
   CPP_DEFINES += -DPLATFORM_N64=0 -DPLATFORM_GC=0 -DPLATFORM_IQUE=1
-  LIBULTRA_VERSION := L
-  LIBULTRA_PATCH := 0
 else
 $(error Unsupported platform $(PLATFORM))
 endif
+
+ifeq ($(MQ),1)
+  CPP_DEFINES += -DOOT_MQ=1
+else
+  CPP_DEFINES += -DOOT_MQ=0
+endif
+
+LIBULTRA_VERSION := L
+LIBULTRA_PATCH := 0
 
 # Converts e.g. ntsc-1.0 to NTSC_1_0
 VERSION_MACRO := $(shell echo $(VERSION) | tr a-z-. A-Z__)

@@ -27,17 +27,10 @@
 #endif
 
 // PAL N64 (50 Hz)
-#if OOT_VERSION == PAL_1_0 || OOT_VERSION == PAL_1_1
+#if OOT_PAL && PLATFORM_N64
 #define OOT_PAL_N64 1
 #else
 #define OOT_PAL_N64 0
-#endif
-
-// Master Quest
-#if OOT_VERSION == GC_JP_MQ || OOT_VERSION == GC_US_MQ || OOT_VERSION == GC_EU_MQ || OOT_VERSION == GC_EU_MQ_DBG
-#define OOT_MQ 1
-#else
-#define OOT_MQ 0
 #endif
 
 // Macro for constants that change in 50 Hz N64 PAL versions.
