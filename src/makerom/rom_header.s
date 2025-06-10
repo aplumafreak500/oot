@@ -36,7 +36,7 @@
 /* 0x3F */ GAME_REVISION(222)
 #else
 /* 0x3F */ GAME_REVISION(OOT_REVISION)
-
+#endif
 #else
 
     .fill 0x40 - 0x18
