@@ -51,10 +51,10 @@ beginseg
     include "$(BUILD_DIR)/src/boot/is_debug_ique.o"
 #endif
 #if PLATFORM_N64
-    include "$(BUILD_DIR)/src/code/fault_n64.o"
+    include "$(BUILD_DIR)/src/boot/fault_n64.o"
 #else
-    include "$(BUILD_DIR)/src/code/fault_gc.o"
-    include "$(BUILD_DIR)/src/code/fault_gc_drawer.o"
+    include "$(BUILD_DIR)/src/boot/fault_gc.o"
+    include "$(BUILD_DIR)/src/boot/fault_gc_drawer.o"
 #endif
     include "$(BUILD_DIR)/src/boot/driverominit.o"
 

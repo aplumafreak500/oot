@@ -461,16 +461,16 @@ void KaleidoScope_DrawInventoryEditor(PlayState* play) {
     KaleidoScope_DrawDigit(play, gSaveContext.save.info.playerData.isDoubleDefenseAcquired, 78, 204);
 
 	// Magic
-	spD8[2] = 0;
-	spD8[3] = gSaveContext.save.info.playerData.magic;
+	digitBuf[2] = 0;
+	digitBuf[3] = gSaveContext.save.info.playerData.magic;
 
-    while (spD8[3] >= 10) {
-        spD8[2]++;
-        spD8[3] -= 10;
+    while (digitBuf[3] >= 10) {
+        digitBuf[2]++;
+        digitBuf[3] -= 10;
     }
 
-    KaleidoScope_DrawDigit(play, spD8[2], 120, 204);
-    KaleidoScope_DrawDigit(play, spD8[3], 130, 204);
+    KaleidoScope_DrawDigit(play, digitBuf[2], 120, 204);
+    KaleidoScope_DrawDigit(play, digitBuf[3], 130, 204);
 
 	// Magic Meter
     KaleidoScope_DrawDigit(play, gSaveContext.save.info.playerData.magicLevel, 200, 204);
