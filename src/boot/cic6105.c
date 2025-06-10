@@ -42,6 +42,8 @@ void CIC6105_FaultClient(void) {
     Fault_Printf(" [Creator:%s]", gBuildCreator);
     Fault_SetCursor(56, 192);
     Fault_Printf("[Date:%s]", gBuildDate);
+    Fault_SetCursor(64, 192);
+    Fault_Printf("[Git Rev:%s]", gGitRev);
 #if OOT_VERSION < PAL_1_0
     Fault_SetCursor(128, 24);
 #else
