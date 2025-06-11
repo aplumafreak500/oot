@@ -140,7 +140,7 @@ void Main(void* arg) {
 
     Regs_Init();
 
-#if OOT_DEBUG
+#if DEBUG_FEATURES
     R_ENABLE_ARENA_DBG = 1;
 #else
     R_ENABLE_ARENA_DBG = 0;
