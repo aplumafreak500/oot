@@ -1560,14 +1560,14 @@ char DebugCamera_InitCut(s32 idx, DebugCamSub* sub) {
     sDebugCamCuts[idx].lookAt = DEBUG_ARENA_MALLOC(i, "../db_camera.c", 2748);
     if (sDebugCamCuts[idx].lookAt == NULL) {
         // "Debug camera memory allocation failure"
-        PRINTF("%s: %d: デバッグカメラ メモリ確保失敗！！\n", "../db_camera.c", 2751);
+        PRINTF("%s: %d: デバッグカメラ メモリ確保失敗！！\n", __FILE__, __LINE__);
         return '?';
     }
 
     sDebugCamCuts[idx].position = DEBUG_ARENA_MALLOC(i, "../db_camera.c", 2754);
     if (sDebugCamCuts[idx].position == NULL) {
         // "Debug camera memory allocation failure"
-        PRINTF("%s: %d: デバッグカメラ メモリ確保失敗！！\n", "../db_camera.c", 2757);
+        PRINTF("%s: %d: デバッグカメラ メモリ確保失敗！！\n", __FILE__, __LINE__);
         DEBUG_ARENA_FREE(sDebugCamCuts[idx].lookAt, "../db_camera.c", 2758);
         sDebugCamCuts[idx].lookAt = NULL;
         return '?';
@@ -1645,7 +1645,7 @@ s32 DebugCamera_LoadCallback(char* c) {
             sDebugCamCuts[i].lookAt = DEBUG_ARENA_MALLOC(ALIGN32(size), "../db_camera.c", 2844);
             if (sDebugCamCuts[i].lookAt == NULL) {
                 // "Debug camera memory allocation failure"
-                PRINTF("%s: %d: デバッグカメラ メモリ確保失敗！！\n", "../db_camera.c", 2847);
+                PRINTF("%s: %d: デバッグカメラ メモリ確保失敗！！\n", __FILE__, __LINE__);
                 return false;
             }
             if (!Mempak_Read(DEBUG_CAM_CONTROLLER_PORT, *c, sDebugCamCuts[i].lookAt, off, ALIGN32(size))) {
@@ -1656,7 +1656,7 @@ s32 DebugCamera_LoadCallback(char* c) {
             sDebugCamCuts[i].position = DEBUG_ARENA_MALLOC(ALIGN32(size), "../db_camera.c", 2855);
             if (sDebugCamCuts[i].position == NULL) {
                 // "Debug camera memory allocation failure"
-                PRINTF("%s: %d: デバッグカメラ メモリ確保失敗！！\n", "../db_camera.c", 2858);
+                PRINTF("%s: %d: デバッグカメラ メモリ確保失敗！！\n", __FILE__, __LINE__);
                 return false;
             }
             if (!Mempak_Read(DEBUG_CAM_CONTROLLER_PORT, *c, sDebugCamCuts[i].position, off, ALIGN32(size))) {

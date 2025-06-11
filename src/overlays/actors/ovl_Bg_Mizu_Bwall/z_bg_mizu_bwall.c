@@ -213,7 +213,7 @@ void BgMizuBwall_Init(Actor* thisx, PlayState* play) {
                                       this->colliderElements)) {
                     PRINTF(T("Error : コリジョンデータセット失敗(%s %d)(arg_data 0x%04x)\n",
                              "Error : Collision data set failure (%s %d)(arg_data 0x%04x)\n"),
-                           "../z_bg_mizu_bwall.c", 484, this->dyna.actor.params);
+                           __FILE__, __LINE__, this->dyna.actor.params);
                     Actor_Kill(&this->dyna.actor);
                 } else {
                     sin = Math_SinS(this->dyna.actor.shape.rot.y);
@@ -254,7 +254,7 @@ void BgMizuBwall_Init(Actor* thisx, PlayState* play) {
                                       this->colliderElements)) {
                     PRINTF(T("Error : コリジョンデータセット失敗(%s %d)(arg_data 0x%04x)\n",
                              "Error : Collision data set failure (%s %d)(arg_data 0x%04x)\n"),
-                           "../z_bg_mizu_bwall.c", 558, this->dyna.actor.params);
+                           __FILE__, __LINE__, this->dyna.actor.params);
                     Actor_Kill(&this->dyna.actor);
                 } else {
                     sin = Math_SinS(this->dyna.actor.shape.rot.y);
@@ -295,7 +295,7 @@ void BgMizuBwall_Init(Actor* thisx, PlayState* play) {
                                       this->colliderElements)) {
                     PRINTF(T("Error : コリジョンデータセット失敗(%s %d)(arg_data 0x%04x)\n",
                              "Error : Collision data set failure (%s %d)(arg_data 0x%04x)\n"),
-                           "../z_bg_mizu_bwall.c", 638, this->dyna.actor.params);
+                           __FILE__, __LINE__, this->dyna.actor.params);
                     Actor_Kill(&this->dyna.actor);
                 } else {
                     sin = Math_SinS(this->dyna.actor.shape.rot.y);
@@ -338,7 +338,7 @@ void BgMizuBwall_Init(Actor* thisx, PlayState* play) {
                                       this->colliderElements)) {
                     PRINTF(T("Error : コリジョンデータセット失敗(%s %d)(arg_data 0x%04x)\n",
                              "Error : Collision data set failure (%s %d)(arg_data 0x%04x)\n"),
-                           "../z_bg_mizu_bwall.c", 724, this->dyna.actor.params);
+                           __FILE__, __LINE__, this->dyna.actor.params);
                     Actor_Kill(&this->dyna.actor);
                 } else {
                     sin = Math_SinS(this->dyna.actor.shape.rot.y);
@@ -381,7 +381,7 @@ void BgMizuBwall_Init(Actor* thisx, PlayState* play) {
                                       this->colliderElements)) {
                     PRINTF(T("Error : コリジョンデータセット失敗(%s %d)(arg_data 0x%04x)\n",
                              "Error : Collision data set failure (%s %d)(arg_data 0x%04x)\n"),
-                           "../z_bg_mizu_bwall.c", 798, this->dyna.actor.params);
+                           __FILE__, __LINE__, this->dyna.actor.params);
                     Actor_Kill(&this->dyna.actor);
                 } else {
                     sin = Math_SinS(this->dyna.actor.shape.rot.y);

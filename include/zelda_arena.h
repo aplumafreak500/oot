@@ -24,9 +24,9 @@ void* ZeldaArena_ReallocDebug(void* ptr, u32 newSize, const char* file, int line
 void ZeldaArena_FreeDebug(void* ptr, const char* file, int line);
 void ZeldaArena_Display(void);
 
-#define ZELDA_ARENA_MALLOC(size, file, line) ZeldaArena_MallocDebug(size, file, line)
-#define ZELDA_ARENA_MALLOC_R(size, file, line) ZeldaArena_MallocRDebug(size, file, line)
-#define ZELDA_ARENA_FREE(size, file, line) ZeldaArena_FreeDebug(size, file, line)
+#define ZELDA_ARENA_MALLOC(size, file, line) ZeldaArena_MallocDebug(size, __FILE__, __LINE__)
+#define ZELDA_ARENA_MALLOC_R(size, file, line) ZeldaArena_MallocRDebug(size, __FILE__, __LINE__)
+#define ZELDA_ARENA_FREE(size, file, line) ZeldaArena_FreeDebug(size, __FILE__, __LINE__)
 
 #else
 

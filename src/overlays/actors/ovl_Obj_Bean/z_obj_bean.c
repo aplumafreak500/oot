@@ -165,7 +165,7 @@ void ObjBean_InitDynaPoly(ObjBean* this, PlayState* play, CollisionHeader* colli
 
         PRINTF(T("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n",
                  "Warning : move BG registration failed (%s %d)(name %d)(arg_data 0x%04x)\n"),
-               "../z_obj_bean.c", 374, this->dyna.actor.id, this->dyna.actor.params);
+               __FILE__, __LINE__, this->dyna.actor.id, this->dyna.actor.params);
     }
 #endif
 }
@@ -493,7 +493,7 @@ void ObjBean_Init(Actor* thisx, PlayState* play) {
             if (path == 0x1F) {
                 PRINTF_COLOR_ERROR();
                 PRINTF(T("パスデータが無い？(%s %d)(arg_data %xH)\n", "No path data? (%s %d)(arg_data %xH)\n"),
-                       "../z_obj_bean.c", 909, this->dyna.actor.params);
+                       __FILE__, __LINE__, this->dyna.actor.params);
                 PRINTF_RST();
                 Actor_Kill(&this->dyna.actor);
                 return;
@@ -502,7 +502,7 @@ void ObjBean_Init(Actor* thisx, PlayState* play) {
                 PRINTF_COLOR_ERROR();
                 PRINTF(T("パスデータ数が不正(%s %d)(arg_data %xH)\n",
                          "Path data count is invalid (%s %d)(arg_data %xH)\n"),
-                       "../z_obj_bean.c", 921, this->dyna.actor.params);
+                       __FILE__, __LINE__, this->dyna.actor.params);
                 PRINTF_RST();
                 Actor_Kill(&this->dyna.actor);
                 return;

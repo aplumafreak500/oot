@@ -6,20 +6,20 @@
 #if DEBUG_FEATURES
 #define LOG(exp, value, format, file, line)         \
     do {                                            \
-        LogUtils_LogThreadId(file, line);           \
+        LogUtils_LogThreadId(__FILE__, __LINE__);           \
         osSyncPrintf(exp " = " format "\n", value); \
     } while (0)
 #else
 #define LOG(exp, value, format, file, line) (void)(value)
 #endif
 
-#define LOG_STRING(string, file, line) LOG(#string, string, "%s", file, line)
-#define LOG_ADDRESS(exp, value, file, line) LOG(exp, value, "%08x", file, line)
-#define LOG_TIME(exp, value, file, line) LOG(exp, value, "%lld", file, line)
-#define LOG_NUM(exp, value, file, line) LOG(exp, value, "%d", file, line)
-#define LOG_HEX(exp, value, file, line) LOG(exp, value, "%x", file, line)
-#define LOG_HEX32(exp, value, file, line) LOG(exp, value, "%08x", file, line)
-#define LOG_FLOAT(exp, value, file, line) LOG(exp, value, "%f", file, line)
+#define LOG_STRING(string, file, line) LOG(#string, string, "%s", __FILE__, __LINE__)
+#define LOG_ADDRESS(exp, value, file, line) LOG(exp, value, "%08x", __FILE__, __LINE__)
+#define LOG_TIME(exp, value, file, line) LOG(exp, value, "%lld", __FILE__, __LINE__)
+#define LOG_NUM(exp, value, file, line) LOG(exp, value, "%d", __FILE__, __LINE__)
+#define LOG_HEX(exp, value, file, line) LOG(exp, value, "%x", __FILE__, __LINE__)
+#define LOG_HEX32(exp, value, file, line) LOG(exp, value, "%08x", __FILE__, __LINE__)
+#define LOG_FLOAT(exp, value, file, line) LOG(exp, value, "%f", __FILE__, __LINE__)
 
 #if PLATFORM_N64 || DEBUG_FEATURES
 f32 LogUtils_CheckFloatRange(const char* exp, int line, const char* valueName, f32 value, const char* minName, f32 min,
@@ -27,8 +27,8 @@ f32 LogUtils_CheckFloatRange(const char* exp, int line, const char* valueName, f
 #endif
 
 #if DEBUG_FEATURES
-#define LOG_UTILS_CHECK_NULL_POINTER(exp, ptr, file, line) LogUtils_CheckNullPointer(exp, ptr, file, line)
-#define LOG_UTILS_CHECK_VALID_POINTER(exp, ptr, file, line) LogUtils_CheckValidPointer(exp, ptr, file, line)
+#define LOG_UTILS_CHECK_NULL_POINTER(exp, ptr, file, line) LogUtils_CheckNullPointer(exp, ptr, __FILE__, __LINE__)
+#define LOG_UTILS_CHECK_VALID_POINTER(exp, ptr, file, line) LogUtils_CheckValidPointer(exp, ptr, __FILE__, __LINE__)
 
 s32 LogUtils_CheckIntRange(const char* exp, int line, const char* valueName, s32 value, const char* minName, s32 min,
                            const char* maxName, s32 max);

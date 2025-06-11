@@ -81,7 +81,7 @@ void BgMoriIdomizu_Init(Actor* thisx, PlayState* play) {
     if (this->moriTexObjectSlot < 0) {
         Actor_Kill(&this->actor);
         PRINTF(T("Error : バンク危険！(arg_data 0x%04x)(%s %d)\n", "Error : Bank danger! (arg_data 0x%04x)(%s %d)\n"),
-               this->actor.params, "../z_bg_mori_idomizu.c", 202);
+               this->actor.params, __FILE__, __LINE__);
         return;
     }
     BgMoriIdomizu_SetupWaitForMoriTex(this);

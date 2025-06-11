@@ -73,7 +73,7 @@ void BgMoriKaitenkabe_Init(Actor* thisx, PlayState* play) {
     if (this->moriTexObjectSlot < 0) {
         Actor_Kill(&this->dyna.actor);
         PRINTF(T("【回転壁】 バンク危険！(%s %d)\n", "[Rotating wall] Bank danger! (%s %d)\n"),
-               "../z_bg_mori_kaitenkabe.c", 176);
+               __FILE__, __LINE__);
     } else {
         this->actionFunc = BgMoriKaitenkabe_WaitForMoriTex;
     }

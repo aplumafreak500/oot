@@ -200,7 +200,7 @@ void BgHidanHamstep_Init(Actor* thisx, PlayState* play) {
             step = this;
 
             PRINTF(T("【ハンマーステップ】 足場産れない！！\n", "[Hammer Step] I can't create a step!!\n"));
-            PRINTF("%s %d\n", "../z_bg_hidan_hamstep.c", 425);
+            PRINTF("%s %d\n", __FILE__, __LINE__);
 
             while (step != NULL) {
                 Actor_Kill(&step->dyna.actor);
@@ -366,7 +366,7 @@ void func_80888A58(BgHidanHamstep* this, PlayState* play) {
         PRINTF(T("【ハンマーステップ】 arg_data おかしい (arg_data = %d)",
                  "[Hammer Step] arg_data strange (arg_data = %d)"),
                this->dyna.actor.params);
-        PRINTF("%s %d\n", "../z_bg_hidan_hamstep.c", 696);
+        PRINTF("%s %d\n", __FILE__, __LINE__);
     }
 #endif
 

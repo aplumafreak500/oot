@@ -666,7 +666,7 @@ void DmaMgr_Init(void) {
         PRINTF("_bootSegmentRomStart(%08x) != dma_rom_ad[0].rom_b(%08x)\n", _bootSegmentRomStart,
                gDmaDataTable[0].file.vromEnd);
         //! @bug The main code file where fault.c resides is not yet loaded
-        Fault_AddHungupAndCrash("../z_std_dma.c", LN3(837, 840, 859, 1055));
+        Fault_AddHungupAndCrash(__FILE__, __LINE__);
     }
 
     // Start the DMA manager

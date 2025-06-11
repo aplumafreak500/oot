@@ -13,8 +13,8 @@
  * Note: This translation macro exists for quality of life purposes.
  *       The original game would not have had a macro like this.
  */
-#define T(jp, en) jp
+#define T(jp, en) en
 
-#define LOG_STRING_T(stringJP, stringEN, file, line) LOG(#stringJP, stringJP, "%s", file, line)
+#define LOG_STRING_T(stringJP, stringEN, file, line) LOG(#stringJP, stringJP, "%s", __FILE__, __LINE__)
 
 #endif

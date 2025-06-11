@@ -40,7 +40,7 @@ void SysCfb_Init(s32 n64dd) {
         PRINTF("RAM4M mode\n");
         sSysCfbEnd = 0x80400000;
     } else {
-        LogUtils_HungupThread("../sys_cfb.c", LN4(305, 308, 322, 341, 354));
+        LogUtils_HungupThread(__FILE__, __LINE__);
     }
 
     screenSize = SCREEN_WIDTH * SCREEN_HEIGHT;

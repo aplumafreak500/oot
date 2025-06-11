@@ -17,7 +17,7 @@ typedef struct GameAlloc {
 
 #if DEBUG_FEATURES
 
-#define GAME_ALLOC_MALLOC(alloc, size, file, line) GameAlloc_MallocDebug(alloc, size, file, line)
+#define GAME_ALLOC_MALLOC(alloc, size, file, line) GameAlloc_MallocDebug(alloc, size, __FILE__, __LINE__)
 void* GameAlloc_MallocDebug(GameAlloc* this, u32 size, const char* file, int line);
 #else
 #define GAME_ALLOC_MALLOC(alloc, size, file, line) GameAlloc_Malloc(alloc, size)

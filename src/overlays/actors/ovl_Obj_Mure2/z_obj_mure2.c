@@ -120,7 +120,7 @@ void ObjMure2_SpawnActors(ObjMure2* this, PlayState* play) {
         if (this->actorSpawnPtrList[i] != NULL) {
             PRINTF(T("Warning : 既に子供がいる(%s %d)(arg_data 0x%04x)\n",
                      "Warning : I already have a child (%s %d)(arg_data 0x%04x)\n"),
-                   "../z_obj_mure2.c", 269, this->actor.params);
+                   __FILE__, __LINE__, this->actor.params);
             continue;
         }
 

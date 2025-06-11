@@ -398,7 +398,7 @@ void EnFish_Dropped_Fall(EnFish* this, PlayState* play) {
                (this->actor.floorHeight < BGCHECK_Y_MIN + 10.0f)) {
         PRINTF_COLOR_WARNING();
         PRINTF(T("BG 抜け？ Actor_delete します(%s %d)\n", "BG missing? Running Actor_delete (%s %d)\n"),
-               "../z_en_sakana.c", 822);
+               __FILE__, __LINE__);
         PRINTF_RST();
         Actor_Kill(&this->actor);
     }
@@ -642,7 +642,7 @@ void EnFish_UpdateCutscene(EnFish* this, PlayState* play) {
     if (cue == NULL) {
         PRINTF(T("Warning : dousa 3 消滅 が呼ばれずにデモが終了した(%s %d)(arg_data 0x%04x)\n",
                  "Warning : Demo ended without action 3 being called (%s %d)(arg_data 0x%04x)\n"),
-               "../z_en_sakana.c", 1169, this->actor.params);
+               __FILE__, __LINE__, this->actor.params);
         EnFish_ClearCutsceneData(this);
         Actor_Kill(&this->actor);
         return;
@@ -665,7 +665,7 @@ void EnFish_UpdateCutscene(EnFish* this, PlayState* play) {
             return;
         default:
             PRINTF(T("不正なデモ動作(%s %d)(arg_data 0x%04x)\n", "Incorrect demo behavior (%s %d)(arg_data 0x%04x)\n"),
-                   "../z_en_sakana.c", 1200, this->actor.params);
+                   __FILE__, __LINE__, this->actor.params);
             break;
     }
 

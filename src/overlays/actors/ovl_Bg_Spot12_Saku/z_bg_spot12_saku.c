@@ -63,7 +63,7 @@ void func_808B3420(BgSpot12Saku* this, PlayState* play, CollisionHeader* collisi
 
         PRINTF(T("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n",
                  "Warning : move BG registration failed (%s %d)(name %d)(arg_data 0x%04x)\n"),
-               "../z_bg_spot12_saku.c", 140, this->dyna.actor.id, this->dyna.actor.params);
+               __FILE__, __LINE__, this->dyna.actor.id, this->dyna.actor.params);
     }
 #endif
 }

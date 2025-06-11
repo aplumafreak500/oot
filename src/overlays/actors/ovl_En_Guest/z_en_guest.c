@@ -72,7 +72,7 @@ void EnGuest_Init(Actor* thisx, PlayState* play) {
         this->osAnimeObjectSlot = Object_GetSlot(&play->objectCtx, OBJECT_OS_ANIME);
         if (this->osAnimeObjectSlot < 0) {
             PRINTF_COLOR_ERROR();
-            PRINTF(T("%s[%d] : バンクが無いよ！！\n", "%s[%d] : There is no bank!!\n"), "../z_en_guest.c", 129);
+            PRINTF(T("%s[%d] : バンクが無いよ！！\n", "%s[%d] : There is no bank!!\n"), __FILE__, __LINE__);
             PRINTF_RST();
             ASSERT(0, "0", "../z_en_guest.c", 132);
         }

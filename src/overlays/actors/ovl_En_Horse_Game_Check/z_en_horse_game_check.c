@@ -104,7 +104,7 @@ s32 EnHorseGameCheck_InitIngoRace(EnHorseGameCheckBase* base, PlayState* play) {
     this->ingoHorse = Actor_Spawn(&play->actorCtx, play, ACTOR_EN_HORSE, -250.0f, 1.0f, -1650.0f, 0, 0x4000, 0, 0x8003);
 
     if (this->ingoHorse == NULL) {
-        LogUtils_HungupThread("../z_en_horse_game_check.c", LN1(382, 385));
+        LogUtils_HungupThread(__FILE__, __LINE__);
     }
 
     this->startTimer = 0;

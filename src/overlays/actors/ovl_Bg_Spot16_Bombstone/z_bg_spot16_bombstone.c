@@ -241,7 +241,7 @@ s32 func_808B4E58(BgSpot16Bombstone* this, PlayState* play) {
 
     if (this->requiredObjectSlot < 0) {
         PRINTF(T("Error : バンク危険！(arg_data 0x%04x)(%s %d)\n", "Error : Bank danger! (arg_data 0x%04x)(%s %d)\n"),
-               actor->params, "../z_bg_spot16_bombstone.c", 589);
+               actor->params, __FILE__, __LINE__);
         return false;
     }
 
@@ -275,7 +275,7 @@ void BgSpot16Bombstone_Init(Actor* thisx, PlayState* play) {
         default:
             PRINTF(T("Error : arg_data おかしいな(%s %d)(arg_data 0x%04x)\n",
                      "Error : arg_data is strange (%s %d)(arg_data 0x%04x)\n"),
-                   "../z_bg_spot16_bombstone.c", 668, this->actor.params);
+                   __FILE__, __LINE__, this->actor.params);
             shouldLive = false;
             break;
 #endif
@@ -412,7 +412,7 @@ void func_808B56BC(BgSpot16Bombstone* this, PlayState* play) {
             } else {
                 PRINTF(T("Error 補正出来ない(%s %d)(arg_data 0x%04x)(hosei_angY %x)\n",
                          "Error Can't correct (%s %d)(arg_data 0x%04x)(hosei_angY %x)\n"),
-                       "../z_bg_spot16_bombstone.c", 935, this->actor.params, adjustedYawDiff);
+                       __FILE__, __LINE__, this->actor.params, adjustedYawDiff);
             }
         }
     }

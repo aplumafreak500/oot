@@ -144,7 +144,7 @@ s32 EnIshi_SnapToFloor(EnIshi* this, PlayState* play, f32 arg2) {
         return true;
     } else {
         PRINTF_COLOR_WARNING();
-        PRINTF(T("地面に付着失敗(%s %d)\n", "Failed to attach to ground (%s %d)\n"), "../z_en_ishi.c", 388);
+        PRINTF(T("地面に付着失敗(%s %d)\n", "Failed to attach to ground (%s %d)\n"), __FILE__, __LINE__);
         PRINTF_RST();
         return false;
     }

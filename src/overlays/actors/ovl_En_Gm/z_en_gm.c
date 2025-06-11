@@ -81,7 +81,7 @@ void EnGm_Init(Actor* thisx, PlayState* play) {
 
     Actor_ProcessInitChain(&this->actor, sInitChain);
 
-    PRINTF(VT_FGCOL(GREEN) T("%s[%d] : 中ゴロン[%d]", "%s[%d] : Medi Goron [%d]") VT_RST "\n", "../z_en_gm.c", 133,
+    PRINTF(VT_FGCOL(GREEN) T("%s[%d] : 中ゴロン[%d]", "%s[%d] : Medi Goron [%d]") VT_RST "\n", __FILE__, __LINE__,
            this->actor.params);
 
     this->gmObjectSlot = Object_GetSlot(&play->objectCtx, OBJECT_GM);

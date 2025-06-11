@@ -81,7 +81,7 @@ void func_808B3960(BgSpot15Rrbox* this, PlayState* play, CollisionHeader* collis
 
         PRINTF(T("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n",
                  "Warning : move BG registration failed (%s %d)(name %d)(arg_data 0x%04x)\n"),
-               "../z_bg_spot15_rrbox.c", 171, this->dyna.actor.id, this->dyna.actor.params);
+               __FILE__, __LINE__, this->dyna.actor.id, this->dyna.actor.params);
     }
 #endif
 }
@@ -336,7 +336,7 @@ void func_808B43D0(BgSpot15Rrbox* this, PlayState* play) {
     if (actor->world.pos.y <= BGCHECK_Y_MIN + 10.0f) {
         PRINTF(T("Warning : ロンロン木箱落ちすぎた(%s %d)(arg_data 0x%04x)\n",
                  "Warning : Lon Lon Wooden Box fell too far (%s %d)(arg_data 0x%04x)\n"),
-               "../z_bg_spot15_rrbox.c", 599, actor->params);
+               __FILE__, __LINE__, actor->params);
 
         Actor_Kill(actor);
 

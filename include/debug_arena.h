@@ -16,9 +16,9 @@ s32 DebugArena_IsInitialized(void);
 
 #if DEBUG_FEATURES
 
-#define DEBUG_ARENA_MALLOC(size, file, line) DebugArena_MallocDebug(size, file, line)
-#define DEBUG_ARENA_MALLOC_R(size, file, line) DebugArena_MallocRDebug(size, file, line)
-#define DEBUG_ARENA_FREE(size, file, line) DebugArena_FreeDebug(size, file, line)
+#define DEBUG_ARENA_MALLOC(size, file, line) DebugArena_MallocDebug(size, __FILE__, __LINE__)
+#define DEBUG_ARENA_MALLOC_R(size, file, line) DebugArena_MallocRDebug(size, __FILE__, __LINE__)
+#define DEBUG_ARENA_FREE(size, file, line) DebugArena_FreeDebug(size, __FILE__, __LINE__)
 
 void DebugArena_CheckPointer(void* ptr, u32 size, const char* name, const char* action);
 void* DebugArena_MallocDebug(u32 size, const char* file, int line);

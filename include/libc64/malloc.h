@@ -16,9 +16,9 @@ void SystemArena_Cleanup(void);
 s32 SystemArena_IsInitialized(void);
 
 #if DEBUG_FEATURES
-#define SYSTEM_ARENA_MALLOC(size, file, line) SystemArena_MallocDebug(size, file, line)
-#define SYSTEM_ARENA_MALLOC_R(size, file, line) SystemArena_MallocRDebug(size, file, line)
-#define SYSTEM_ARENA_FREE(size, file, line) SystemArena_FreeDebug(size, file, line)
+#define SYSTEM_ARENA_MALLOC(size, file, line) SystemArena_MallocDebug(size, __FILE__, __LINE__)
+#define SYSTEM_ARENA_MALLOC_R(size, file, line) SystemArena_MallocRDebug(size, __FILE__, __LINE__)
+#define SYSTEM_ARENA_FREE(size, file, line) SystemArena_FreeDebug(size, __FILE__, __LINE__)
 
 void* SystemArena_MallocDebug(u32 size, const char* file, int line);
 void* SystemArena_MallocRDebug(u32 size, const char* file, int line);

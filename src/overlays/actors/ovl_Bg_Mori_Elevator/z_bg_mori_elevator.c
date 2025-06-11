@@ -107,7 +107,7 @@ void BgMoriElevator_Init(Actor* thisx, PlayState* play) {
         Actor_Kill(thisx);
         PRINTF(T("Error : 森の神殿 obj elevator バンク危険！(%s %d)\n",
                  "Error : Forest Temple obj elevator bank danger! (%s %d)\n"),
-               "../z_bg_mori_elevator.c", 277);
+               __FILE__, __LINE__);
         return;
     }
 #endif
@@ -158,7 +158,7 @@ void BgMoriElevator_WaitAfterInit(BgMoriElevator* this, PlayState* play) {
             } else {
                 PRINTF(T("Error : 森の神殿 obj elevator 部屋設定が危険(%s %d)\n",
                          "Error : Forest Temple obj elevator room setting is dangerous(%s %d)\n"),
-                       "../z_bg_mori_elevator.c", 371);
+                       __FILE__, __LINE__);
             }
         } else {
             BgMoriElevator_SetupSetPosition(this);
@@ -220,7 +220,7 @@ void BgMoriElevator_SetPosition(BgMoriElevator* this, PlayState* play) {
         } else {
             PRINTF(T("Error : 森の神殿 obj elevator 部屋設定が危険(%s %d)\n",
                      "Error : Forest Temple obj elevator room setting is dangerous(%s %d)\n"),
-                   "../z_bg_mori_elevator.c", 479);
+                   __FILE__, __LINE__);
         }
     } else if ((play->roomCtx.curRoom.num == 2) && (this->dyna.actor.world.pos.y < -275.0f)) {
         this->targetY = 233.0f;

@@ -104,7 +104,7 @@ void BgMoriHashigo_InitDynapoly(BgMoriHashigo* this, PlayState* play, CollisionH
 
         PRINTF(T("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n",
                  "Warning : move BG registration failed (%s %d)(name %d)(arg_data 0x%04x)\n"),
-               "../z_bg_mori_hashigo.c", 164, this->dyna.actor.id, this->dyna.actor.params);
+               __FILE__, __LINE__, this->dyna.actor.id, this->dyna.actor.params);
     }
 #endif
 }
@@ -142,7 +142,7 @@ s32 BgMoriHashigo_SpawnLadder(BgMoriHashigo* this, PlayState* play) {
     } else {
         PRINTF(T("Error : 梯子の発生失敗(%s %d)(arg_data 0x%04x)\n",
                  "Error : Ladder failed to spawn (%s %d)(arg_data 0x%04x)\n"),
-               "../z_bg_mori_hashigo.c", 220, this->dyna.actor.params);
+               __FILE__, __LINE__, this->dyna.actor.params);
         return false;
     }
 }
@@ -183,7 +183,7 @@ void BgMoriHashigo_Init(Actor* thisx, PlayState* play) {
     this->moriTexObjectSlot = Object_GetSlot(&play->objectCtx, OBJECT_MORI_TEX);
     if (this->moriTexObjectSlot < 0) {
         PRINTF(T("Error : バンク危険！(arg_data 0x%04x)(%s %d)\n", "Error : Bank danger! (arg_data 0x%04x)(%s %d)\n"),
-               this->dyna.actor.params, "../z_bg_mori_hashigo.c", 312);
+               this->dyna.actor.params, __FILE__, __LINE__);
         Actor_Kill(&this->dyna.actor);
     } else {
         BgMoriHashigo_SetupWaitForMoriTex(this);

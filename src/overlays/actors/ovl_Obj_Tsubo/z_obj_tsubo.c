@@ -151,7 +151,7 @@ void ObjTsubo_Init(Actor* thisx, PlayState* play) {
     this->requiredObjectSlot = Object_GetSlot(&play->objectCtx, sObjectIds[PARAMS_GET_U(this->actor.params, 8, 1)]);
     if (this->requiredObjectSlot < 0) {
         PRINTF(T("Error : バンク危険！ (arg_data 0x%04x)(%s %d)\n", "Error : Bank danger! (arg_data 0x%04x)(%s %d)\n"),
-               this->actor.params, "../z_obj_tsubo.c", 410);
+               this->actor.params, __FILE__, __LINE__);
         Actor_Kill(&this->actor);
     } else {
         ObjTsubo_SetupWaitForObject(this);

@@ -83,7 +83,7 @@ void BgJyaZurerukabe_InitDynaPoly(BgJyaZurerukabe* this, PlayState* play, Collis
 
         PRINTF(T("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n",
                  "Warning : move BG registration failed (%s %d)(name %d)(arg_data 0x%04x)\n"),
-               "../z_bg_jya_zurerukabe.c", 194, this->dyna.actor.id, this->dyna.actor.params);
+               __FILE__, __LINE__, this->dyna.actor.id, this->dyna.actor.params);
     }
 #endif
 }
@@ -139,7 +139,7 @@ void BgJyaZurerukabe_Init(Actor* thisx, PlayState* play) {
         PRINTF_COLOR_ERROR();
         PRINTF(T("home pos が変更されたみたい(%s %d)(arg_data 0x%04x)\n",
                  "It seems that the home pos has changed (%s %d)(arg_data 0x%04x)\n"),
-               "../z_bg_jya_zurerukabe.c", 299, this->dyna.actor.params);
+               __FILE__, __LINE__, this->dyna.actor.params);
         PRINTF_RST();
     }
 

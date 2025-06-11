@@ -110,7 +110,7 @@ s32 func_808B8910(BgSpot18Obj* this, PlayState* play) {
     } else {
         PRINTF(T("Error : リンク年齢不詳 (%s %d)(arg_data 0x%04x)\n",
                  "Error : Link age unknown (%s %d)(arg_data 0x%04x)\n"),
-               "../z_bg_spot18_obj.c", 182, this->dyna.actor.params);
+               __FILE__, __LINE__, this->dyna.actor.params);
         return 0;
     }
 
@@ -124,12 +124,12 @@ s32 func_808B8910(BgSpot18Obj* this, PlayState* play) {
         case 2:
             PRINTF(T("Error : Obj出現判定が設定されていない(%s %d)(arg_data 0x%04x)\n",
                      "Error : Obj appearance detection is not set (%s %d)(arg_data 0x%04x)\n"),
-                   "../z_bg_spot18_obj.c", 202, this->dyna.actor.params);
+                   __FILE__, __LINE__, this->dyna.actor.params);
             return 0;
         default:
             PRINTF(T("Error : Obj出現判定失敗(%s %d)(arg_data 0x%04x)\n",
                      "Error : Obj appearance check failed (%s %d)(arg_data 0x%04x)\n"),
-                   "../z_bg_spot18_obj.c", 210, this->dyna.actor.params);
+                   __FILE__, __LINE__, this->dyna.actor.params);
     }
     return 0;
 }

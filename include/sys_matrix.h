@@ -49,9 +49,9 @@ Mtx* Matrix_ToMtx(Mtx* dest, const char* file, int line);
 Mtx* Matrix_Finalize(struct GraphicsContext* gfxCtx, const char* file, int line);
 MtxF* Matrix_CheckFloats(MtxF* mf, const char* file, int line);
 
-#define MATRIX_TO_MTX(gfxCtx, file, line) Matrix_ToMtx(gfxCtx, file, line)
-#define MATRIX_FINALIZE(gfxCtx, file, line) Matrix_Finalize(gfxCtx, file, line)
-#define MATRIX_CHECK_FLOATS(mtx, file, line) Matrix_CheckFloats(mtx, file, line)
+#define MATRIX_TO_MTX(gfxCtx, file, line) Matrix_ToMtx(gfxCtx, __FILE__, __LINE__)
+#define MATRIX_FINALIZE(gfxCtx, file, line) Matrix_Finalize(gfxCtx, __FILE__, __LINE__)
+#define MATRIX_CHECK_FLOATS(mtx, file, line) Matrix_CheckFloats(mtx, __FILE__, __LINE__)
 
 #else
 
@@ -65,7 +65,7 @@ Mtx* Matrix_Finalize(struct GraphicsContext* gfxCtx);
 #endif
 
 #define MATRIX_FINALIZE_AND_LOAD(pkt, gfxCtx, file, line) \
-    gSPMatrix(pkt, MATRIX_FINALIZE(gfxCtx, file, line), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW)
+    gSPMatrix(pkt, MATRIX_FINALIZE(gfxCtx, __FILE__, __LINE__), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW)
 
 /* Vector operations */
 

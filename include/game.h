@@ -44,7 +44,7 @@ GameStateFunc GameState_GetInit(GameState* gameState);
 u32 GameState_IsRunning(GameState* gameState);
 #if DEBUG_FEATURES
 void* GameState_Alloc(GameState* gameState, size_t size, const char* file, int line);
-#define GAME_STATE_ALLOC(gameState, size, file, line) GameState_Alloc(gameState, size, file, line)
+#define GAME_STATE_ALLOC(gameState, size, file, line) GameState_Alloc(gameState, size, __FILE__, __LINE__)
 #else
 #define GAME_STATE_ALLOC(gameState, size, file, line) THA_AllocTailAlign16(&(gameState)->tha, size)
 #endif

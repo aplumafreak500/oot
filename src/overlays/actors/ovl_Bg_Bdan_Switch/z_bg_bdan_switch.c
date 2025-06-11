@@ -115,7 +115,7 @@ void BgBdanSwitch_InitDynaPoly(BgBdanSwitch* this, PlayState* play, CollisionHea
 
         PRINTF(T("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n",
                  "Warning : move BG registration failed (%s %d)(name %d)(arg_data 0x%04x)\n"),
-               "../z_bg_bdan_switch.c", 325, this->dyna.actor.id, this->dyna.actor.params);
+               __FILE__, __LINE__, this->dyna.actor.id, this->dyna.actor.params);
     }
 #endif
 }
@@ -210,7 +210,7 @@ void BgBdanSwitch_Init(Actor* thisx, PlayState* play) {
             break;
         default:
             PRINTF(T("不正な ARG_DATA(arg_data 0x%04x)(%s %d)\n", "Invalid ARG_DATA(arg_data 0x%04x)(%s %d)\n"),
-                   this->dyna.actor.params, "../z_bg_bdan_switch.c", 454);
+                   this->dyna.actor.params, __FILE__, __LINE__);
             Actor_Kill(&this->dyna.actor);
             return;
     }

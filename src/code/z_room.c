@@ -478,9 +478,9 @@ RoomShapeImageMultiBgEntry* Room_GetImageMultiBgEntry(RoomShapeImageMulti* roomS
            bgCamIndex);
 
 #if !PLATFORM_N64
-    LogUtils_HungupThread("../z_room.c", 726);
+    LogUtils_HungupThread(__FILE__, __LINE__);
 #else
-    Fault_AddHungupAndCrash("../z_room.c", LN2(724, 727, 721));
+    Fault_AddHungupAndCrash(__FILE__, __LINE__);
 #endif
 
     return NULL;
@@ -565,9 +565,9 @@ void Room_DrawImage(PlayState* play, Room* room, u32 flags) {
         Room_DrawImageMulti(play, room, flags);
     } else {
 #if !PLATFORM_N64
-        LogUtils_HungupThread("../z_room.c", 841);
+        LogUtils_HungupThread(__FILE__, __LINE__);
 #else
-        Fault_AddHungupAndCrash("../z_room.c", LN2(849, 852, 836));
+        Fault_AddHungupAndCrash(__FILE__, __LINE__);
 #endif
     }
 }

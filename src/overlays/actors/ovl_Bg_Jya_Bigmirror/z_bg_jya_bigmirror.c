@@ -86,7 +86,7 @@ void BgJyaBigmirror_HandleCobra(Actor* thisx, PlayState* play) {
 #if DEBUG_FEATURES
                 if (curCobraInfo->cobra->dyna.actor.update == NULL) {
                     PRINTF(T("Error : コブラ削除された (%s %d)\n", "Error : Cobra deleted (%s %d)\n"),
-                           "../z_bg_jya_bigmirror.c", 203);
+                           __FILE__, __LINE__);
                 }
 #endif
             } else {
@@ -97,7 +97,7 @@ void BgJyaBigmirror_HandleCobra(Actor* thisx, PlayState* play) {
 
                 if (curCobraInfo->cobra == NULL) {
                     PRINTF(T("Error : コブラ発生失敗 (%s %d)\n", "Error : Cobra failed to spawn (%s %d)\n"),
-                           "../z_bg_jya_bigmirror.c", 221);
+                           __FILE__, __LINE__);
                 }
             }
         }
@@ -165,7 +165,7 @@ void BgJyaBigmirror_HandleMirRay(Actor* thisx, PlayState* play) {
 #if DEBUG_FEATURES
                     if (this->lightBeams[i] == NULL) {
                         PRINTF(T("Error : Mir Ray 発生失敗 (%s %d)\n", "Error : Mir Ray failed to spawn (%s %d)\n"),
-                               "../z_bg_jya_bigmirror.c", 310);
+                               __FILE__, __LINE__);
                     }
 #endif
                 }

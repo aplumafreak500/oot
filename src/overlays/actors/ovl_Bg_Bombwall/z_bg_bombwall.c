@@ -100,7 +100,7 @@ void BgBombwall_InitDynapoly(BgBombwall* this, PlayState* play) {
 
     if (this->dyna.bgId == BG_ACTOR_MAX) {
         PRINTF(T("Warning : move BG 登録失敗", "Warning : move BG registration failed") "(%s %d)(arg_data 0x%04x)\n",
-               "../z_bg_bombwall.c", 243, this->dyna.actor.params);
+               __FILE__, __LINE__, this->dyna.actor.params);
     }
 }
 

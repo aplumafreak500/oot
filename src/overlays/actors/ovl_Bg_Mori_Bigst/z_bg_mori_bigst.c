@@ -76,7 +76,7 @@ void BgMoriBigst_InitDynapoly(BgMoriBigst* this, PlayState* play, CollisionHeade
 
         PRINTF(T("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n",
                  "Warning : move BG registration failed (%s %d)(name %d)(arg_data 0x%04x)\n"),
-               "../z_bg_mori_bigst.c", 190, this->dyna.actor.id, this->dyna.actor.params);
+               __FILE__, __LINE__, this->dyna.actor.id, this->dyna.actor.params);
     }
 #endif
 }
@@ -95,7 +95,7 @@ void BgMoriBigst_Init(Actor* thisx, PlayState* play) {
     this->moriTexObjectSlot = Object_GetSlot(&play->objectCtx, OBJECT_MORI_TEX);
     if (this->moriTexObjectSlot < 0) {
         PRINTF(T("【ビッグスタルフォス鍵型天井】 バンク危険！\n", "[Big Stalfos Key-shaped Ceiling] Bank danger!\n"));
-        PRINTF("%s %d\n", "../z_bg_mori_bigst.c", 234);
+        PRINTF("%s %d\n", __FILE__, __LINE__);
         Actor_Kill(&this->dyna.actor);
         return;
     }

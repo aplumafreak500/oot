@@ -1625,7 +1625,7 @@ void BgCheck_Allocate(CollisionContext* colCtx, PlayState* play, CollisionHeader
                                            ALIGNOF_MASK(StaticLookup));
 
     if (colCtx->lookupTbl == NULL) {
-        LogUtils_HungupThread("../z_bgcheck.c", LN1(4173, 4176));
+        LogUtils_HungupThread(__FILE__, __LINE__);
     }
 
     colCtx->minBounds.x = colCtx->colHeader->minBounds.x;
@@ -1651,7 +1651,7 @@ void BgCheck_Allocate(CollisionContext* colCtx, PlayState* play, CollisionHeader
         tblMax = customNodeListMax;
     } else {
         if (colCtx->memSize < memSize) {
-            LogUtils_HungupThread("../z_bgcheck.c", LN1(4227, 4230));
+            LogUtils_HungupThread(__FILE__, __LINE__);
         }
         tblMax = (colCtx->memSize - memSize) / sizeof(SSNode);
     }
@@ -1733,7 +1733,7 @@ f32 BgCheck_RaycastDownImpl(PlayState* play, CollisionContext* colCtx, u16 xpFla
         }
 
 #if DEBUG_FEATURES
-        if (BgCheck_PosErrorCheck(&checkPos, "../z_bgcheck.c", 4410)) {
+        if (BgCheck_PosErrorCheck(&checkPos, __FILE__, __LINE__)) {
             if (actor != NULL) {
                 PRINTF(T("こいつ,pself_actor->name %d\n", "This guy, pself_actor->name %d\n"), actor->id);
             }
@@ -1985,8 +1985,8 @@ s32 BgCheck_CheckWallImpl(CollisionContext* colCtx, u16 xpFlags, Vec3f* posResul
     dz = posNext->z - posPrev->z;
 
 #if DEBUG_FEATURES
-    if (BgCheck_PosErrorCheck(posNext, "../z_bgcheck.c", 4831) == true ||
-        BgCheck_PosErrorCheck(posPrev, "../z_bgcheck.c", 4832) == true) {
+    if (BgCheck_PosErrorCheck(posNext, __FILE__, __LINE__) == true ||
+        BgCheck_PosErrorCheck(posPrev, __FILE__, __LINE__) == true) {
         if (actor != NULL) {
             PRINTF(T("こいつ,pself_actor->name %d\n", "This guy, pself_actor->name %d\n"), actor->id);
         }
@@ -2179,7 +2179,7 @@ s32 BgCheck_CheckCeilingImpl(CollisionContext* colCtx, u16 xpFlags, f32* outY, V
     *outY = pos->y;
 
 #if DEBUG_FEATURES
-    if (BgCheck_PosErrorCheck(pos, "../z_bgcheck.c", 5206) == true) {
+    if (BgCheck_PosErrorCheck(pos, __FILE__, __LINE__) == true) {
         if (actor != NULL) {
             PRINTF(T("こいつ,pself_actor->name %d\n", "This guy, pself_actor->name %d\n"), actor->id);
         }
@@ -2252,8 +2252,8 @@ s32 BgCheck_CheckLineImpl(CollisionContext* colCtx, u16 xpFlags1, u16 xpFlags2, 
     *outBgId = BGCHECK_SCENE;
 
 #if DEBUG_FEATURES
-    if (BgCheck_PosErrorCheck(posA, "../z_bgcheck.c", 5334) == true ||
-        BgCheck_PosErrorCheck(posB, "../z_bgcheck.c", 5335) == true) {
+    if (BgCheck_PosErrorCheck(posA, __FILE__, __LINE__) == true ||
+        BgCheck_PosErrorCheck(posB, __FILE__, __LINE__) == true) {
         if (actor != NULL) {
             PRINTF(T("こいつ,pself_actor->name %d\n", "This guy, pself_actor->name %d\n"), actor->id);
         } else {
@@ -2475,7 +2475,7 @@ s32 BgCheck_SphVsFirstPolyImpl(CollisionContext* colCtx, u16 xpFlags, CollisionP
     *outBgId = BGCHECK_SCENE;
 
 #if DEBUG_FEATURES
-    if (BgCheck_PosErrorCheck(center, "../z_bgcheck.c", 5852) == true) {
+    if (BgCheck_PosErrorCheck(center, __FILE__, __LINE__) == true) {
         if (actor != NULL) {
             PRINTF(T("こいつ,pself_actor->name %d\n", "This guy, pself_actor->name %d\n"), actor->id);
         }

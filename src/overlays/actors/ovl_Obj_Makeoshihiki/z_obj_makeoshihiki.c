@@ -81,7 +81,7 @@ void ObjMakeoshihiki_Init(Actor* thisx, PlayState* play) {
                            block->rotY, 0, ((block->color << 6) & 0xC0) | (block->type & 0xF) | 0xFF00) == NULL) {
         PRINTF_COLOR_ERROR();
         PRINTF(T("Ｅｒｒｏｒ : 押し引きブロック発生失敗(%s %d)\n", "Error : Push/pull block failed to spawn (%s %d)\n"),
-               "../z_obj_makeoshihiki.c", 194);
+               __FILE__, __LINE__);
         PRINTF_RST();
         Actor_Kill(thisx);
         return;
@@ -90,7 +90,7 @@ void ObjMakeoshihiki_Init(Actor* thisx, PlayState* play) {
         ((ObjOshihiki*)thisx->child)->cantMove = true;
     }
     thisx->world.rot.z = thisx->shape.rot.z = 0;
-    PRINTF("(%s)(arg_data %04xF)(angleZ %d)\n", "../z_obj_makeoshihiki.c", thisx->params, thisx->home.rot.z);
+    PRINTF("(%s)(arg_data %04xF)(angleZ %d)\n", __FILE__, thisx->params, thisx->home.rot.z);
 }
 
 void ObjMakeoshihiki_Draw(Actor* thisx, PlayState* play) {

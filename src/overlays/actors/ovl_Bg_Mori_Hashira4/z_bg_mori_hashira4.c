@@ -74,7 +74,7 @@ void BgMoriHashira4_InitDynaPoly(BgMoriHashira4* this, PlayState* play, Collisio
 
         PRINTF(T("Warning : move BG 登録失敗(%s %d)(name %d)(arg_data 0x%04x)\n",
                  "Warning : move BG registration failed (%s %d)(name %d)(arg_data 0x%04x)\n"),
-               "../z_bg_mori_hashira4.c", 155, this->dyna.actor.id, this->dyna.actor.params);
+               __FILE__, __LINE__, this->dyna.actor.id, this->dyna.actor.params);
     }
 #endif
 }
@@ -96,7 +96,7 @@ void BgMoriHashira4_Init(Actor* thisx, PlayState* play) {
     if (this->moriTexObjectSlot < 0) {
         Actor_Kill(&this->dyna.actor);
         PRINTF(T("Error : バンク危険！(arg_data 0x%04x)(%s %d)\n", "Error : Bank danger! (arg_data 0x%04x)(%s %d)\n"),
-               this->dyna.actor.params, "../z_bg_mori_hashira4.c", 196);
+               this->dyna.actor.params, __FILE__, __LINE__);
         return;
     }
     if ((this->dyna.actor.params != 0) && Flags_GetSwitch(play, this->switchFlag)) {

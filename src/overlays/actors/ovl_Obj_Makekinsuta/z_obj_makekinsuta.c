@@ -42,7 +42,7 @@ void ObjMakekinsuta_Init(Actor* thisx, PlayState* play) {
     } else {
         PRINTF_COLOR_WARNING();
         PRINTF(T("引数不正 (arg_data %x)(%s %d)\n", "Invalid Argument (arg_data %x)(%s %d)\n"), this->actor.params,
-               "../z_obj_makekinsuta.c", 119);
+               __FILE__, __LINE__);
         PRINTF_RST();
     }
     this->actionFunc = func_80B98320;

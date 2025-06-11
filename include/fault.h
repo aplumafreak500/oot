@@ -52,9 +52,9 @@ NORETURN void Fault_AddHungupAndCrashImpl(const char* exp1, const char* exp2);
 NORETURN void Fault_AddHungupAndCrash(const char* file, int line);
 
 #if PLATFORM_N64 || DEBUG_FEATURES
-#define HUNGUP_AND_CRASH(file, line) Fault_AddHungupAndCrash(file, line)
+#define HUNGUP_AND_CRASH(file, line) Fault_AddHungupAndCrash(__FILE__, __LINE__)
 #else
-#define HUNGUP_AND_CRASH(file, line) LogUtils_HungupThread(file, line)
+#define HUNGUP_AND_CRASH(file, line) LogUtils_HungupThread(__FILE__, __LINE__)
 #endif
 
 // Client Registration

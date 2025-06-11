@@ -96,11 +96,11 @@ void Graph_CloseDisps(Gfx** dispRefs, GraphicsContext* gfxCtx, const char* file,
         Gfx* dispRefs[4];              \
         __gfxCtx = gfxCtx;             \
         (void)__gfxCtx;                \
-        Graph_OpenDisps(dispRefs, gfxCtx, file, line)
+        Graph_OpenDisps(dispRefs, gfxCtx, __FILE__, __LINE__)
 
 #define CLOSE_DISPS(gfxCtx, file, line)                     \
         do {                                                \
-            Graph_CloseDisps(dispRefs, gfxCtx, file, line); \
+            Graph_CloseDisps(dispRefs, gfxCtx, __FILE__, __LINE__); \
         } while (0);                                        \
     }                                                       \
     (void)0

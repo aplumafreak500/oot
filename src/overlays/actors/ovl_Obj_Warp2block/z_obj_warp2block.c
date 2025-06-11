@@ -283,7 +283,7 @@ void func_80BA24F8(ObjWarp2block* this, PlayState* play) {
         PRINTF_COLOR_ERROR();
         PRINTF(T("Error : 時のブロック(ワープ２)が対でセットされていません(%s %d)\n",
                  "Error : Time Blocks (Warp 2) are not set in pairs (%s %d)\n"),
-               "../z_obj_warp2block.c", 505);
+               __FILE__, __LINE__);
         PRINTF_RST();
         Actor_Kill(&this->dyna.actor);
     }

@@ -270,7 +270,7 @@ s32 EnGoroiwa_GetAscendDirection(EnGoroiwa* this, PlayState* play) {
 #if DEBUG_FEATURES
         if (nextPointPos->y == currentPointPos->y) {
             PRINTF(T("Error : レールデータ不正(点が重なっている)", "Error : Rail data is incorrect (dots overlap)"));
-            PRINTF("(%s %d)(arg_data 0x%04x)\n", "../z_en_gr.c", 559, this->actor.params);
+            PRINTF("(%s %d)(arg_data 0x%04x)\n", __FILE__, __LINE__, this->actor.params);
         }
 #endif
 
@@ -566,13 +566,12 @@ void EnGoroiwa_Init(Actor* thisx, PlayState* play) {
     if (pathIdx == 0xFF) {
         PRINTF(T("Ｅｒｒｏｒ : arg_data が不正(%s %d)(arg_data 0x%04x)\n",
                  "Error : Invalid arg_data (%s %d)(arg_data 0x%04x)\n"),
-               "../z_en_gr.c", 1033, this->actor.params);
+               __FILE__, __LINE__, this->actor.params);
         Actor_Kill(&this->actor);
         return;
     }
     if (play->pathList[pathIdx].count < 2) {
-        PRINTF(T("Ｅｒｒｏｒ : レールデータ が不正(%s %d)\n", "Error : Rail data is invalid (%s %d)\n"), "../z_en_gr.c",
-               1043);
+        PRINTF(T("Ｅｒｒｏｒ : レールデータ が不正(%s %d)\n", "Error : Rail data is invalid (%s %d)\n"), __FILE__, __LINE__);
         Actor_Kill(&this->actor);
         return;
     }

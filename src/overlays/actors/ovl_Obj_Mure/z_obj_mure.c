@@ -79,7 +79,7 @@ s32 ObjMure_SetCullingImpl(Actor* thisx, PlayState* play) {
         default:
             PRINTF(T("Error : カリングの設定がされていません。(%s %d)(arg_data 0x%04x)\n",
                      "Error : Culling is not set. (%s %d)(arg_data 0x%04x)\n"),
-                   "../z_obj_mure.c", 204, this->actor.params);
+                   __FILE__, __LINE__, this->actor.params);
             return false;
     }
     return result;
@@ -102,12 +102,12 @@ void ObjMure_Init(Actor* thisx, PlayState* play) {
 
     if (this->ptn >= 4) {
         PRINTF(T("Error 群れな敵 (%s %d)(arg_data 0x%04x)\n", "Error Swarm of enemies (%s %d)(arg_data 0x%04x)\n"),
-               "../z_obj_mure.c", 237, thisx->params);
+               __FILE__, __LINE__, thisx->params);
         Actor_Kill(&this->actor);
         return;
     } else if (this->type >= 5) {
         PRINTF(T("Error 群れな敵 (%s %d)(arg_data 0x%04x)\n", "Error Swarm of enemies (%s %d)(arg_data 0x%04x)\n"),
-               "../z_obj_mure.c", 245, thisx->params);
+               __FILE__, __LINE__, thisx->params);
         Actor_Kill(&this->actor);
         return;
     } else if (!ObjMure_SetCulling(thisx, play)) {
@@ -123,7 +123,7 @@ void ObjMure_Init(Actor* thisx, PlayState* play) {
     if (ObjMure_GetMaxChildSpawns(this) <= 0) {
         PRINTF(T("Warning : 個体数が設定されていません(%s %d)(arg_data 0x%04x)\n",
                  "Warning : The number of individuals is not set(%s %d)(arg_data 0x%04x)\n"),
-               "../z_obj_mure.c", 268, thisx->params);
+               __FILE__, __LINE__, thisx->params);
     }
 #endif
 }
@@ -141,7 +141,7 @@ s32 ObjMure_GetMaxChildSpawns(ObjMure* this) {
 void ObjMure_GetSpawnPos(Vec3f* outPos, Vec3f* inPos, s32 ptn, s32 idx) {
 #if DEBUG_FEATURES
     if (ptn >= 4) {
-        PRINTF(T("おかしなの (%s %d)\n", "That's strange (%s %d)\n"), "../z_obj_mure.c", 307);
+        PRINTF(T("おかしなの (%s %d)\n", "That's strange (%s %d)\n"), __FILE__, __LINE__);
     }
 #endif
 
@@ -160,7 +160,7 @@ void ObjMure_SpawnActors0(ObjMure* this, PlayState* play) {
         if (this->children[i] != NULL) {
             PRINTF(T("Error : 既に子供がいる(%s %d)(arg_data 0x%04x)\n",
                      "Error : I already have a child (%s %d)(arg_data 0x%04x)\n"),
-                   "../z_obj_mure.c", 333, actor->params);
+                   __FILE__, __LINE__, actor->params);
         }
 #endif
 
@@ -176,8 +176,7 @@ void ObjMure_SpawnActors0(ObjMure* this, PlayState* play) {
                     this->children[i]->flags |= ACTOR_FLAG_GRASS_DESTROYED;
                     this->children[i]->room = actor->room;
                 } else {
-                    PRINTF(T("warning 発生失敗 (%s %d)\n", "warning failed to spawn (%s %d)\n"), "../z_obj_mure.c",
-                           359);
+                    PRINTF(T("warning 発生失敗 (%s %d)\n", "warning failed to spawn (%s %d)\n"), __FILE__, __LINE__);
                 }
                 break;
             default:
@@ -188,8 +187,7 @@ void ObjMure_SpawnActors0(ObjMure* this, PlayState* play) {
                 if (this->children[i] != NULL) {
                     this->children[i]->room = actor->room;
                 } else {
-                    PRINTF(T("warning 発生失敗 (%s %d)\n", "warning failed to spawn (%s %d)\n"), "../z_obj_mure.c",
-                           382);
+                    PRINTF(T("warning 発生失敗 (%s %d)\n", "warning failed to spawn (%s %d)\n"), __FILE__, __LINE__);
                 }
                 break;
         }
@@ -208,7 +206,7 @@ void ObjMure_SpawnActors1(ObjMure* this, PlayState* play2) {
         if (this->children[i] != NULL) {
             PRINTF(T("Error : 既に子供がいる(%s %d)(arg_data 0x%04x)\n",
                      "Error : I already have a child (%s %d)(arg_data 0x%04x)\n"),
-                   "../z_obj_mure.c", 407, actor->params);
+                   __FILE__, __LINE__, actor->params);
         }
 #endif
 
@@ -221,7 +219,7 @@ void ObjMure_SpawnActors1(ObjMure* this, PlayState* play2) {
             this->children[i]->room = actor->room;
         } else {
             this->childrenStates[i] = OBJMURE_CHILD_STATE_1;
-            PRINTF(T("warning 発生失敗 (%s %d)\n", "warning failed to spawn (%s %d)\n"), "../z_obj_mure.c", 438);
+            PRINTF(T("warning 発生失敗 (%s %d)\n", "warning failed to spawn (%s %d)\n"), __FILE__, __LINE__);
         }
     }
 }

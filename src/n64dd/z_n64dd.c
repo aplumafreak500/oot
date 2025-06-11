@@ -122,7 +122,7 @@ void func_801C6FD8(void) {
 // Adds a HungupAndCrash
 void func_801C7018(void) {
     if (D_80121213 != 0) {
-        Fault_AddHungupAndCrash("../z_n64dd.c", LN2(503, 551, 573));
+        Fault_AddHungupAndCrash(__FILE__, __LINE__);
     }
 
     D_80121213 = 1;

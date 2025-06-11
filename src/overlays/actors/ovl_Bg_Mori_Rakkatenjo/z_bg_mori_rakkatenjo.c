@@ -86,7 +86,7 @@ void BgMoriRakkatenjo_Init(Actor* thisx, PlayState* play) {
     if (this->moriTexObjectSlot < 0) {
         PRINTF(T("Error : 森の神殿 obj 落下天井 バンク危険！(%s %d)\n",
                  "Error : Forest Temple obj Falling Ceiling Bank danger! (%s %d)\n"),
-               "../z_bg_mori_rakkatenjo.c", 205);
+               __FILE__, __LINE__);
         Actor_Kill(&this->dyna.actor);
         return;
     }
