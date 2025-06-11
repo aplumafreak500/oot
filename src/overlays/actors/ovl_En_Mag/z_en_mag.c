@@ -49,7 +49,7 @@ ActorProfile En_Mag_Profile = {
 
 static s16 sDelayTimer = 0;
 
-#if OOT_VERSION < GC_US || PLATFORM_IQUE
+#if 0
 void EnMag_ResetSram(void) {
     static u8 buffer[0x2000];
 
@@ -161,7 +161,7 @@ void EnMag_Init(Actor* thisx, PlayState* play) {
 void EnMag_Destroy(Actor* thisx, PlayState* play) {
 }
 
-#if OOT_VERSION < GC_US || PLATFORM_IQUE
+#if 0
 void EnMag_CheckSramResetCode(PlayState* play, EnMag* this) {
     static s32 sSramResetCode[] = {
         BTN_DUP, BTN_DDOWN,  BTN_DLEFT, BTN_DRIGHT, BTN_START, BTN_B, BTN_CDOWN,
@@ -211,7 +211,7 @@ void EnMag_Update(Actor* thisx, PlayState* play) {
     Input* input = &play->state.input[0];
     EnMag* this = (EnMag*)thisx;
 
-#if OOT_VERSION < GC_US || PLATFORM_IQUE
+#if 0
     EnMag_CheckSramResetCode(play, this);
 #endif
 
@@ -278,13 +278,8 @@ void EnMag_Update(Actor* thisx, PlayState* play) {
 
     if (this->globalState == MAG_STATE_FADE_IN) {
         if (this->effectFadeInState == 0) {
-#if !PLATFORM_GC
-            this->effectPrimLodFrac += 0.8f;
-            this->effectAlpha += 6.375f;
-#else
             this->effectAlpha += 6.375f;
             this->effectPrimLodFrac += 0.8f;
-#endif
 
             this->effectPrimColor[0] += 6.375f;
             this->effectPrimColor[1] += 3.875f;
@@ -308,9 +303,7 @@ void EnMag_Update(Actor* thisx, PlayState* play) {
                 this->effectFadeInState = 1;
             }
         } else if (this->effectFadeInState == 1) {
-#if !PLATFORM_GC
             this->effectPrimLodFrac += 2.4f;
-#endif
 #if !OOT_MQ
             this->effectPrimColor[2] += -2.125f;
             this->effectEnvColor[1] += -3.875f;
@@ -318,15 +311,10 @@ void EnMag_Update(Actor* thisx, PlayState* play) {
             this->effectPrimColor[0] += -2.125f;
             this->effectEnvColor[0] += -1.375f;
 #endif
-#if PLATFORM_GC
-            this->effectPrimLodFrac += 2.4f;
-#endif
-
             this->effectFadeInTimer--;
 
             if (this->effectFadeInTimer == 0) {
                 this->effectPrimLodFrac = 128.0f;
-
 #if !OOT_MQ
                 this->effectPrimColor[2] = 170.0f;
                 this->effectEnvColor[1] = 100.0f;
@@ -660,9 +648,7 @@ void EnMag_DrawInner(Actor* thisx, PlayState* play, Gfx** gfxP) {
 #if OOT_MQ
         gDPPipeSync(gfx++);
         gDPSetPrimColor(gfx++, 0, 0, 255, 255, 255, (s16)this->subAlpha);
-#if OOT_VERSION == GC_JP_MQ
-        EnMag_DrawImageRGBA32(&gfx, 235, 149, (u8*)gTitleUraLogoTex, 40, 40);
-#elif OOT_VERSION == GC_US_MQ
+#if OOT_NTSC
         if (gSaveContext.language == LANGUAGE_JPN) {
             EnMag_DrawImageRGBA32(&gfx, 235, 149, (u8*)gTitleUraLogoTex, 40, 40);
         } else {
@@ -732,11 +718,6 @@ void EnMag_DrawInner(Actor* thisx, PlayState* play, Gfx** gfxP) {
                             G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
                             G_TX_NOLOD, G_TX_NOLOD);
         gSPTextureRectangle(gfx++, 94 << 2, 198 << 2, 222 << 2, 214 << 2, G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
-#elif PLATFORM_GC && OOT_VERSION < GC_US
-        gDPLoadTextureBlock(gfx++, gTitleCopyright19982002Tex, G_IM_FMT_IA, G_IM_SIZ_8b, 160, 16, 0,
-                            G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMASK, G_TX_NOMASK,
-                            G_TX_NOLOD, G_TX_NOLOD);
-        gSPTextureRectangle(gfx++, 78 << 2, 198 << 2, 238 << 2, 214 << 2, G_TX_RENDERTILE, 0, 0, 1 << 10, 1 << 10);
 #elif PLATFORM_GC && OOT_NTSC
         if (gSaveContext.language == LANGUAGE_JPN) {
             gDPLoadTextureBlock(gfx++, gTitleCopyright19982002Tex, G_IM_FMT_IA, G_IM_SIZ_8b, 160, 16, 0,

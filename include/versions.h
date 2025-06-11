@@ -1,6 +1,8 @@
 #ifndef VERSIONS_H
 #define VERSIONS_H
 
+#include "region.h"
+
 // OOT versions in build order
 #define NTSC_1_0       1
 #define NTSC_1_1       2
@@ -18,7 +20,7 @@
 #define IQUE_CN       14
 
 // NTSC/PAL
-#if OOT_VERSION == PAL_1_0 || OOT_VERSION == PAL_1_1 || OOT_VERSION == GC_EU || OOT_VERSION == GC_EU_MQ || OOT_VERSION == GC_EU_MQ_DBG
+#if OOT_REGION == REGION_EU
 #define OOT_NTSC 0
 #define OOT_PAL 1
 #else

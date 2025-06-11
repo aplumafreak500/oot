@@ -52,16 +52,14 @@ void Locale_Init(void) {
         case 'E': // "NTSC-U (North America)"
             gCurrentRegion = REGION_US;
             break;
-#if OOT_VERSION >= PAL_1_0
         case 'P': // "PAL (Europe)"
             gCurrentRegion = REGION_EU;
             break;
-#endif
         default:
             PRINTF_COLOR_ERROR();
             PRINTF(T("z_locale_init: 日本用かアメリカ用か判別できません\n",
                      "z_locale_init: Can't tell if it's for Japan or America\n"));
-            LogUtils_HungupThread("../z_locale.c", LN4(86, 92, 101, UNK_LINE, 118));
+            LogUtils_HungupThread(__FILE__, __LINE__);
             PRINTF(VT_RST);
             break;
     }
