@@ -423,15 +423,6 @@ beginseg
     number 7
 endseg
 
-#if OOT_NTSC && OOT_VERSION < NTSC_1_2
-beginseg
-    name "jpn_message_data_static"
-    romalign 0x1000
-    include "$(BUILD_DIR)/assets/text/jpn_message_data_static.o"
-    number 8
-endseg
-#endif
-
 beginseg
     name "message_texture_static"
     romalign 0x1000
@@ -446,7 +437,7 @@ beginseg
     number 10
 endseg
 
-#if OOT_NTSC && OOT_VERSION >= NTSC_1_2
+#if OOT_NTSC
 beginseg
     name "jpn_message_data_static"
     romalign 0x1000
@@ -690,37 +681,24 @@ beginseg
     include "$(BUILD_DIR)/src/audio/game/session_init.o"
 
     // libu64
-#if PLATFORM_N64
     include "$(BUILD_DIR)/src/libu64/gfxprint.o"
     include "$(BUILD_DIR)/src/libu64/rcp_utils.o"
-    include "$(BUILD_DIR)/src/libu64/loadfragment2_n64.o"
-    include "$(BUILD_DIR)/src/libu64/pad.o"
-    include "$(BUILD_DIR)/src/libu64/runtime.o"
-    include "$(BUILD_DIR)/src/libu64/padsetup.o"
-#elif PLATFORM_GC
-    include "$(BUILD_DIR)/src/libu64/logseverity_gc.o"
-    include "$(BUILD_DIR)/src/libu64/gfxprint.o"
-    include "$(BUILD_DIR)/src/libu64/rcp_utils.o"
-    include "$(BUILD_DIR)/src/libu64/loadfragment2_gc.o"
 #if DEBUG_FEATURES
     include "$(BUILD_DIR)/src/libu64/mtxuty-cvt.o"
 #endif
-    include "$(BUILD_DIR)/src/libu64/relocation_gc.o"
-    include "$(BUILD_DIR)/src/libu64/load_gc.o"
-    include "$(BUILD_DIR)/src/libu64/runtime.o"
-    include "$(BUILD_DIR)/src/libu64/pad.o"
-    include "$(BUILD_DIR)/src/libu64/padsetup.o"
-#elif PLATFORM_IQUE
-    include "$(BUILD_DIR)/src/libu64/runtime.o"
-    include "$(BUILD_DIR)/src/libu64/debug.o"
-    include "$(BUILD_DIR)/src/libu64/gfxprint.o"
+#if PLATFORM_GC || PLATFORM_IQUE
     include "$(BUILD_DIR)/src/libu64/logseverity_gc.o"
-    include "$(BUILD_DIR)/src/libu64/relocation_gc.o"
     include "$(BUILD_DIR)/src/libu64/loadfragment2_gc.o"
+    include "$(BUILD_DIR)/src/libu64/relocation_gc.o"
     include "$(BUILD_DIR)/src/libu64/load_gc.o"
-    include "$(BUILD_DIR)/src/libu64/padsetup.o"
+#else
+    include "$(BUILD_DIR)/src/libu64/loadfragment2_n64.o"
+#endif
+    include "$(BUILD_DIR)/src/libu64/runtime.o"
     include "$(BUILD_DIR)/src/libu64/pad.o"
-    include "$(BUILD_DIR)/src/libu64/rcp_utils.o"
+    include "$(BUILD_DIR)/src/libu64/padsetup.o"
+#if PLATFORM_IQUE
+    include "$(BUILD_DIR)/src/libu64/debug.o"
 #endif
 
     // libc64
@@ -948,9 +926,6 @@ beginseg
     include "$(BUILD_DIR)/src/overlays/actors/ovl_En_Test/z_en_test.o"
     include "$(BUILD_DIR)/src/overlays/actors/ovl_En_Test/ovl_En_Test_reloc.o"
 endseg
-
-// Overlays for most actors and effects are reordered between versions. On N64 and iQue,
-// the overlays are in some arbitrary order, while on GameCube they are sorted alphabetically.
 
 #include "overlays.inc"
 
