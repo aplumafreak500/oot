@@ -329,8 +329,8 @@ CPPFLAGS += -P -xc -fno-dollars-in-identifiers $(CPP_DEFINES)
 ASFLAGS += -march=vr4300 -32 -no-pad-sections -Iinclude -I$(EXTRACTED_DIR)
 
 ifeq ($(COMPILER),gcc)
-  CFLAGS += $(CPP_DEFINES) $(GBI_DEFINES) -G 0 -nostdinc -MD -MP $(INC) -march=vr4300 -mfix4300 -mabi=32 -mno-abicalls -mdivide-breaks -fno-PIC -fno-common -ffreestanding -funsigned-char -fbuiltin -fno-builtin-sinf -fno-builtin-cosf $(CHECK_WARNINGS)
-  CCASFLAGS += $(CPP_DEFINES) $(GBI_DEFINES) -G 0 -nostdinc -MD -MP $(INC) -march=vr4300 -mfix4300 -mabi=32 -mno-abicalls -fno-PIC -fno-common -Wa,-no-pad-sections
+  CFLAGS += $(CPP_DEFINES) $(GBI_DEFINES) -G 0 -nostdinc -MD -MP $(INC) -march=vr4300 -mfix4300 -mabi=32 -mno-abicalls -mdivide-breaks -fno-PIC -fno-common -ffreestanding -funsigned-char -fbuiltin -fno-builtin-sinf -fno-builtin-cosf -fno-unwind-tables -fno-asynchronous-unwind-tables $(CHECK_WARNINGS)
+  CCASFLAGS += $(CPP_DEFINES) $(GBI_DEFINES) -G 0 -nostdinc -MD -MP $(INC) -march=vr4300 -mfix4300 -mabi=32 -mno-abicalls -fno-PIC -fno-common -fno-unwind-tables -fno-asynchronous-unwind-tables -Wa,-no-pad-sections
   MIPS_VERSION := -mips3
 else
   # Suppress warnings for wrong number of macro arguments (to fake variadic
