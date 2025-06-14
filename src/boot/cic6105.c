@@ -37,12 +37,12 @@ void CIC6105_FaultClient(void) {
     } else {
         Fault_Printf("LEGEND %08x %08x", B_80008EF8, B_80008EFC);
     }
-    Fault_SetCursor(40, 184);
+    Fault_SetCursor(40, 176);
     Fault_Printf("ROM_F");
     Fault_Printf(" [Creator:%s]", gBuildCreator);
-    Fault_SetCursor(56, 192);
+    Fault_SetCursor(56, 184);
     Fault_Printf("[Date:%s]", gBuildDate);
-    Fault_SetCursor(64, 192);
+    Fault_SetCursor(56, 192);
     Fault_Printf("[Git Rev:%s]", gGitRev);
 #if OOT_VERSION < PAL_1_0
     Fault_SetCursor(128, 24);

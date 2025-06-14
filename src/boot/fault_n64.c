@@ -836,7 +836,7 @@ NORETURN void Fault_AddHungupAndCrashImpl(const char* exp1, const char* exp2) {
         Fault_SleepImpl(1000);
     }
     Fault_SleepImpl(500);
-    Fault_WaitForButtonCombo();
+    //Fault_WaitForButtonCombo();
     do {
         func_800AF558();
         Fault_DrawRecBlack(22, 16, 276, 34);
