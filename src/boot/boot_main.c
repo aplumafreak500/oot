@@ -12,8 +12,6 @@
 #include "z_locale.h"
 #include "thread.h"
 
-#pragma increment_block_number "gc-eu:0 gc-eu-mq:0 gc-jp:0 gc-jp-ce:0 gc-jp-mq:0 gc-us:0 gc-us-mq:0 ntsc-1.2:128"
-
 StackEntry sBootThreadInfo;
 OSThread sIdleThread;
 STACK(sIdleThreadStack, 0x400);

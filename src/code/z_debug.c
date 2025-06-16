@@ -23,9 +23,6 @@ typedef struct InputCombo {
     /* 0x2 */ u16 press;
 } InputCombo; // size = 0x4
 
-#pragma increment_block_number "gc-eu:0 gc-eu-mq:0 gc-jp:0 gc-jp-ce:0 gc-jp-mq:0 gc-us:0 gc-us-mq:0 ique-cn:0" \
-                               "ntsc-1.0:0 ntsc-1.1:0 ntsc-1.2:0 pal-1.0:0 pal-1.1:0"
-
 RegEditor* gRegEditor;
 
 DebugCamTextBufferEntry sDebugCamTextBuffer[22];

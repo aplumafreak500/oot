@@ -10,8 +10,6 @@
 #include "gfx.h"
 #include "terminal.h"
 
-#pragma increment_block_number "gc-eu:0 gc-eu-mq:0 gc-jp:128 gc-jp-ce:128 gc-jp-mq:128 gc-us:128 gc-us-mq:128"
-
 typedef struct FaultDrawer {
     /* 0x00 */ u16* fb;
     /* 0x04 */ u16 w;
@@ -103,8 +101,6 @@ FaultDrawer sFaultDrawerDefault = {
     false,
     NULL,
 };
-
-#pragma increment_block_number "gc-eu:0 gc-eu-mq:0"
 
 FaultDrawer sFaultDrawer;
 char D_8016B6C0[0x20];

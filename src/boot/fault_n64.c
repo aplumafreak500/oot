@@ -13,8 +13,6 @@
 #include "thread.h"
 #include "translation.h"
 
-#pragma increment_block_number "ntsc-1.0:144 ntsc-1.1:144 ntsc-1.2:144 pal-1.0:144 pal-1.1:144"
-
 typedef struct FaultMgr {
     OSThread thread;
     char unk_1B0[0x400];
