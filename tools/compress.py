@@ -164,7 +164,12 @@ def compress_rom(
     compressed_rom_size = sum(
         align(len(segment.data)) for segment in compressed_rom_segments
     )
-    compressed_rom_data = memoryview(bytearray(compressed_rom_size))
+    compressed_rom_size_padded = (
+        (compressed_rom_size + pad_to_multiple_of - 1)
+        // pad_to_multiple_of
+        * pad_to_multiple_of
+    )
+    compressed_rom_data = memoryview(bytearray(compressed_rom_size_padded))
     compressed_rom_dma_entries: list[dmadata.DmaEntry] = []
     rom_offset = 0
     for segment in compressed_rom_segments:
@@ -195,6 +200,10 @@ def compress_rom(
         )
 
     assert rom_offset == compressed_rom_size
+    if fill_padding_bytes:
+        # Pad the compressed rom with the pattern matching the baseroms
+        for i in range(compressed_rom_size, compressed_rom_size_padded):
+            compressed_rom_data[i] = i % 256
 
     # Write the new dmadata
     offset = dmadata_start
