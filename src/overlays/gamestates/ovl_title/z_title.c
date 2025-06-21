@@ -258,6 +258,6 @@ void ConsoleLogo_Init(GameState* thisx) {
     this->ult = 0;
     this->unk_1D4 = 20;
     this->coverAlpha = 255;
-    this->addAlpha = -12;
-    this->visibleDuration = 120;
+    this->addAlpha = -3;
+    this->visibleDuration = 60;
 }

@@ -647,7 +647,7 @@ void Regs_InitDataImpl(void) {
     VREG(30) = 0;
     VREG(31) = 0;
     VREG(32) = 0;
-	// TODO: Below 6 lines different on N64?
+
     R_TEXT_ADJUST_COLOR_1_R = 70;
     R_TEXT_ADJUST_COLOR_1_G = 255;
     R_TEXT_ADJUST_COLOR_1_B = 80;
