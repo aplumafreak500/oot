@@ -2351,11 +2351,7 @@ void FileSelect_Init(GameState* thisx) {
     }
 #endif
 
-#if !OOT_PAL_N64
-    SREG(30) = 1;
-#else
-    SREG(30) = 2;
-#endif
+    R_UPDATE_RATE = 1;
     PRINTF("SIZE=%x\n", size);
 
     this->staticSegment = GAME_STATE_ALLOC(&this->state, size, "../z_file_choose.c", 3392);
