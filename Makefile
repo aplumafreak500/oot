@@ -20,7 +20,7 @@ NON_MATCHING ?= 1
 # If ORIG_COMPILER is 1, compile with QEMU_IRIX and the original compiler.
 ORIG_COMPILER ?= 0
 # If COMPILER is "gcc", compile with GCC instead of IDO.
-COMPILER ?= gcc
+COMPILER ?= ido
 # Target game version. Ensure the corresponding input ROM is placed in baseroms/$(VERSION)/baserom.z64.
 # Currently the following versions are supported:
 #   ntsc-1.0       N64 NTSC 1.0 (Japan/US depending on REGION)
@@ -354,7 +354,7 @@ ifeq ($(COMPILER),ido)
     export QEMU_GUEST_BASE := 1
   else
     # Ensure that gcc (warning check) treats the code as 32-bit
-    CC_CHECK += -m32
+    CC_CHECK = @:
   endif
 else
   CC_CHECK = @:
@@ -688,12 +688,12 @@ endif
 #### Various Recipes ####
 
 ifeq ($(PLATFORM),IQUE)
-  COMPRESS_ARGS := --format gzip --pad-to 0x4000
   CIC = 6102
 else
-  COMPRESS_ARGS := --format yaz0 --pad-to 0x800000 --fill-padding-bytes
   CIC = 6105
 endif
+
+COMPRESS_ARGS := --format yaz0 --pad-to 0x1000 --fill-padding-bytes
 
 $(ROM): $(ELF)
 	$(ELF2ROM) -cic $(CIC) $< $@
