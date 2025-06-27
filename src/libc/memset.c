@@ -12,7 +12,7 @@
  * @return dest
  */
 void* memset(void* dest, int val, size_t len) {
-    char* ptr = dest;
+    volatile char* ptr = dest;
 
     while (len--) {
         *ptr++ = val;
